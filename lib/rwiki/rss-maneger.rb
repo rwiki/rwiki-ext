@@ -61,7 +61,7 @@ module RWiki
 
 					@@mutex.synchronize do
 						need_update = !@@cache.has_key?(uri) or
-							@@cache[uri][:time] + expire < Time.now
+							((@@cache[uri][:time] + expire) < Time.now)
 					end
 
 					if need_update
@@ -201,7 +201,7 @@ module RWiki
 				@@mutex.synchronize do
 					@@cache.each do |uri, value|
 						next if value[:channel].nil?
-						yield(uri, value[:channel], value[:items], value[:name])
+						yield(uri, value[:channel], value[:items], value[:name], value[:time])
 					end
 				end
 			end

@@ -73,18 +73,18 @@ module RWiki
 						arg = @@topics.collect {|uri, values| [uri, *values]}
 						@@maneger.parallel_parse(arg)
 					else
-						@@topics.collect do |uri, values|
+						@@topics.each do |uri, values|
 							@@maneger.parse(uri, *values)
 						end
 					end
 						
 					rv = pre_html
 
-					@@maneger.each do |uri, channel, items, name|
+					@@maneger.each do |uri, channel, items, name, time|
 						if @@topics.has_key?(uri) and !items.empty?
 							rv << %Q! <div class="rss_topic_item">\n! <<
 								%Q! <span class="rss_topic_title">! <<
-								%Q!#{tta(channel, name)}</span>\n!
+								%Q!#{tta(channel, name)}(#{time})</span>\n!
 							items[0...@@number].each do |item|
 								rv << %Q! <span class="rss_topic_content">! <<
 									%Q![#{ttia(item, @@characters)}]</span>\n!
