@@ -223,7 +223,7 @@ module RD
 		end
 
     def apply_to_Reference_with_RDLabel(element, content)
-			label = File.join(element.label.filename, content.join(''))
+			label = content.join('')
 			if /\Aimg:/ =~ label
 				filename = $POSTMATCH.gsub(/\.[^.]+\z/, '.eps')
 				"\\includegraphics[width=1.0\\slideWidth]{#{filename}}"
@@ -256,7 +256,7 @@ module RD
     
     def apply_to_Verb(element)
       content = apply_to_String(element.content)
-      "\\verb|#{content}|"
+      # "\\verb|#{content}|"
     end
 
     def apply_to_String(element)
