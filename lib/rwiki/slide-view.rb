@@ -1,5 +1,6 @@
 require 'rwiki/rwiki'
 
+module RWiki
 module Slide
   class SlideFormat < RWiki::PageFormat
 
@@ -44,7 +45,7 @@ module Slide
 		def self.slide_css=(css) @@slide_css = css; end
 
     @rhtml = {
-      :view => RWiki::ERbLoader.new('view(pg)', 'slide-view.rhtml')
+      :view => RWiki::ERBLoader.new('view(pg)', 'slide-view.rhtml')
     }
     reload_rhtml
     
@@ -76,4 +77,5 @@ module Slide
     end
   end
 
+end
 end

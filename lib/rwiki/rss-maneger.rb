@@ -145,7 +145,7 @@ module RWiki
 				end
 				has_update_info_values.sort_by do |_, _, _, item, _|
 					item.dc_date
-				end
+				end.reverse
 			end
 
 			def each

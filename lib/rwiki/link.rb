@@ -181,8 +181,8 @@ module RWiki
 
 		module LinkPageMixIn
 
-			def edit_html(env={}, &block)
-				dispatch_edit_html(@format.new(env, &block), &block)
+			def edit_html(rev=nil, env={}, &block)
+				dispatch_edit_html(@format.new(env, &block), rev, &block)
 			end
 
 			def title
@@ -255,20 +255,20 @@ module RWiki
 			end
 
 			private
-			def dispatch_html(html_type, format, &block)
+			def dispatch_html(html_type, format, *args, &block)
 				method_name = "#{mode(&block)}_#{html_type}"
 				unless format.respond_to?(method_name)
 					method_name = html_type
 				end
-				format.send(method_name, self, &block)
+				format.send(method_name, self, *args, &block)
 			end
 
 			def dispatch_view_html(format, &block)
 				dispatch_html("view", format, &block)
 			end
 
-			def dispatch_edit_html(format, &block)
-				dispatch_html("edit", format, &block)
+			def dispatch_edit_html(format, rev, &block)
+				dispatch_html("edit", format, rev, &block)
 			end
 
 			def update_page_src(pg, format=nil)
@@ -706,9 +706,9 @@ module RWiki
 
 			@rhtml = {
 				:custom_view => ERBLoader.new("custom_view(pg)", "link_category.rhtml"),
-				:custom_edit => ERBLoader.new("custom_edit(pg)", "link_category_edit.rhtml"),
+				:custom_edit => ERBLoader.new("custom_edit(pg, rev=nil)", "link_category_edit.rhtml"),
 				:dedicated_view => ERBLoader.new("dedicated_view(pg)", "link_category_dedicated.rhtml"),
-				:dedicated_edit => ERBLoader.new("dedicated_edit(pg)", "link_category_dedicated_edit.rhtml"),
+				:dedicated_edit => ERBLoader.new("dedicated_edit(pg, rev=nil)", "link_category_dedicated_edit.rhtml"),
 				:make_src => ERBLoader.new("make_src(pg)", "link_category.rrd"),
 			}
 			reload_rhtml
