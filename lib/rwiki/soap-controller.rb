@@ -1,6 +1,6 @@
-require 'socket'
-
 require 'forwardable'
+require 'socket'
+require 'uri'
 require 'drb/drb'
 
 require 'rwiki/soap-lib'
@@ -11,11 +11,8 @@ module RWiki
 		class Controller
 			extend Forwardable
 
-			DRB_SPLIT_RE = /\Adruby:\/\/([a-zA-z._\-]*)?(?::(\d*))?/
-
-			def_delegators(:@rwiki,
-			               :find, :src, :body, :modified, :page,
-			               :rd2content, :recent_changes)
+			def_delegators(:@rwiki, :find, :src, :modified)
+      def_delegators(:@rwiki, :recent_changes)
 
 			if const_defined?(:ALLOW_GET_PAGE) and ALLOW_GET_PAGE
 				def_delegators(:@rwiki, :page)
@@ -24,9 +21,9 @@ module RWiki
 			def initialize(rwiki)
 				@rwiki = rwiki
 
-				@rwiki.__drburi =~ DRB_SPLIT_RE
-				@drb_host = $1
-				@drb_port = $2.to_i
+				uri = URI.parse(@rwiki.__drburi)
+				@drb_host = uri.host
+				@drb_port = uri.port
 
 				if @drb_host.empty?
 					@drb_host = Socket.gethostbyname(Socket.gethostname)[0]
@@ -37,7 +34,7 @@ module RWiki
 			end
 
 			def allow_get_page # XML element name cann't include '?'.
-				ALLOW_GET_PAGE ? true : false
+				!!(const_defined?(:ALLOW_GET_PAGE) and ALLOW_GET_PAGE)
 			end
   
 			def include(name) # XML element name cann't include '?'.
@@ -49,15 +46,15 @@ module RWiki
 				page.revision
 			end
 
-			def copy(name, src)
+			def copy(name, src, rev, log_message)
 				page = @rwiki.page(name)
-				page.src = src
+				page.set_src(src, rev, log_message)
 				name
 			end
   
-			def append(name, src)
+			def append(name, src, rev, log_message)
 				page = @rwiki.page(name)
-				page.src = page.src.to_s + src
+				page.set_src(page.src.to_s + src, rev, log_message)
 				name
 			end
 

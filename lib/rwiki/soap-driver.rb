@@ -10,7 +10,7 @@ module RWiki
       APP_NAME = 'RWikiSOAPDriver'
 
       def initialize(log_dir, end_point, http_proxy=nil, soap_action=nil)
-        super(RWiki::SOAP::NS, end_point, soap_action)
+        super(end_point, RWiki::SOAP::NS, soap_action)
 				unless log_dir.nil?
 					self.wiredump_file_base = File.join(log_dir, APP_NAME)
 				end

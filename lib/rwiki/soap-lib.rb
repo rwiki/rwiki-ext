@@ -1,5 +1,5 @@
 module RWiki
   module SOAP
-    NS = 'http://www.jin.gr.jp/~nahi/RWiki/'
+    NS = 'http://pub.cozmixng.org/~the-rwiki/'
   end
 end
