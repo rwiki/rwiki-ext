@@ -216,7 +216,7 @@ module RWiki
 			def items(uri)
 				begin
 					@@mutex.synchronize do
-						@@cache[uri][:items]
+						@@cache[uri][:items] || []
 					end
 				rescue NameError
 					[]
