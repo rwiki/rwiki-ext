@@ -72,8 +72,8 @@ module RWiki
 								@called = true
 							end
 						end
-					elsif !@driver.nil?
-						@driver.copy(name, src) unless @driver.nil?
+					elsif not @driver.nil?
+						@driver.copy(name, src)
 					end
 					set_modified(name)
 				end
