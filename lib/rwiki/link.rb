@@ -245,7 +245,7 @@ module RWiki
 
 			def update_page_src(pg, format=nil)
 				format ||= pg.format.new()
-				made_src = format.make_src(pg)
+				made_src = format.make_src(pg).chomp
 				pg.src = made_src if pg.src != made_src
 			end
 
@@ -332,7 +332,7 @@ module RWiki
 
 			def view_html(env={}, &block)
 				format = @format.new(env, &block)
-				update_src(self, format) if dirty?
+				update_page_src(self, format) if dirty?
 				dispatch_view_html(format, &block)
 			end
 
@@ -378,7 +378,7 @@ module RWiki
 
 			def view_html(env={}, &block)
 				format = @format.new(env, &block)
-				update_src(self, format) if dirty?
+				update_page_src(self, format) if dirty?
 				dispatch_view_html(format, &block)
 			end
 
@@ -506,7 +506,7 @@ module RWiki
 
 			def view_html(env={}, &block)
 				format = @format.new(env, &block)
-				update_src(self, format) if dirty?
+				update_page_src(self, format) if dirty?
 				::RWiki::RSS::Maneger.forget
 				dispatch_view_html(format, &block)
 			end
