@@ -9,13 +9,16 @@ if ::RWiki::RSS::Topic.display
 <script type="text/javascript">
 <!--
 function show_hide(id) {
-  if (! document.getElementById) return;
-  if (document.getElementById(id).style.visibility != "hidden")
-    document.getElementById(id).style.visibility = "hidden";
-  else
-    document.getElementById(id).style.visibility = "visible";
+	if (! document.getElementById) return;
+	if (document.getElementById(id).style.visibility != "hidden") {
+		document.cookie = "rss_visibility=hidden";
+		document.getElementById(id).style.visibility = "hidden";
+	} else {
+		document.cookie = "rss_visibility=visible";
+		document.getElementById(id).style.visibility = "visible";
+	}
 }
-document.write('<div class="rss-visibility-toggle" onclick="show_hide(' + "'rss-topic-contents'" + ')">Show / Hide</div>');
+document.write('<div class="rss-visibility-toggle" onclick="show_hide(' + "'rss-topic-contents'" + ')">show / hide</div>');
 // -->
 </script>
 	<div class="rss-topic-contents" id="rss-topic-contents" ondblclick="show_hide('rss-topic-contents')">
@@ -40,6 +43,13 @@ document.write('<div class="rss-visibility-toggle" onclick="show_hide(' + "'rss-
 %>
 	</div>
 </div>
+<script type="text/javascript">
+<!--
+if (/rss_visibility=hidden/.exec(document.cookie)) {
+	show_hide("rss-topic-contents");
+}
+// -->
+</script>
 <%
 	end
 end

@@ -712,7 +712,8 @@ class Installer
   end
 
   def install_dir_lib( rel )
-    install_files ruby_scripts(), config('rb-dir') + '/' + rel, 0644
+#    install_files ruby_scripts(), config('rb-dir') + '/' + rel, 0644
+    install_files collect_filenames_auto(), config('rb-dir') + '/' + rel, 0644
   end
 
   def install_dir_ext( rel )
