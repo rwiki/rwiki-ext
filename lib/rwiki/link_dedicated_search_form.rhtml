@@ -1,0 +1,15 @@
+<form action="<%= form_action %>" method="get" class="search">
+<p>
+<%= form_hidden(pg.index_page.name) %>
+<input type="hidden" name="mode" value="<%= pg.index_page.mode %>_search" />
+<input type="text" name="key" value="<%= keywords.join(" ") %>" <%=tabindex%> accesskey="K" />
+<% if have_search_option %>
+<br />
+<input type="radio" name="type" value="and" <%=tabindex%> accesskey="A"<%= if search_type == "and" then ' checked="true"' end %>>全ての単語が含まれているカテゴリ/リンクのみ(AND)</input><br />
+<input type="radio" name="type" value="or" <%=tabindex%> accesskey="O"<%= if search_type == "or" then ' checked="true"' end %>>どれかの単語が含まれているカテゴリ/リンク(OR)</input><br />
+<% else %>
+<input type="hidden" name="type" value="<%=h search_type %>" />
+<% end %>
+<input type="submit" value="検索" <%=tabindex%> accesskey="S" />
+</p>
+</form>

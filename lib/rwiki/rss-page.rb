@@ -148,7 +148,7 @@ module RWiki
 			def make_anchor(href, name, time=nil, image_src=nil, image_title=nil)
 				anchor = if image_src
 									 image_title ||= name
-									 %Q[<img src="#{h image_src}" title="#{h image_title}" alt="#{h image_title}"]
+									 %Q[<img src="#{h image_src}" title="#{h image_title}" alt="#{h image_title}" />]
 								 else
 									 h(name)
 								 end

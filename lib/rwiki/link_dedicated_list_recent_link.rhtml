@@ -30,7 +30,7 @@
 	<h3><%= ia(item) %><%= make_modified(item.dc_date) %></h3>
 	<div class="link-target"><%= ca(channel, image, name) %></div>
   <% unless item.description.nil? %>
-	<div class="description"><p><%=h item.description.shorten %></p></div>
+	<div class="description"><p><%=h item.description %></p></div>
   <% end %>
 	<% if item.dc_date then %><div class="date"><%=h item.dc_date.localtime %></div><% end %>
 </div>

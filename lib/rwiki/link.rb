@@ -5,6 +5,8 @@ require "rwiki/rss-page"
 module RWiki
 	module LinkSystem
 
+		MINIMUM_DIRTY_TIME = 60 * 60 # 1 hour
+
 		class << self
 
 			def install(index_name, link_base_name, category_base_name, default_mode="custom")
@@ -151,8 +153,6 @@ module RWiki
 
 		module LinkPageMixIn
 
-			attr_accessor :dirty
-
 			def edit_html(env={}, &block)
 				dispatch_edit_html(@format.new(env, &block), &block)
 			end
@@ -173,7 +173,6 @@ module RWiki
 
 			def forget
 				@property = nil
-				@dirty = false
 			end
 
 			def property
@@ -197,7 +196,7 @@ module RWiki
 			end
 
 			def dirty?
-				return true if @dirty
+				return false if (Time.new - self.modified) < MINIMUM_DIRTY_TIME
 				newer = hot_links[0]
 				return true if newer.nil?
 				return false unless @book.include_name?(newer)
@@ -533,6 +532,8 @@ module RWiki
 				:dedicated_list_recent_link => ::RWiki::ERbLoader.new("dedicated_list_recent_link(pg, link_pages, *params)", "link_dedicated_list_recent_link.rhtml"),
 				:dedicated_list_link => ::RWiki::ERbLoader.new("dedicated_list_link(pg, link_pages, display_update_info=false)", "link_dedicated_list_link.rhtml"),
 				:dedicated_list_category => ::RWiki::ERbLoader.new("dedicated_list_category(pg, category_pages)", "link_dedicated_list_category.rhtml"),
+				:dedicated_refine_form => ::RWiki::ERbLoader.new("dedicated_refine_form(pg, refine_type='and', categories=[], selected_category_names={}, have_refine_option=false)", "link_dedicated_refine_form.rhtml"),
+				:dedicated_search_form => ::RWiki::ERbLoader.new("dedicated_search_form(pg, search_type='and', keywords=[], have_search_option=false)", "link_dedicated_search_form.rhtml"),
 			}
 			
 			reload_rhtml

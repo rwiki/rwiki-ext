@@ -1,0 +1,21 @@
+<form action="<%= form_action %>" method="get" class="refine">
+<p>
+<%= form_hidden(pg.name) %>
+<input type="hidden" name="mode" value="<%= pg.index_page.mode %>_refine" />
+<input type="hidden" name="pages" value="<%= number_of_pages(var("pages").first) %>" />
+カテゴリ選択(複数選択可):<br />
+<select name="cat" multiple="true" <%=tabindex%> accesskey="C" size="5">
+<% categories.sort{|x, y| x.title <=> y.title}.each do |cat_pg| %>
+	<option value="<%=h cat_pg.name%>"<%= if selected_category_names.has_key?(cat_pg.name) then ' selected="selected"' end%>><%=h cat_pg.title%></option>
+<% end %>
+</select>
+<% if have_refine_option %>
+<br />
+<input type="radio" name="type" value="and" <%=tabindex%> accesskey="A"<%= if refine_type == "and" then ' checked="true"' end %>>全てのカテゴリに含まれているリンクのみ(AND)</input><br />
+<input type="radio" name="type" value="or" <%=tabindex%> accesskey="O"<%= if refine_type == "or" then ' checked="true"' end %>>どれかのカテゴリに含まれているリンク(OR)</input><br />
+<% else %>
+<input type="hidden" name="cat" value="<%=h refine_type %>" />
+<% end %>
+<input type="submit" value="絞り込み" <%=tabindex%> accesskey="D" />
+</p>
+</form>

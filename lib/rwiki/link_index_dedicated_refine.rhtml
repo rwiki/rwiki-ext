@@ -8,7 +8,6 @@
 	refine_funcname = if refine_type == "and" then "&" else "|" end
 
 	category_names = var('cat')
-	category_names ||= []
 	category_name = {}
 	category_names.each {|cat_name| category_name[cat_name] = nil}
 	categories = pg.find_all_category {|cat_pg| category_name.has_key?(cat_pg.name)}.sort {|x, y| x.title <=> y.title}
@@ -30,23 +29,9 @@
 <% unless categories.empty? then %><div class="main"><% end %>
 <%= dedicated_navi(pg) %>
 <div class="body">
-<form action="<%= form_action %>" method="get">
-<p>
-<%= form_hidden(pg.name) %>
-<input type="hidden" name="mode" value="<%= pg.mode %>_refine" />
-<input type="hidden" name="pages" value="<%= number_of_pages(var("pages").first) %>" />
-カテゴリ選択(複数選択可):<br />
-<select name="cat" multiple="true" <%=tabindex%> accesskey="C" size="5">
-<% pg.all_category.sort{|x, y| x.title <=> y.title}.each do |cat_pg| %>
-			<option value="<%=h cat_pg.name%>"<%= if category_name.has_key?(cat_pg.name) then ' selected="selected"' end%>><%=h cat_pg.title%></option>
-<% end %>
-</select><br />
-<input type="radio" name="type" value="and" <%=tabindex%> accesskey="A"<%= if refine_type == "and" then ' checked="true"' end %>>全てのカテゴリに含まれているリンクのみ(AND)</input><br />
-<input type="radio" name="type" value="or" <%=tabindex%> accesskey="O"<%= if refine_type == "or" then ' checked="true"' end %>>どれかのカテゴリに含まれているリンク(OR)</input><br />
-<input type="submit" value="決定" <%=tabindex%> accesskey="D" />
-</p>
-</form>
+<%= dedicated_refine_form(pg, refine_type, pg.all_category, category_name, true) %>
 </div>
+
 <% unless categories.empty? then %>
 <h2>選択したカテゴリに属するリンクの更新状況</h2>
 <%= dedicated_list_recent_link(pg, link_pages, params) %>
