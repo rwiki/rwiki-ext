@@ -83,12 +83,16 @@ module RWiki
 					rescue NameError
 					end
 
-					if need_update
-						STDERR.puts "updating... #{uri_str}"
-						source = get_rss_source(uri, name)
-						parsed = update_cache(uri_str, charset, name, source)
-					end
-					
+          if need_update
+            if uri.host
+              STDERR.puts "updating... #{uri_str}"
+              source = get_rss_source(uri, name)
+              parsed = update_cache(uri_str, charset, name, source)
+            else
+              STDERR.puts "not update: #{uri_str}"
+            end
+          end
+
 					if !parsed and @@cache[uri_str][:items].empty?
 						@mutex.synchronize do
 							@not_include_update_info_resources << [uri_str, name]
@@ -177,7 +181,15 @@ module RWiki
 			def get_rss_source(uri, name)
 				rss_source = nil
 				begin
-					rss_source = fetch_rss(uri, @@cache[uri.to_s][:time])
+          begin
+            rss_source = fetch_rss(uri, @@cache[uri.to_s][:time])
+          rescue NoMethodError
+            STDERR.puts uri.inspect
+            STDERR.puts $!.class
+            STDERR.puts $!.message
+            STDERR.puts $@
+            raise InvalidResourceError
+          end
 				rescue TimeoutError,
 				SocketError,
 				Net::HTTPBadResponse,
