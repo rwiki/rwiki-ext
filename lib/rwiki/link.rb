@@ -372,6 +372,7 @@ module RWiki
 				categories.each do |cat_pg|
 					link_pgs = link_pgs.send(refine_funcname, cat_pg.link_pages)
 				end
+				lnik_pgs.delete_if {|pg| pg.modified.nil?}
 				link_pgs.uniq! if refine_type == "and"
 				link_pgs.sort! {|x, y| x.title <=> y.title}
 				link_pgs
@@ -411,7 +412,7 @@ module RWiki
 			include LinkPageMixIn
 
 			def link_pages
-				get_property(:links, [])
+				get_property(:links, []).delete_if {|pg| pg.modified.nil?}
 			end
 
 			def categorized_links
@@ -571,7 +572,7 @@ module RWiki
 					find_all_page(@section.link_section)
 				else
 					get_property(:links, [])
-				end
+				end.delete_if {|pg| pg.modified.nil?}
 			end
 
 			def view_html(env={}, &block)

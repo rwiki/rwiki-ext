@@ -46,20 +46,20 @@ module RWiki
 
 	class PageStoreCVS
 
-    def run_cvs(*args)
-      STDERR.puts(args.inspect) if PageStoreCVS::Develop
-      `#{make_command(@cvs, @cvs_options, '-d', @cvsrepo, *args)}`
-    end
+		def run_cvs(*args)
+			STDERR.puts(args.inspect) if PageStoreCVS::Develop
+			`#{make_command(@cvs, @cvs_options, '-d', @cvsrepo, *args)}`
+		end
 
 		def make_command(*args)
 			args.collect {|x| x.dump}.join(" ")
 		end
 
 		def cvs_log(filename)
-      run_cvs('log', '--', filename)
+			run_cvs('log', '--', filename)
 		end
 
-    def logs(page_name)
+		def logs(page_name)
 			filename = fname(page_name)
 			result = []
 			log = nil
@@ -166,19 +166,19 @@ end
 class HistoryFormat < RWiki::PageFormat
 	include DiffLink
 
-  @rhtml = { :view => RWiki::ERbLoader.new('view(pg)', 'history.rhtml')}
-  reload_rhtml
+	@rhtml = { :view => RWiki::ERbLoader.new('view(pg)', 'history.rhtml')}
+	reload_rhtml
 
-  def navi_view(pg, title, referer)
-    %Q[<span class="navi">[<a href="#{ ref_name(pg.name, 'target' => target(nil) || referer.name) }">#{ h title }</a>]</span>]
-  end
+	def navi_view(pg, title, referer)
+		%Q[<span class="navi">[<a href="#{ ref_name(pg.name, 'target' => target(nil) || referer.name) }">#{ h title }</a>]</span>]
+	end
 end
 
 class DiffFormat < RWiki::PageFormat
 	include DiffLink
 
-  @rhtml = { :view => RWiki::ERbLoader.new('view(pg)', 'diff.rhtml')}
-  reload_rhtml
+	@rhtml = { :view => RWiki::ERbLoader.new('view(pg)', 'diff.rhtml')}
+	reload_rhtml
 
 	def diff(pg, log1, log2)
 		result = nil
@@ -189,9 +189,9 @@ class DiffFormat < RWiki::PageFormat
 		result
 	end
 
-  def navi_view(pg, title, referer)
-    %Q[<span class="navi">[<a href="#{ ref_name(pg.name, {'target' => target(nil) || referer.name}) }">#{ h title }</a>]</span>]
-  end
+	def navi_view(pg, title, referer)
+		%Q[<span class="navi">[<a href="#{ ref_name(pg.name, {'target' => target(nil) || referer.name}) }">#{ h title }</a>]</span>]
+	end
 end
 
 RWiki::install_page_module('history', HistoryFormat, "History")

@@ -3,7 +3,7 @@ require "uri"
 require "rwiki/rddoc"
 require "rwiki/custom-edit"
 
-RWiki::Version.regist('InportWiki', '2003-07-10')
+RWiki::Version.regist('ImportWiki', '2003-07-10')
 
 module RWiki
 	module ImportWiki
