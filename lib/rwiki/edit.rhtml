@@ -1,0 +1,41 @@
+<%= header(pg) %>
+<%= navi(pg) %>
+<% 
+  src = pg.src || pg.book.default_src(pg.name)
+%>
+<div class="edit">
+<h1>Edit: <%=h pg.name%></h1>
+
+<form action="<%= form_action %>" method="post">
+<p>
+<%= form_hidden(pg.name, 'submit') %>
+<input type="hidden" name="rev" value="<%= pg.revision %>" />
+<textarea name="src" cols="70" rows="15" <%=tabindex%> accesskey="M"><%=h src %></textarea>
+<%
+begin
+	if ::RWiki::BookConfig.default.db.kind_of?(::RWiki::PageStoreCVS)
+%>
+<br />
+commit log:
+<input type="text" name="commit_log" size="80" maxlength="100" <%=tabindex%> accesskey="L" />
+<%
+	end
+rescue NameError
+end
+%>
+<br />
+<input type="submit" name="commit" value="Save" <%=tabindex%> accesskey="S" />
+</p>
+</form>
+
+<p>
+The writing form is RD format.
+</p>
+</div>
+
+<hr />
+
+<%= pg.empty? ? '' : body(pg) %>
+<%# pg.empty? ? '= ' << pg.name : body(pg) %>
+
+<%= footer(pg) %>

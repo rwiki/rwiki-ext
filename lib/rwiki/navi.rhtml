@@ -1,0 +1,19 @@
+<div class="navi">
+<% label = pg.book.navi_label %>
+<form action="<%= form_action() %>" method="get" class="navi">
+<div>
+<%= form_hidden('search') %>
+<input name="key" type="text" value="<%= h(var('key')) %>" size="10" <%=tabindex%> accesskey="K" />
+<input name="submit" type="submit" value="<%= label['search'] %>" <%=tabindex%> accesskey="G" />
+</div>
+</form>
+<span class="navi">[<a href="<%= ref_name(pg.name, 'edit') %>"><%= label['edit'] %></a>]</span>
+<span class="navi">[<a href="#link"><%= label['link'] %></a>]</span>
+<%=
+  pg.book.navi.collect { |title, page|
+    %Q|<span class="navi">[#{page.navi_view(title, pg, @env, &@block)}]</span>\n|
+  }.join
+%>
+<span class="navi">[<a href="<%= ref_name(pg.name, 'src') %>"><%= label['src'] %></a>]</span>
+<span class="navi">[<a href="<%= ref_name('help') %>"><%= label['help'] %></a>]</span>
+</div>

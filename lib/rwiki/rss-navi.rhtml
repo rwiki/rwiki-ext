@@ -1,0 +1,8 @@
+<%= super(pg) %>
+<%
+ cmd = var('cmd')
+ cmd = cmd.first if cmd.kind_of?(Array)
+ if cmd != 'edit' and not pg.empty?
+   %><%= ::RWiki::RSS::Topic.topics %><%
+ end
+ %>

@@ -1,0 +1,86 @@
+<%= header(pg) %>
+<%
+  from_uri = get_var('from_uri')
+  from_page = get_var('from_page')
+  to_page = get_var('to_page', from_page)
+  to_page = from_page if to_page.empty?
+  action = get_var('action')
+  prop = pg.prop(:soap)
+  entry = prop[:entry] unless prop.nil?
+  entry ||= {}
+%>
+
+<%= navi(pg) %>
+
+<%= body(pg) %>
+
+<hr />
+
+<div class="soap">
+<form action="<%= form_action() %>" method="get">
+<p>
+<%= form_hidden('soap') %>
+From: [PAGE NAME]@[URI] <br />
+<input name="from_page" value="<%=h from_page%>" <%=tabindex%> type="text" />@
+<select name="from_uri" <%=tabindex%>>
+<% entry.each do |uri, display_name| %>
+ <option value="<%= h(uri) %>" <%= 'selected="yes"' if uri == from_uri %>
+ ><%= h(display_name || uri) %></option>
+<% end %>
+</select>
+<br />
+To : [PAGE NAME] <br />
+<input name="to_page" value="<%=h to_page%>" <%=tabindex%> type="text" />
+<br />
+<input name="action" type="submit" value="copy" <%=tabindex%> accesskey="C" />
+<input name="action" type="submit" value="append" <%=tabindex%> accesskey="A" />
+</p>
+</form>
+
+<% begin %>
+<% 
+  if !from_uri.empty? and !from_page.empty?
+
+    log_dir = nil
+    log_dir = RWiki::SOAP::LOG_DIR if RWiki::SOAP.const_defined?(:LOG_DIR)
+
+    driver = RWiki::SOAP::Driver.new(log_dir, from_uri)
+
+    to_pg = pg.book[to_page]
+    src = ''
+
+    case action
+    when 'copy'
+      src << (driver.src(from_page) || pg.book.default_src(to_page))
+    when 'append'
+      src << (to_pg.src || pg.book.default_src(to_page)) + 
+              (driver.src(from_page) || '')
+    else
+      action = nil
+    end
+%>
+<hr />
+
+<% if action.nil? %>
+ <p>Do nothing.</p>
+<% else %>
+ <form action="<%= form_action %>" method="post">
+ <p>
+ <%= form_hidden(to_page, 'submit') %>
+ <input type="hidden" name="rev" value="<%= to_pg.revision %>" />
+ <textarea name="src" cols="80" rows="15" <%=tabindex%> accesskey="M"><%=h src %></textarea>
+ <br />
+ <input type="submit" name="commit" value="Save" <%=tabindex%> accesskey="S" />
+ </p>
+ </form>
+<% end %>
+
+<% end %>
+
+<% rescue SOAP::StreamError%>
+<hr />
+<p>Can't connect <%=h from_uri %></p>
+<% end %>
+</div>
+
+<%= footer(pg) %>

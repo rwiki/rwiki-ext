@@ -1,0 +1,39 @@
+<%= header(pg) %>
+<%= navi(pg) %>
+
+<div class="body">
+<h1>ImportWiki</h1>
+
+<form method="post" action="<%= form_action %>">
+<%= form_hidden(pg.name, 'submit') %>
+<input type="hidden" name="rev" value="<%= pg.revision %>" />
+<input type="hidden" name="src" value="" /> <!-- dummy -->
+
+<h2>WikiType</h2>
+<select name="wiki_type" <%=tabindex%> accesskey="T">
+<% RWiki::ImportWiki.each_wiki_type do |wiki_type| %>
+ <option><%= wiki_type %></option> 
+<% end %>
+</select>
+
+<h2>Encoding</h2>
+<select name="encoding" <%=tabindex%> accesskey="E">
+<% RWiki::ImportWiki.available_encodings.each do |encoding| %>
+ <option><%= encoding %></option> 
+<% end %>
+</select>
+
+<h2>WikiName</h2>
+<input type="text" name="wiki_name" <%=tabindex%> accesskey="N" />
+
+<h2>SourceURI</h2>
+<input type="text" name="source_uri" <%=tabindex%> accesskey="S" />
+
+<input type="submit" name="commit" value="Add" <%=tabindex%> accesskey="A" />
+</form>
+</div>
+
+<hr />
+
+<%= body(pg) %>
+<%= footer(pg) %>

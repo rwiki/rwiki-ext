@@ -1,0 +1,26 @@
+<%= header(pg) %>
+
+<%= navi(pg) %>
+
+<%
+	topic = ::RWiki::RSS::Topic
+	topic.clear
+	
+	prop = pg.prop(:rss)
+	expire = prop[:expire] || ::RWiki::RSS::EXPIRE
+	topic.number = prop[:number] || ::RWiki::RSS::DISPLAY_NUMBER
+	topic.characters = prop[:characters] || ::RWiki::RSS::DISPLAY_CHARACTERS
+	topic.use_thread = prop[:use_thread]
+	topic.display = prop[:display]
+
+	topic.forget(expire)
+
+	prop[:uri].each do |uri, name|
+	  topic.add_topic(uri, @@charset, name, expire)
+	end
+
+%>
+
+<%= body(pg) %>
+
+<%= footer(pg) %>

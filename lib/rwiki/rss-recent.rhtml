@@ -1,0 +1,73 @@
+<%= header(pg) %>
+<%= navi(pg) %>
+
+<%
+	before_time = Time.now
+	maneger = ::RWiki::RSS::Maneger.new
+	prop = pg.prop(:rss)
+	expire = prop[:expire] || ::RWiki::RSS::EXPIRE
+	number = prop[:number] || ::RWiki::RSS::DISPLAY_NUMBER
+	characters = prop[:characters] || ::RWiki::RSS::DISPLAY_CHARACTERS
+
+	::RWiki::RSS::Maneger.forget(expire)
+
+	if prop[:use_thread]
+		maneger.parallel_parse(prop[:uri].collect do |uri, name|
+				[uri, @@charset, name, expire]
+			end)
+	else
+		prop[:uri].each do |uri, name|
+			maneger.parse(uri, @@charset, name, expire)
+		end
+	end
+%>
+
+<%= body(pg) %>
+
+<hr />
+
+<div class="rss_recent">
+<h2>RSS Recent</h2>
+
+<% if prop[:use_thread] then %><p>Useing thread</p><% end %>
+
+<ol>
+<% maneger.recent_changes[0...number].each do |channel, item, name| %>
+  <li><%=h item.dc_date.localtime.iso8601 %>
+      : <%= ia(channel, item, name) %>
+  <% unless item.description.nil? %>
+    <ul>
+      <li><%=h item.description.shorten(characters)%></li>
+    </ul>
+  <% end %>
+  </li>
+<% end %>
+</ol>
+
+<h2>Invalid URIs</h2>
+
+<ul>
+<% maneger.invalid_uris.each do |uri, name| %>
+  <li><%= ua(uri, name) %></li>
+<% end %>
+</ul>
+
+<h2>Invalid Resources</h2>
+<ul>
+<% maneger.invalid_resources.each do |uri, name| %>
+  <li><%= ua(uri, name) %></li>
+<% end %>
+</ul>
+
+<h2>Resources that doesn't include update infomation</h2>
+<ul>
+<% maneger.not_include_update_info_resources.each do |uri, name| %>
+  <li><%= ua(uri, name) %></li>
+<% end %>
+</ul>
+
+<h2>Processing time</h2>
+<p><%= Time.now - before_time %></p>
+</div>
+
+<%= footer(pg) %>
