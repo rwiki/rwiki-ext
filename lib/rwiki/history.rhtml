@@ -6,7 +6,8 @@
 <ul>
 <%
 	targ = target
-	logs = pg.book[targ].logs
+	show_logs = get_var("logs", 30).to_i
+	logs = pg.book[targ].logs[0..show_logs]
 	size = logs.size
 %>
 <% logs.each_with_index do |log, i| %>
@@ -18,6 +19,9 @@
 		<%=h log.commit_log %>
 	</li>
 <% prev = log %>
+<% end %>
+<% if show_logs > 0 && size > show_logs %>
+	<li><a href="<%= full_ref_name(pg.name, 'target' => targ, 'logs' => show_logs + 30) %>">more ...</a></li>
 <% end %>
 </ul>
 </div>

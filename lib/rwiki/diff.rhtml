@@ -17,10 +17,10 @@
 
 <p class="diff-navi">
 [<a href="<%= ref_name(target) %>"><%= h target %></a>]
-<% if r1 > 0 %>
+<% if r1 and r1 > 0 %>
 <%= diff_link(target, r1 - 1, r1) %>
 <% end %>
-<% if 0 < r2 and r2 < size - 1 %>
+<% if r2 and 0 < r2 and r2 < size - 1 %>
 <%= diff_link(target, r2, r2 + 1) %>
 <% end %>
 </p>
