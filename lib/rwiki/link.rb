@@ -727,7 +727,7 @@ module RWiki
 # 				:custom_view => ERBLoader.new("custom_view(pg)", "link_group.rhtml"),
 # 				:custom_edit => ERBLoader.new("custom_edit(pg)", "link_group_edit.rhtml"),
  				:dedicated_view => ERBLoader.new("dedicated_view(pg)", "link_group_dedicated.rhtml"),
- 				:dedicated_edit => ERBLoader.new("dedicated_edit(pg)", "link_group_dedicated_edit.rhtml"),
+ 				:dedicated_edit => ERBLoader.new("dedicated_edit(pg, rev=nil)", "link_group_dedicated_edit.rhtml"),
  				:make_src => ERBLoader.new("make_src(pg)", "link_group.rrd"),
 			}
 			reload_rhtml
@@ -750,9 +750,9 @@ module RWiki
 
 			@rhtml = {
 				:custom_view=> ERBLoader.new("custom_view(pg)", "link_link.rhtml"),
-				:custom_edit => ERBLoader.new("custom_edit(pg)", "link_link_edit.rhtml"),
+				:custom_edit => ERBLoader.new("custom_edit(pg, rev=nil)", "link_link_edit.rhtml"),
 				:dedicated_view => ERBLoader.new("dedicated_view(pg)", "link_link_dedicated.rhtml"),
-				:dedicated_edit => ERBLoader.new("dedicated_edit(pg)", "link_link_dedicated_edit.rhtml"),
+				:dedicated_edit => ERBLoader.new("dedicated_edit(pg, rev=nil)", "link_link_dedicated_edit.rhtml"),
 				:make_src => ERBLoader.new("make_src(pg)", "link_link.rrd"),
 			}
 			reload_rhtml
@@ -837,13 +837,13 @@ module RWiki
 				:custom_search_view => ERBLoader.new("custom_search_view(pg)", "link_index_search.rhtml"),
 				:custom_refine_view => ERBLoader.new("custom_refine_view(pg)", "link_index_refine.rhtml"),
 				:custom_help_view => ERBLoader.new("custom_help_view(pg)", "link_index_help.rhtml"),
-				:custom_edit => ERBLoader.new("custom_edit(pg)", "link_index_edit.rhtml"),
+				:custom_edit => ERBLoader.new("custom_edit(pg, rev=nil)", "link_index_edit.rhtml"),
 				:dedicated_navi => ERBLoader.new("dedicated_navi(pg)", "link_index_dedicated_navi.rhtml"),
 				:dedicated_view => ERBLoader.new("dedicated_view(pg)", "link_index_dedicated.rhtml"),
 				:dedicated_search_view => ERBLoader.new("dedicated_search_view(pg)", "link_index_dedicated_search.rhtml"),
 				:dedicated_refine_view => ERBLoader.new("dedicated_refine_view(pg)", "link_index_dedicated_refine.rhtml"),
 				:dedicated_help_view => ERBLoader.new("dedicated_help_view(pg)", "link_index_dedicated_help.rhtml"),
-				:dedicated_edit => ERBLoader.new("dedicated_edit(pg)", "link_index_dedicated_edit.rhtml"),
+				:dedicated_edit => ERBLoader.new("dedicated_edit(pg, rev=nil)", "link_index_dedicated_edit.rhtml"),
 				:make_src => ERBLoader.new("make_src(pg)", "link_index.rrd"),
 			}
 			
