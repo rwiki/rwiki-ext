@@ -11,7 +11,7 @@
 	 unless link_pg.descriptions.empty?
 	 %>: <span class="description"><%=h link_pg.descriptions.first %></span>
 	<% end %>
-	<% if display_update_info and rss and rss[:items] %>
+	<% if display_update_info and rss and rss[:items] and !rss[:items].empty? %>
 		<ul>
 			<% rss[:items][0...3].each do |item| %>
 				<li>

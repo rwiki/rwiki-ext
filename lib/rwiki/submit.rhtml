@@ -7,5 +7,21 @@
 <meta http-equiv="refresh" content="0;url=<%= ref_name(pg.name) %>" />
 <title>Moving...</title>
 </head>
-<body>Wait or <a href="<%= ref_name(pg.name) %>">Click here!</a></body>
-</html> 
+<body>
+Wait or <a href="<%= ref_name(pg.name) %>">Click here!</a>
+<%
+  if defined?(::RWiki::PageStoreCVS) and pg.section.db.is_a?(::RWiki::PageStoreS)
+    last_cvs_messages = pg.section.db.last_cvs_messages
+    message = last_cvs_messages[pg.name]
+    last_cvs_messages[pg.name] = nil
+    if message
+%>
+<hr />
+cvs results:
+<pre><%= h(message) %></pre>
+<%
+    end
+  end
+%>
+</body>
+</html>

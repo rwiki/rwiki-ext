@@ -3,6 +3,16 @@ require "rwiki/rss-maneger"
 
 require "nkf"
 
+class ERB
+  module Util
+    public
+    def html_unescape(s)
+      s.to_s.gsub(/&lt;/, "<").gsub(/&gt;/, ">").gsub(/&quot;/, '"').gsub(/&amp;/, "&")
+    end
+    alias hu html_unescape
+  end
+end
+
 class String
 	unless respond_to?(:shorten)
 		def shorten(len=120)
@@ -22,7 +32,7 @@ class String
 				lines[0]
 			else
 				rv = self[0...len]
-				rv.concat("...") if self.size > 120
+				rv.concat("...") if self.size > len
 				rv
 			end
 		end
@@ -217,6 +227,10 @@ module RWiki
 
 			def extract_text_from_html(html)
 				html.to_s.gsub(/([^<]*)(<[^>]*>)?/, '\1')
+			end
+
+			def shorten(text, len=120)
+				h(hu(text).shorten(len))
 			end
 
 		end
