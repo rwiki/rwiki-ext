@@ -13,7 +13,6 @@
 <%= dedicated_navi(pg) %>
 <div class="body">
 
-<div class="content">
 <div class="link-info">
 <% if pg.url or pg.rss %>
 	<% if rss and rss[:channel] %>
@@ -31,20 +30,19 @@
 <p><%=h desc %></p>
 </div>
 <% end %>
-</div>
 <% end %>
-</div>
 
 <% if rss and rss[:items] %>
+<h2>¹¹¿·¾õ¶·</h2>
 	<% rss[:items].each do |item| %>
 <div class="content">
-	<h2><%= ia(item) %></h2>
+	<h3><%= ia(item) %><%= make_modified(item.dc_date) %></h3>
 		<% if item.description %>
 	<div class="description">
 	<p><%=h item.description %></p>
 	</div>
 		<% end %>
-		<% if item.dc_date then %><div class="date"><%=make_modified(item.dc_date)%></div><% end %>
+		<% if item.dc_date then %><div class="date"><%=h item.dc_date.localtime%></div><% end %>
 </div>
 	<% end %>
 <% end %>

@@ -10,18 +10,16 @@
 <input type="hidden" name="rev" value="<%= pg.revision %>" />
 <input type="hidden" name="src" value="<%=h pg.src %>" />
 <input type="hidden" name="mode" value="<%=h pg.mode %>" />
+<div class="item">
 <span class="item-title">タイトル: </span><input type="text" size="30" name="title" <%=tabindex%> value="<%=h pg.title %>" accesskey="T" />
-<br />
+</div>
+<div class="item">
 <span class="item-title">説明: </span><textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description %></textarea>
+</div>
 <input type="submit" name="commit" value="保存" <%=tabindex%> accesskey="S" />
 </p>
 </form>
 </div>
 </div>
-
-<% unless pg.empty? %>
-<hr />
-<%= body(pg) %>
-<% end %>
 
 <%= dedicated_footer(pg) %>

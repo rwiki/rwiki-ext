@@ -23,7 +23,7 @@
   <% unless item.description.nil? %>
 	<div class="description"><p><%=h item.description.shorten %></p></div>
   <% end %>
-	<% if item.dc_date then %><div class="date"><%= item.dc_date %></div><% end %>
+	<% if item.dc_date then %><div class="date"><%=h item.dc_date.localtime %></div><% end %>
 </div>
 <% end %>
 <% if 0 < num_of_pages and num_of_pages < full_recent_changes.size %>

@@ -14,35 +14,28 @@
 <input type="hidden" name="rev" value="<%= pg.revision %>" />
 <input type="hidden" name="src" value="<%=h pg.src %>" />
 <input type="hidden" name="mode" value="<%=h pg.mode %>" />
-<ul>
-	<li><span class="item-title">タイトル: </span><input type="text" size="30" name="title" <%=tabindex%> value="<%=h pg.title %>" accesskey="T" /></li>
-	<li><span class="item-title">URL: </span><input type="text" size="30" name="url" value="<%=h pg.url %>" <%=tabindex%> accesskey="U" /></li>
-	<li><span class="item-title">RSSのあるURL: </span><input type="text" size="30" name="rss" value="<%=h pg.rss %>" <%=tabindex%> accesskey="R" /></li>
-	<li><span class="item-title">カテゴリ(複数選択可): </span>
-		<select name="categories" multiple="true" <%=tabindex%> accesskey="C" size="5">
+<div class="item"><span class="item-title">タイトル: </span><input type="text" size="30" name="title" <%=tabindex%> value="<%=h pg.title %>" accesskey="T" /></div>
+<div class="item"><span class="item-title">URL: </span><input type="text" size="30" name="url" value="<%=h pg.url %>" <%=tabindex%> accesskey="U" /></div>
+<div class="item"><span class="item-title">RSSのあるURL: </span><input type="text" size="30" name="rss" value="<%=h pg.rss %>" <%=tabindex%> accesskey="R" /></div>
+<div class="item"><span class="item-title">カテゴリ(複数選択可): </span>
+	<select name="categories" multiple="true" <%=tabindex%> accesskey="C" size="5">
 <%
 cats = pg.categories || []
 cat_names = cats.collect {|cat| cat.name}
 pg.all_category.sort{|x, y| x.title <=> y.title}.each do |cat_pg|
  %>
-			<option value="<%=h cat_pg.name%>"<%= if cat_names.include?(cat_pg.name) then ' selected="selected"' end%>><%=h cat_pg.title%></option>
+		<option value="<%=h cat_pg.name%>"<%= if cat_names.include?(cat_pg.name) then ' selected="selected"' end%>><%=h cat_pg.title%></option>
 <%
 end
  %>
-		</select>
-	</li>
-</ul>
-<span class="item-title">説明: </span>
-<textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description %></textarea>
+	</select>
+</div>
+<div class="item"><span class="item-title">説明: </span>
+<textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description %></textarea></div>
 <input type="submit" name="commit" value="保存" <%=tabindex%> accesskey="S" />
 </p>
 </form>
 </div>
 </div>
-
-<% unless pg.empty? %>
-<hr />
-<%= body(pg) %>
-<% end %>
 
 <%= dedicated_footer(pg) %>
