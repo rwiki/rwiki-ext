@@ -1,12 +1,12 @@
 
-RWiki::Version.regist('rw-concat', '2002-05-09 cloudy')
+RWiki::Version.regist('rw-concat', '2003-08-04 cloudy')
 
 class ConcatFormat < RWiki::PageFormat
 
 	LABEL_PREFIX = "concat_"
 
 	def navi_view(pg, title, referer)
-		%Q[<a href="#{ref_name(pg.name)};top=#{ref_url(u(referer.name))}">#{ h title }</a>]
+		%Q[<span class="navi"><a href="#{ref_name(pg.name, 'top' => ref_url(u(referer.name)))}">#{ h title }</a></span>]
 	end
 
 	private

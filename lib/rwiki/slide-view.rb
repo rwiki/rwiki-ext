@@ -2,10 +2,6 @@ require 'rwiki/rwiki'
 
 module Slide
   class SlideFormat < RWiki::PageFormat
-    @rhtml = {
-      :navi => RWiki::ERbLoader.new('navi(pg)', 'slide-navi.rhtml')
-    }
-    reload_rhtml
 
     def view(pg)
       slide = pg.prop(:slide)
@@ -18,18 +14,27 @@ module Slide
       slide_view(pg, slide, slide_no)
     end
 
+		def navi_view(pg, title, referer)
+			if @env[:slide_navi]
+				if slide?(pg)
+					%Q[<span class="navi">[<a href="#{ ref_name(pg.name, 'slide' => 1) }">#{ h title }</a>]</span>]
+				else
+					''
+				end
+			else
+				super
+			end
+		end
+
     def slide_view(pg, slide, slide_no)
       SlideView.new(slide, slide_no, @env, &@block).view(pg)
     end
     
     def slide?(pg)
       slide = pg.prop(:slide)
-      if slide && slide[:index] 
-        true
-      else
-        false
-      end
+			slide && slide[:index] 
     end
+
   end
   
   class SlideView < RWiki::PageFormat
@@ -62,12 +67,30 @@ module Slide
 
     def a_prev(pg)
       return nil unless @slide_no >= 2
-      ref_name(pg.name) + ";slide=#{@slide_no - 1}"
+      ref_name(pg.name, 'slide' => @slide_no - 1)
     end
     
     def a_next(pg)
       return nil unless @slide_no < @slide_index.size
-      ref_name(pg.name) + ";slide=#{@slide_no + 1}"
+      ref_name(pg.name, 'slide' => @slide_no + 1)
     end
   end
+
+	@slide_navi = Object.new
+	def @slide_navi.navi_view(title, pg, env = {}, &block)
+		env = env.dup
+		env[:slide_navi] ||= true
+		begin
+			orig_format = pg.format
+			pg.format = SlideFormat
+			pg.navi_view(title, pg, env, &block)
+		ensure
+			pg.format = orig_format
+		end
+	end
+
+	def self.install(title)
+		RWiki::PageModuleLeft.unshift([nil, @slide_navi, title])
+	end
+
 end

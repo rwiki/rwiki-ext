@@ -1,7 +1,7 @@
 require "rwiki/rss-recent"
 require "rwiki/rss-topic"
 
-RWiki::Version.regist("rw-rss", "2003-5-10")
+RWiki::Version.regist("rw-rss", "2003-8-04")
 
 module RWiki
 	module RSS
@@ -13,7 +13,7 @@ module RWiki
 			end
 			
 			def navi_view(pg, title, referer)
-				%Q[<a href="#{ ref_name(pg.name, 'rss') }">#{ h title }</a>]
+				%Q[<span class="navi"><a href="#{ ref_name(pg.name, {}, 'rss') }">#{ h title }</a></span>]
 			end
 
 			private

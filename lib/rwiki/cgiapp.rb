@@ -113,9 +113,8 @@ class CGIApp < Devel::Application
 	'SJIS' => 'shift_jis',
       }
 
-      def initialize( status = 200, content_type = 'text/html' )
+      def initialize( status = 200 )
 	@status = status
-				@content_type = content_type
 	@bodyType = nil
 	@bodyCharset = nil
 	@bodySize = nil
@@ -137,10 +136,12 @@ class CGIApp < Devel::Application
 
 	hash['status'] = to_cgi_status(@status)
 
+	if @bodyType
+	  hash['type'] = @bodyType
+	end
+	hash['charset'] = CharsetMap[@bodyCharset || $KCODE]
 	if @bodySize
 	  hash['length'] = @bodySize
-	  hash['type'] = @content_type
-	  hash['charset'] = CharsetMap[@bodyCharset || $KCODE]
 	else
 	  hash['connection'] = 'close'
 	end
@@ -374,9 +375,9 @@ class RWikiCGIApp < CGIApp
       req = parseRequest()
       raise RWiki::InvalidRequest unless req.name
       page = @rwiki.page( req.name )
-      header = Response::Header.new(200, 'application/xml')
+      header = Response::Header.new(200)
 			res = page.view_html( getEnv )
-      Response.new( header, Response::Body.new( res ))
+      Response.new( header, Response::Body.new( res, nil, 'application/xml' ))
     rescue RWiki::InvalidRequest
       requestError
     rescue
