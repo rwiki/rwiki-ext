@@ -243,13 +243,18 @@ module RWiki
 				dispatch_html("edit", format, &block)
 			end
 
+			def update_page_src(pg, format=nil)
+				format ||= pg.format.new()
+				made_src = format.make_src(pg)
+				pg.src = made_src if pg.src != made_src
+			end
+
 			def update_index_page_src
-				ind_pg = index_page
-				ind_pg.src = ind_pg.format.new().make_src(ind_pg)
+				update_page_src(index_page)
 			end
 
 			def update_category_page_src(cat_pg)
-				cat_pg.src = cat_pg.format.new().make_src(cat_pg)
+				update_page_src(cat_pg)
 			end
 
 			def get_property(key, default_value=nil, &validation)
@@ -300,6 +305,55 @@ module RWiki
 
 		end
 
+		class GroupPage < ::RWiki::Custom::EditPage
+
+			include LinkPageMixIn
+
+			VALID_REFINE_TYPE = %w(and or)
+			DEFAULT_REFINE_TYPE = "and"
+
+			def refine_type
+				ref_type = get_property(:refine_type)
+				if VALID_REFINE_TYPE.include?(ref_type)
+					ref_type
+				else
+					DEFAULT_REFINE_TYPE
+				end
+			end
+
+			def category_pages
+				get_property(:categories, [])
+			end
+
+			def set_src(*args)
+				super
+				update_index_page_src
+			end
+
+			def view_html(env={}, &block)
+				format = @format.new(env, &block)
+				update_src(self, format) if dirty?
+				dispatch_view_html(format, &block)
+			end
+
+			def index_section
+				@section.index_section
+			end
+
+			private
+			def property_key
+				:group
+			end
+
+			def getting_property_infos
+				[
+					[:refine_type, "texts", get_first_element_proc],
+					[:categories, "item_list", collect_page_proc],
+				]
+			end
+
+		end
+
 		class CategoryPage < ::RWiki::Custom::EditPage
 
 			include LinkPageMixIn
@@ -324,9 +378,7 @@ module RWiki
 
 			def view_html(env={}, &block)
 				format = @format.new(env, &block)
-				if dirty?
-					self.src = format.make_src(self) 
-				end
+				update_src(self, format) if dirty?
 				dispatch_view_html(format, &block)
 			end
 
@@ -454,9 +506,7 @@ module RWiki
 
 			def view_html(env={}, &block)
 				format = @format.new(env, &block)
-				if dirty?
-					self.src = format.make_src(self) 
-				end
+				update_src(self, format) if dirty?
 				::RWiki::RSS::Maneger.forget
 				dispatch_view_html(format, &block)
 			end
@@ -486,11 +536,7 @@ module RWiki
 		class PageFormat < ::RWiki::PageFormat
 			def create_src(pg, src)
 				if var('mode').first == pg.default_mode
-					if have_contents(pg)
-						make_src(pg)
-					else
-						""
-					end
+					generate_src(pg, src)
 				else
 					src
 				end
@@ -499,6 +545,14 @@ module RWiki
 			private
 
 			include ::RWiki::RSS::FormatUtils
+
+			def generate_src(pg, src)
+				if have_contents(pg)
+					make_src(pg)
+				else
+					"" # delete
+				end
+			end
 
 			def have_contents(pg)
 				/\A\s*\z/ !~ var("title").first.to_s or
@@ -546,14 +600,6 @@ module RWiki
 
 		class CategoryFormat < PageFormat
 			private
-			def default_recent_changes_number
-				10
-			end
-
-			def added_recent_changes_number
-				30
-			end
-
 			def link_navis(pg)
 				index_pg = pg.index_page
 				[
@@ -567,6 +613,25 @@ module RWiki
 				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_category_dedicated.rhtml"),
 				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_category_dedicated_edit.rhtml"),
 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_category.rrd"),
+			}
+			reload_rhtml
+		end
+
+		class GroupFormat < PageFormat
+			private
+			def link_navis(pg)
+				index_pg = pg.index_page
+				[
+					make_anchor(ref_name(index_pg.name), index_pg.title, index_pg.modified),
+				]
+			end
+
+			@rhtml = {
+# 				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_category.rhtml"),
+# 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_category_edit.rhtml"),
+# 				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_category_dedicated.rhtml"),
+# 				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_category_dedicated_edit.rhtml"),
+# 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_category.rrd"),
 			}
 			reload_rhtml
 		end
@@ -598,14 +663,6 @@ module RWiki
 
 		class IndexFormat < PageFormat
 			private
-			def default_recent_changes_number
-				10
-			end
-
-			def added_recent_changes_number
-				30
-			end
-
 			def search_pages_by_or(pages, keywords)
 				keyword_re = Regexp.new(keywords.collect do |keyword|
 																	Regexp.escape(keyword)
