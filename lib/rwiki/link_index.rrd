@@ -3,11 +3,11 @@
 <%=er((var("description").first || pg.description), {:accept_textblock => true})%>
 
 == カテゴリ
-<% pg.categories(true).each do |cat_pg| %>
+<% pg.categories(true).sort{|x, y| x.name <=> y.name}.each do |cat_pg| %>
 * ((<<%=er(cat_pg.title, {:accept_slash => false})%>|<%=er cat_pg.name %>>))
 <% end %>
 
 == リンク
-<% pg.link_pages(true).each do |link_pg| %>
+<% pg.link_pages(true).sort{|x, y| x.name <=> y.name}.each do |link_pg| %>
 * ((<<%=er(link_pg.title, {:accept_slash => false})%>|<%=er link_pg.name %>>))
 <% end %>
