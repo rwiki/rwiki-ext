@@ -38,11 +38,14 @@ module RD
 			found = false
 			rtex_name = "tex-presentation-#{meth}.rtex"
 			$LOAD_PATH.each do |x|
-				fname = File.join(x, rtex_name)
-				if File.exist?(fname)
-					def_erb_method(meth, fname)
-					found = true
+				['rwiki', ''].each do |sub|
+					fname = File.join(x, sub, rtex_name)
+					if File.exist?(fname)
+						def_erb_method(meth, fname)
+						found = true
+					end
 				end
+				break if found
 			end
 			raise "template file #{rtex_name} doesn't found." unless found
 		end
