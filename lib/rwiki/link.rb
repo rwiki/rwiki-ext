@@ -193,6 +193,15 @@ module RWiki
 			end
 
 			private
+			def update_index_page_src
+				ind_pg = index_page
+				ind_pg.src = ind_pg.format.new().create_src(ind_pg, '')
+			end
+
+			def update_category_page_src(cat_pg)
+				cat_pg.src = cat_pg.format.new().create_src(cat_pg, '')
+			end
+
 			def get_property(key, default_value=nil, &validation)
 				rv = property[key]
 				rv = nil if validation and !validation.call(rv)
@@ -262,6 +271,12 @@ module RWiki
 				end
 			end
 
+			def set_src(*args)
+				super
+				update_index_page_src
+				forget
+			end
+
 			def view_html(env={}, &block)
 				format = @format.new(env, &block)
 
@@ -311,6 +326,12 @@ module RWiki
 
 			def category_pages
 				find_all_page(@section.category_section)
+			end
+
+			def set_src(*args)
+				super
+				update_index_page_src
+				categories.each {|x| update_category_page_src(x)}
 			end
 
 			private
@@ -393,15 +414,6 @@ module RWiki
 			end
 			alias er escape_rd
 
-			def update_index_page_src(pg)
-				ind_pg = index_page(pg)
-				ind_pg.src = ind_pg.format.new().create_src(ind_pg, '')
-			end
-
-			def update_category_page_src(cat_pg)
-				cat_pg.src = cat_pg.format.new().create_src(cat_pg, '')
-			end
-
 			@rhtml = {
 				:link_navi => ::RWiki::ERbLoader.new("link_navi(pg, *args)", "link_navi.rhtml"),
 			}
@@ -420,15 +432,10 @@ module RWiki
 			end
 
 			def create_src(pg, src)
-				update_index_page_src(pg)
 				make_src(pg)
 			end
 
 			private
-			def index_page(pg)
-				pg.book[pg.section.index_section.name]
-			end
-
 			def link_navis(pg)
 				index_pg = pg.index_page
 				[
@@ -446,18 +453,12 @@ module RWiki
 
 		class LinkFormat < PageFormat
 			def create_src(pg, src)
-				update_index_page_src(pg)
-				category_pages(pg).each {|x| update_category_page_src(x)}
 				make_src(pg)
 			end
 
 			private
 			def index_page(pg)
 				pg.index_page
-			end
-
-			def category_pages(pg)
-				pg.categories
 			end
 
 			@rhtml = {
