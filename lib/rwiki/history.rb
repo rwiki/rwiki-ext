@@ -37,8 +37,7 @@ module RWiki
 
     def run_cvs(*args)
       STDERR.puts(args.inspect) if PageStoreCVS::Develop
-      result = `#{make_command(@cvs, @cvs_options, '-d', @cvsrepo, *args)}`
-			result
+      `#{make_command(@cvs, @cvs_options, '-d', @cvsrepo, *args)}`
     end
 
 		def make_command(*args)
