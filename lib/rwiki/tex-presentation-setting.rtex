@@ -1,5 +1,0 @@
-\title{<%= @info["title"] %>}
-\author{<%= @info["author"] %>}
-\institution{<%= @info["institution"] %>}
-\DefaultTransition{<%= @info["transition"] || "R" %>}
-% R, Replace, Split, Blinds, Box, Wipe, Dissolve, Glitter
