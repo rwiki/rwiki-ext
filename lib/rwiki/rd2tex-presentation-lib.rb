@@ -33,11 +33,24 @@ module RD
     INCLUDE_SUFFIX = ["tex"]
 
 		%w(header setting footer).each do |meth|
-			def_erb_method(meth, "tex-presentation-#{meth}.rtex")
+			found = false
+			rtex_name = "tex-presentation-#{meth}.rtex"
+			$LOAD_PATH.each do |x|
+				fname = File.join(x, rtex_name)
+				if File.exist?(fname)
+					def_erb_method(meth, fname)
+					found = true
+				end
+			end
+			raise "template file #{rtex_name} doesn't found." unless found
 		end
 
     def initialize()
       super
+			@first_headline = true
+			@second_headline = false
+			@indent = 1
+			@title = ""
     end
     
     def visit(tree)
@@ -72,13 +85,21 @@ module RD
 
     def apply_to_Headline(element, title)
 			if element.level == 1
-				[:headline, <<-EOM]
-
-\\Newslide%---------------------------------------------------------
-\\Section{#{title}}
-\\Large\\bf
-
-EOM
+				text = ""
+				if @first_headline
+					@title = title
+					@first_headline = false
+					@second_headline = true
+					[:headline, false]
+				else
+					if @second_headline
+						@second_headline = false
+					else
+						text << %Q[\t\\end{slide}\n]
+					end
+					text << %Q[\n\t\\begin{slide}{#{title}}\n]
+					[:headline, text]
+				end
 			else
 				[:headline, false]
 			end
@@ -91,39 +112,67 @@ EOM
     end
 
     def apply_to_Verbatim(element)
-			%Q[\\begin{alltt}\n#{element.join("\n")}\n\\end{alltt}]
+			indent do
+				[%Q[\\begin{alltt}],
+				 element.collect{|x| x.chomp},
+				 %Q[\\end{alltt}\n]].flatten
+			end
     end
 
     def apply_to_ItemList(element, items)
-			%Q[\\begin{itemize}\n#{items.join("\n").chomp}\n\\end{itemize}]
+			indent do
+				[%Q[\\begin{itemize}],
+				 items.collect{|x| x.chomp},
+				 %Q[\\end{itemize}\n]].flatten
+			end
     end
   
     def apply_to_EnumList(element, items)
-			%Q[\\begin{enumerate}\n#{items.join("\n").chomp}\n\\end{enumerate}]
+			indent do
+				[%Q[\\begin{enumerate}],
+				 items.collect{|x| x.chomp},
+				 %Q[\\end{enumerate}\n]].flatten
+			end
     end
     
     def apply_to_DescList(element, items)
-			%Q[\\begin{itemize}\n#{items.join("\n").chomp}\n\\end{itemize}]
+			indent do
+				[%Q[\\begin{description}],
+				 items.collect{|x| x.chomp},
+				 %Q[\\end{description}\n]].flatten
+			end
     end
 
     def apply_to_MethodList(element, items)
-			%Q[\\begin{itemize}\n#{items.join("\n").chomp}\n\\end{itemize}]
+			indent do
+				[%Q[\\begin{itemize}],
+				 items.collect{|x| x.chomp},
+				 %Q[\\end{itemize}\n]].flatten
+			end
     end
     
     def apply_to_ItemListItem(element, content)
-      %Q[\\item #{content.join("\n").chomp}]
+			indent do
+				%Q[\\item #{content.join("\n").chomp}]
+			end
     end
     
     def apply_to_EnumListItem(element, content)
-      %Q[\\item #{content.join("\n").chomp}]
+			indent do
+				%Q[\\item #{content.join("\n").chomp}]
+			end
     end
 
     def apply_to_DescListItem(element, term, description)
-      %Q!\\item[#{term}] #{description.join("\n").chomp}!
+			indent do
+				%Q[\\item[#{term}] #{description.join("\n").chomp}]
+			end
     end
 
     def apply_to_MethodListItem(element, term, description)
-      %Q!\\item[#{term}] #{description.join("\n").chomp}!
+			indent do
+				%Q[\\item[#{term}] #{description.join("\n").chomp}]
+			end
     end
   
     def apply_to_StringElement(element)
@@ -147,11 +196,11 @@ EOM
     end
   
     def apply_to_Index(element, content)
-      %Q[content.join('')\\label{#{element.label}}]
+      %Q[\\hypertarget{#{element.label}}{content.join('')}]
     end
 
 		def apply_to_Reference(element, content)
-			%Q[content.join('')\\ref{#{element.label}}]
+			%Q[\\hyperlink{#{element.label}}{content.join('')}]
 		end
 
     def apply_to_Reference_with_RDLabel(element, content)
@@ -163,11 +212,13 @@ EOM
     end
 
     def apply_to_Reference_with_URL(element, content)
-			"[#{element.label.url} #{content.join('')}]"
+			label = content.join("")
+			label = element.label.url if /\A<URL:/ =~ label
+			%Q[\\href{#{element.label.url}}{#{label.gsub(/~/, '\~{}')}}]
     end
 
     def apply_to_RefToElement(element, content)
-			content.join('')
+			%Q[\\hyperlink{#{element.label}}{content.join('')}]
     end
 
     def apply_to_RefToOtherFile(element, content)
@@ -175,7 +226,7 @@ EOM
     end
     
     def apply_to_Footnote(element, content)
-      content.join('')
+      %Q[\\footnote{#{content.join('')}}]
     end
 
     def apply_to_Foottext(element, content)
@@ -191,6 +242,18 @@ EOM
 			element
       #meta_char_escape(element)
     end
+
+		def indent
+			@indent += 1
+			ret = yield
+			if ret.kind_of?(Array)
+				result = ret.collect {|x| %Q[#{"\t" * @indent}#{x}]}.join("\n")
+			else
+				result = %Q[#{"\t" * @indent}#{ret}]
+			end
+			@indent -= 1
+			result
+		end
     
   end # RD2TeXPresentationVisitor
 end # RD

@@ -1,30 +1,9 @@
-\documentclass[
-coloremph,%        プレゼンで色をつかった強調表示を用いる
-colormath,%        プレゼンで色をつかった数式表示を用いる
-colorhighlight,%   プレゼンで色をつかったハイライト表示を用いる
-% 背景。文書の途中でも \lightbackground 等で切り替えることができる。
-lightbackground,%  背景はクリーム色
-%whitebackground,  背景は真っ白
-%darkbackground,%  背景は暗い色
-%blackbackground,%  背景は真っ黒
-slifonts,%         スライド用フォントを用いる
-display%           プレゼン用のファイルを作る（これを消すと出力用のファ
-%                  イルが出来る）
-]{powersem}%       以上は powersem.cls のオプション 
-% リンクを使えるようにするための hyperref.sty を用いる
-\usepackage[dvipdfm,%
-bookmarks=true,%
-bookmarksnumbered=true,%
-bookmarkstype=toc,%
-colorlinks=true]{hyperref}
-\usepackage{texpower}
-\usepackage{graphicx}
-\usepackage{colordvi} 
-\usepackage{fancyheadings} 
+\documentclass[slideColor,pdf,nuancegris]{prosper}
+% frames, lignesbleues, azure, troispoints, contemporain, nuancegris,
+% darkblue, alienglow, autumn
+\usepackage{pst-node,alltt,latexsym,times,mathptm,ascmac,epsfig}
 
 <%= setting %>
 
-\usepackage{alltt,latexsym,times,mathptm,ascmac,epsfig}
-
 \begin{document}
-\begin{slide}
+\maketitle
