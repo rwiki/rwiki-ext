@@ -5,6 +5,44 @@
 
 <hr />
 
-<%= body(pg) %>
+<div class="links">
+<h1><%=h pg.title %></h1>
+<% if pg.url or pg.rss %>
+<p>
+<%	if pg.url then %><%= make_anchor(pg.url, pg.title) %><% end %>
+<%	if pg.rss then %>[<%= make_anchor(pg.rss, "RSS") %>]<% end %>
+</p>
+<% end %>
+
+<% pg.descriptions.each do |desc| %>
+<p><%=h desc %></p>
+<% end %>
+
+<% unless pg.categories.empty? %>
+<h2>カテゴリ</h2>
+<ul>
+<% pg.categories.sort{|x, y| x.title <=> y.title}.each do |category| %>
+	<li><%= make_anchor(ref_name(category.name), category.title, category.modified) %>: <%=h category.description %></li>
+<% end %>
+</ul>
+<% end %>
+
+<%
+	if pg.rss
+		maneger = ::RWiki::RSS::Maneger.new
+		maneger.parse(pg.rss, @@charset, pg.title)
+%>
+<h2>更新状況</h2>
+<ul>
+<%	 maneger.items(pg.rss).each do |item| %>
+				<li>
+					<%= ia(item) %>
+					<% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
+					<% if item.description then %>: <%=h item.description.shorten %><% end %>
+				</li>
+<%	 end %>
+</ul>
+</div>
+<% end %>
 
 <%= footer(pg) %>

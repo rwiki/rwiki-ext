@@ -66,7 +66,9 @@
 		<ul>
 			<% maneger.items(link_pg.rss)[0...3].each do |item| %>
 				<li>
-					<%= ia(item) %><% if item.description then %>: <%=h item.description.shorten %><% end %>
+					<%= ia(item) %>
+					<% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
+					<% if item.description then %>: <%=h item.description.shorten %><% end %>
 				</li>
 			<% end %>
 		</ul>
