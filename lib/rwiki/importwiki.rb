@@ -206,12 +206,16 @@ module RWiki
 
 			def cache(name, src)
 				synchronize do
-					File.open(fname(name), 'w') {|fp| fp.write(src)} unless src.nil?
+					unless src.nil?
+						p "Writing cache of #{fname(name)}. src is #{src}"
+						File.open(fname(name), 'w') {|fp| fp.write(src)}
+					end
 				end
 			end
 
 			def read_cache(name)
 				synchronize do
+					p "Reading cache of #{fname(name)}"
 					File.open(fname(name)) {|fp| fp.read} rescue nil
 				end
 			end
@@ -219,11 +223,16 @@ module RWiki
 			def if_old_then_cache(name,	wiki_name, page_name)
 				begin
 					stat = File.stat(fname(name))
+					p "Comparing cache time #{stat.mtime} ... "
+					p "recache? #{stat.mtime + EXPIRE < Time.now}"
 					raise if stat.mtime + EXPIRE < Time.now
 				rescue
 					begin
 						cache(name, connector(wiki_name).fetch(page_name))
 					rescue Error, NameError
+						p "Error occured in caching"
+						p $!
+						puts $@ 
 					end
 				end
 			end
