@@ -38,35 +38,59 @@ module RWiki
 
 			class << self
 
-				@@lang = ::RWiki::PageFormat.module_eval('@@lang')
+				def mutex_attr(id, writable=false)
+					module_eval(<<-EOC)
+					def self.#{id.id2name}
+						@@mutex.synchronize do
+							@@#{id.id2name}
+						end
+					end
+					EOC
 
-				def clear
-					@@maneger = ::RWiki::RSS::Maneger.new
-					@@topics = {}
-					@@number = DISPLAY_NUMBER
-					@@characters = DISPLAY_CHARACTERS
-					@@use_thread = false
-					@@display = false
+					if writable
+						module_eval(<<-EOC)
+						def self.#{id.id2name}=(new_value)
+							@@mutex.synchronize do
+								@@#{id.id2name} = new_value
+							end
+						end
+						EOC
+					end
+					
 				end
 
-				def forget(expire)
+				def mutex_attr_reader(*ids)
+					ids.each do |id|
+						mutex_attr(id, false)
+					end
+				end
+
+				def mutex_attr_accessor(*ids)
+					ids.each do |id|
+						mutex_attr(id, true)
+					end
+				end
+
+				@@lang = ::RWiki::PageFormat.module_eval('@@lang')
+				@@mutex = Mutex.new
+
+				def clear
+					@@mutex.synchronize do
+						@@maneger = ::RWiki::RSS::Maneger.new
+						@@topics = {}
+						@@number = DISPLAY_NUMBER
+						@@characters = DISPLAY_CHARACTERS
+						@@use_thread = false
+						@@display = false
+						@@expire = ::RWiki::RSS::EXPIRE
+					end
+				end
+
+				def forget
 					::RWiki::RSS::Maneger.forget(expire)
 				end
 
-				def use_thread() @@use_thread end
-				def use_thread=(new_value) @@use_thread = new_value end
-				def number() @@number end
-				def number=(new_value) @@number = new_value end
-				def characters() @@characters end
-				def characters=(new_value) @@characters = new_value end
-				def display() @@display end
-				def display=(new_value) @@display = new_value end
-
-				def topics
-					@@topics
-				end
-
-				def add_topic(uri, charset, name, expire)
+				def add_topic(uri, charset, name)
 					@@topics[uri] = [charset, name, expire]
 				end
 
@@ -80,6 +104,7 @@ module RWiki
 				end
 
 				def parse
+					forget
 					if @@use_thread
 						arg = @@topics.collect {|uri, values| [uri, *values]}
 						@@maneger.parallel_parse(arg)
@@ -91,6 +116,10 @@ module RWiki
 				end
 
 			end
+
+			mutex_attr_accessor :use_thread, :number, :characters
+			mutex_attr_accessor :display, :expire
+			mutex_attr_reader :topics
 
 			clear
 
