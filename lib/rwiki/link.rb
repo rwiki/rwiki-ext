@@ -182,7 +182,7 @@ module RWiki
 		module LinkPageMixIn
 
 			def edit_html(rev=nil, env={}, &block)
-				dispatch_edit_html(@format.new(env, &block), rev, &block)
+				dispatch_edit_html(format.new(env, &block), rev, &block)
 			end
 
 			def title
@@ -384,9 +384,9 @@ module RWiki
 			end
 
 			def view_html(env={}, &block)
-				format = @format.new(env, &block)
-				update_page_src(self, format) if dirty?
-				dispatch_view_html(format, &block)
+				fmt = format.new(env, &block)
+				update_page_src(self, fmt) if dirty?
+				dispatch_view_html(fmt, &block)
 			end
 
 			def index_section
@@ -430,9 +430,9 @@ module RWiki
 			end
 
 			def view_html(env={}, &block)
-				format = @format.new(env, &block)
-				update_page_src(self, format) if dirty?
-				dispatch_view_html(format, &block)
+				fmt = format.new(env, &block)
+				update_page_src(self, fmt) if dirty?
+				dispatch_view_html(fmt, &block)
 			end
 
 			def index_section
@@ -491,10 +491,10 @@ module RWiki
 			end
 
 			def view_html(env={}, &block)
-				format = @format.new(env, &block)
+				fmt = format.new(env, &block)
 				state = current_state
-				self.src = @format.new(env){|key| state[key]}.make_src(self)
-				dispatch_view_html(format, &block)
+				self.src = format.new(env){|key| state[key]}.make_src(self)
+				dispatch_view_html(fmt, &block)
 			end
 
 			def match?(regexp)
@@ -584,10 +584,10 @@ module RWiki
 			end
 
 			def view_html(env={}, &block)
-				format = @format.new(env, &block)
-				update_page_src(self, format) if dirty?
+				fmt = format.new(env, &block)
+				update_page_src(self, fmt) if dirty?
 				::RWiki::RSS::Maneger.forget
-				dispatch_view_html(format, &block)
+				dispatch_view_html(fmt, &block)
 			end
 
 			def find_all_category(&block)

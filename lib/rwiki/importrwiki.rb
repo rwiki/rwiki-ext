@@ -13,7 +13,7 @@ module RWiki
 			class Connector < BaseConnector
 				include MonitorMixin
 
-				DRB_SPLIT_RE = /\Adruby:\/\/([a-zA-z._\-]*)?:(\d+)/
+				DRB_SPLIT_RE = /\Adruby:\/\/(.*)?:(\d+)/
 
 				def self.parse_uri(uri)
 					uri =~ DRB_SPLIT_RE
