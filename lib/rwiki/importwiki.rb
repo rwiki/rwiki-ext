@@ -199,7 +199,7 @@ module RWiki
 				begin
 					cache(name, connector(wiki_name).fetch(page_name))
 					read_cache(name)
-				rescue NameError
+				rescue Error, NameError
 					nil
 				end
 			end
@@ -223,7 +223,7 @@ module RWiki
 				rescue
 					begin
 						cache(name, connector(wiki_name).fetch(page_name))
-					rescue NameError
+					rescue Error, NameError
 					end
 				end
 			end

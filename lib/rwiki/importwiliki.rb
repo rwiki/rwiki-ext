@@ -65,12 +65,18 @@ module RWiki
 				end
 
 				def revision(name)
-					fetch(name) unless @mtime.has_key?(name)
+					begin
+						fetch(name) unless @mtime.has_key?(name)
+					rescue InvalidResourceError
+					end
 					@mtime[name]
 				end
 
 				def modified(name)
-					fetch(name) unless @mtime.has_key?(name)
+					begin
+						fetch(name) unless @mtime.has_key?(name)
+					rescue InvalidResourceError
+					end
 					Time.at(@mtime[name].to_i) rescue nil
 				end
 
