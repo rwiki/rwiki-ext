@@ -1,5 +1,7 @@
-require "rd/rdvisitor"
+require "English"
 require "erb"
+
+require "rd/rdvisitor"
 
 class String
 	def to_euc
@@ -49,6 +51,7 @@ module RD
       super
 			@first_headline = true
 			@second_headline = false
+			@previous_title = nil
 			@indent = 1
 			@info = {}
     end
@@ -98,6 +101,7 @@ module RD
 						text << %Q[\t\\end{slide}\n]
 					end
 					text << %Q[\n\t\\begin{slide}{#{title}}\n]
+					@previous_title = title
 					[:headline, text]
 				end
 			else
@@ -219,11 +223,13 @@ module RD
 		end
 
     def apply_to_Reference_with_RDLabel(element, content)
-			content.join('')
-    end
-
-    def apply_to_Reference_with_RWikiLabel(element, content)
-			content.join('')
+			label = File.join(element.label.filename, content.join(''))
+			if /\Aimg:/ =~ label
+				filename = $POSTMATCH.gsub(/\.[^.]+\z/, '.eps')
+				"\\includegraphics[width=1.0\\slideWidth]{#{filename}}"
+			else
+				label
+			end
     end
 
     def apply_to_Reference_with_URL(element, content)
