@@ -291,16 +291,11 @@ module RWiki
 			end
 
 			def find_all_page(section)
-				base_name = section.base_name
-				rv = []
-				i = 0
-				loop do
-					pg = @book[base_name + i.to_s]
-					break if pg.src.nil?
-					rv << pg
-					i += 1
+				@section.db.find_all do |page_name|
+					section.match?(page_name) and !@book[page_name].empty?
+				end.collect do |page_name|
+					@book[page_name]
 				end
-				rv
 			end
 
 		end
@@ -491,7 +486,11 @@ module RWiki
 		class PageFormat < ::RWiki::PageFormat
 			def create_src(pg, src)
 				if var('mode').first == pg.default_mode
-					make_src(pg)
+					if have_contents(pg)
+						make_src(pg)
+					else
+						""
+					end
 				else
 					src
 				end
@@ -500,6 +499,11 @@ module RWiki
 			private
 
 			include ::RWiki::RSS::FormatUtils
+
+			def have_contents(pg)
+				/\A\s*\z/ !~ var("title").first.to_s or
+					/\A\s*\z/ !~ var("description").first.to_s
+			end
 
 			def default_escape_rd_options
 				{
@@ -568,6 +572,7 @@ module RWiki
 		end
 
 		class LinkFormat < PageFormat
+
 			private
 			def link_navis(pg)
 				index_pg = pg.index_page

@@ -206,6 +206,15 @@ module RWiki
 					0..num_of_pages
 				end
 			end
+
+			def localtime(time)
+				if time.respond_to?(:localtime)
+					time.localtime
+				else
+					time
+				end
+			end
+
 		end
 
 	end

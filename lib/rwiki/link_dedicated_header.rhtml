@@ -39,4 +39,4 @@
 </head>
 <body>
 <h1><%=h pg.title %></h1>
-<div class="last-modified">最終更新日: <span class="last-modified"><%=h pg.modified.localtime %></span></div>
+<div class="last-modified">最終更新日: <span class="last-modified"><%=h localtime(pg.modified) %></span></div>

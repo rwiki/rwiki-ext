@@ -1,6 +1,13 @@
 <%
 	title = var("title").first
 	title = pg.title if /\A\s*\z/ =~ title
+	
+	count = pg.count.to_i
+	if var("cmd").first == "submit"
+		count -= 1
+	else
+		count += 1
+	end
 %>
 = <%=er title %>
 
@@ -24,4 +31,4 @@
 
 == カウンタ
 
-<%= pg.count.to_i.succ %>
+<%= count %>
