@@ -73,7 +73,8 @@ module RWiki
 								SocketError,
 								Net::HTTPBadResponse,
 								Net::HTTPHeaderSyntaxError,
-								SystemCallError
+								SystemCallError, # for sysread
+								EOFError # for sysread
 							@@mutex.synchronize do 
 								@@cache[uri] = {
 									:time => Time.now,
@@ -115,6 +116,10 @@ module RWiki
 						end
 
 						items = rss.items
+
+						items.delete_if do |item|
+							item.link.to_s =~ /\A\s*\z/
+						end
 
 						if items.empty?
 							@mutex.synchronize do
