@@ -1,34 +1,6 @@
 require "rwiki/rss-maneger"
 require "rwiki/rss-page"
 
-require "nkf"
-
-class String
-	unless respond_to?(:shorten)
-		def shorten(len=120)
-
-			nkf_args = nil
-			case RWiki::KCode.charset
-			when 'euc-jp'
-				nkf_args = '-edXm0'
-			when 'Shift_JIS'
-				nkf_args = '-sdXm0'
-			else
-			end
-
-			if nkf_args
-				lines = NKF::nkf("-e -m0 -f#{len}", self.gsub(/\n/, ' ')).split(/\n/)
-				lines[0].concat('...') if lines[0] and lines[1]
-				lines[0]
-			else
-				rv = self[0...len]
-				rv.concat("...") if self.size > 120
-				rv
-			end
-		end
-	end
-end
-
 module RWiki
 	module RSS
 
