@@ -1,48 +1,51 @@
 <%
-	parallel_parse = true
+  parallel_parse = true
 
-	link_page = {}
-	parsed_rsses = []
-	link_pages.each do |link_pg|
-		if link_pg.rss
+  link_page = {}
+  parsed_rsses = []
+  link_pages.each do |link_pg|
+    if link_pg.rss
 #p link_pg.rss
 #before_time = Time.now
-			if parallel_parse
-				parsed_rsses << [link_pg.rss, @@charset, link_pg.title]
-			else
-				maneger.parse(link_pg.rss, @@charset, link_pg.title)
-			end
+      if parallel_parse
+        parsed_rsses << [link_pg.rss, @@charset, link_pg.title]
+      else
+        maneger.parse(link_pg.rss, @@charset, link_pg.title)
+      end
 #p Time.now - before_time
-			link_page[link_pg.rss] = link_pg
-		end
-	end
-	maneger.parallel_parse(parsed_rsses) if parallel_parse
+      link_page[link_pg.rss] = link_pg
+    end
+  end
+  maneger.parallel_parse(parsed_rsses) if parallel_parse
 
-	req_pages, = var('pages')
-	num_of_pages = number_of_pages(var('pages').first)
-	full_recent_changes = maneger.recent_changes.find_all do |uri,|
-		link_page.has_key?(uri)
-	end
-	recent_changes = full_recent_changes[display_range(num_of_pages)]
+  req_pages, = var('pages')
+  num_of_pages = number_of_pages(var('pages').first)
+  full_recent_changes = maneger.recent_changes.find_all do |uri,|
+    link_page.has_key?(uri)
+  end
+  recent_changes = full_recent_changes[display_range(num_of_pages)]
  %>
 <% recent_changes.each do |uri, channel, image, item, name| %>
 <div class="content">
-	<h3>
-		<%= ia(item) %>
-		<% if item.respond_to?(:dc_publisher) and /\A\s*\z/ !~ item.dc_publisher.to_s then %> @ <%=h item.dc_publisher%><% end %>
-		<% if item.respond_to?(:dc_creator) and /\A\s*\z/ !~ item.dc_creator.to_s then %> by <%=h item.dc_creator%><% end %>
-		<%= make_modified(item.dc_date) %>
-	</h3>
-	<div class="link-target"><%= ca(channel, image, name) %></div>
+  <h3>
+    <%= ia(item) %>
+    <% if item.respond_to?(:dc_publisher) and /\A\s*\z/ !~ item.dc_publisher.to_s then %> @ <%=h item.dc_publisher%><% end %>
+    <% if item.respond_to?(:dc_creator) and /\A\s*\z/ !~ item.dc_creator.to_s then %> by <%=h item.dc_creator%><% end %>
+    <%= make_modified(item.dc_date) %>
+  </h3>
+  <div class="link-target"><%= ca(channel, image, name) %></div>
   <% if /\A\s*\z/ !~ item.content.to_s %>
-	<div class="description"><p><%= item.content %></p></div>
+  <div class="description">
+    <p><%= item.content %></p>
+    <% if item.respond_to?(:dc_rights) and /\A\s*\z/ !~ item.dc_rights.to_s then %><span class="rights"><%=h item.dc_rights %></span><% end %>
+  </div>
   <% end %>
-	<% if item.dc_date then %><div class="date"><%=h item.dc_date.localtime %></div><% end %>
+  <% if item.dc_date then %><div class="date"><%=h item.dc_date.localtime %></div><% end %>
 </div>
 <% end %>
 <% if 0 < num_of_pages and num_of_pages < full_recent_changes.size %>
 <div class="link-navi">
-	<span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', num_of_pages + added_recent_changes_number]]) %>">もっと見たい</a>]</span>
-	<span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', -1]]) %>">全部見たい</a>]</span>
+  <span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', num_of_pages + added_recent_changes_number]]) %>">もっと見たい</a>]</span>
+  <span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', -1]]) %>">全部見たい</a>]</span>
 </div>
 <% end %>
