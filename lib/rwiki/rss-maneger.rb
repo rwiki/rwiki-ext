@@ -7,6 +7,7 @@ require "rss/parser"
 require "rss/1.0"
 require "rss/2.0"
 require "rss/dublincore"
+require "rss/content"
 
 module RWiki
 	module RSS
@@ -267,6 +268,28 @@ module RWiki
 				end
 			end
 			
+			def add_content_encoded_reader_if_need(target)
+				unless target.respond_to?(:content_encoded)
+					class << target
+						attr_reader :content_encoded
+					end
+				end
+			end
+
+			def add_content_reader(target)
+				class << target
+					def content
+						if content_encoded
+							content_encoded
+						elsif description
+							h(description)
+						else
+							nil
+						end
+					end
+				end
+			end
+
 			def handle_items(uri, items, have_update_info)
 				items.delete_if do |item|
 					item.link.to_s =~ /\A\s*\z/
@@ -276,6 +299,8 @@ module RWiki
 					next if /\A\s*\z/ =~ item.title.to_s
 					@@mutex.synchronize do
 						pubDate_to_dc_date(item)
+						add_content_encoded_reader_if_need(item)
+						add_content_reader(item)
 						have_update_info = true if item.dc_date
 						@@cache[uri][:items] << item
 					end

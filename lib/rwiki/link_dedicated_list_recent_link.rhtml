@@ -34,8 +34,8 @@
 		<%= make_modified(item.dc_date) %>
 	</h3>
 	<div class="link-target"><%= ca(channel, image, name) %></div>
-  <% if /\A\s*\z/ !~ item.description.to_s %>
-	<div class="description"><p><%=h item.description %></p></div>
+  <% if /\A\s*\z/ !~ item.content.to_s %>
+	<div class="description"><p><%= item.content %></p></div>
   <% end %>
 	<% if item.dc_date then %><div class="date"><%=h item.dc_date.localtime %></div><% end %>
 </div>

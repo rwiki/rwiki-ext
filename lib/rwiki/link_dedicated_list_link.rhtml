@@ -17,7 +17,9 @@
 				<li>
 					<%= ia(item) %>
 					<% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
-					<% if item.description then %>: <%=h item.description.shorten(default_rss_description_character_number) %><% end %>
+					<% if item.content %>
+					: <%= item.content.shorten(default_rss_description_character_number) %>
+					<% end %>
 				</li>
 			<% end %>
 		</ul>

@@ -516,7 +516,8 @@ module RWiki
 			def rss_item_match?(regexp, items)
 				items.find do |item|
 					regexp =~ item.title or
-						(item.description and regexp =~ item.description)
+						(item.description and regexp =~ item.description) or
+						(item.content_encoded and regexp =~ item.content_encoded)
 				end
 			end
 

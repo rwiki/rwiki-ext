@@ -186,8 +186,12 @@ module RD
     end
 
     def apply_to_DescListItem(element, term, description)
-			indent do
-				%Q[\\item[#{term}] #{description.join("\n").chomp}]
+			if in_first_slide
+				@info[term] = description.join("").chomp
+			else
+				indent do
+					%Q[\\item[#{term}] #{description.join("\n").chomp}]
+				end
 			end
     end
 
@@ -202,7 +206,7 @@ module RD
     end
     
     def apply_to_Emphasis(element, content)
-      %Q[{\\em #{content.join("")}}]
+      %Q[\\emph{#{content.join("")}}]
     end
   
     def apply_to_Code(element, content)

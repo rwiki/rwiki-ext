@@ -42,9 +42,9 @@
 		<% if item.respond_to?(:dc_creator) and /\A\s*\z/ !~ item.dc_creator.to_s then %> by <%=h item.dc_creator%><% end %>
 		<%= make_modified(item.dc_date) %>
 	</h3>
-		<% if item.description %>
+		<% if item.content %>
 	<div class="description">
-	<p><%=h item.description %></p>
+	<p><%= item.content %></p>
 	</div>
 		<% end %>
 		<% if item.dc_date then %><div class="date"><%=h item.dc_date.localtime%></div><% end %>

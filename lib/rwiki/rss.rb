@@ -22,9 +22,9 @@ module RWiki
 				href = h(item.link.to_s.strip)
 				rv = %Q!<a href="#{href}">#{h item.title.to_s}</a>!
 				rv << %Q|(#{h modified(item.dc_date)})|
-				desc = item.description
-				if desc
-					rv << %Q! : #{h(desc.shorten(characters))} <a href="#{href}">more</a>!
+				cont = item.content
+				if cont
+					rv << %Q[: #{cont.shorten(characters)} <a href="#{href}">more</a>]
 				end
 				rv
 			end
