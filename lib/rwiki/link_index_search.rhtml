@@ -1,0 +1,72 @@
+<%= header(pg) %>
+<%= navi(pg) %>
+
+<%
+	keywords = var("key")
+	keywords.collect!{|x| x.split(/\s/)}
+	keywords.flatten!
+	keywords.uniq!
+
+	search_type, = var("type")
+	search_type ||= "and"
+	search_type.downcase!
+	search_type = "and" unless %w(and or).include?(search_type)
+
+	if keywords.empty?
+		category_pages = []
+		link_pages = []
+	else
+		if search_type == "or"
+			category_pages = search_pages_by_or(pg.categories, keywords)
+			link_pages = search_pages_by_or(pg.links, keywords)
+		else
+			category_pages = search_pages_by_and(pg.categories, keywords)
+			link_pages = search_pages_by_and(pg.links, keywords)
+		end
+	end
+
+#	params = keywords.collect {|keyword| ["em", keyword]}
+	params = {}
+
+	titles = {
+	:index => "一覧表示",
+	:category => "新しいカテゴリを登録",
+	:link => "新しいリンク先を登録",
+	:refine => "指定したカテゴリのみ表示",
+	:search => "検索",
+	}
+%><%= link_navi(pg, titles) %>
+
+<hr />
+
+<div class="body">
+<h1><%=h pg.title %></h1>
+<form action="<%= form_action %>" method="get">
+<p>
+<%= form_hidden(pg.name) %>
+<input type="hidden" name="mode" value="search" />
+<input type="radio" name="type" value="and" <%=tabindex%> accesskey="A"<%= if search_type == "and" then ' checked="true"' end %>>全ての単語が含まれているカテゴリ/リンクのみ(AND)</input><br />
+<input type="radio" name="type" value="or" <%=tabindex%> accesskey="O"<%= if search_type == "or" then ' checked="true"' end %>>どれかの単語が含まれているカテゴリ/リンク(OR)</input><br />
+<input type="text" name="key" value="<%= keywords.join(" ") %>" <%=tabindex%> accesskey="K" />
+<input type="submit" value="検索" <%=tabindex%> accesskey="S" />
+</p>
+</form>
+
+<% if (not category_pages.empty?) or (not link_pages.empty?) %>
+<h2>検索結果</h2>
+<%
+[
+	["カテゴリ", category_pages],
+	["リンク", link_pages],
+].each do |section_title, target_pages|
+%>
+<h2><%= section_title %></h2>
+<ul>
+	<% target_pages.sort{|x, y| x.title <=> y.title}.each do |target_pg| %>
+	<li><%= make_anchor(ref_name(target_pg.name, params), target_pg.title, target_pg.modified) %>: <%=h target_pg.description %></li>
+	<% end %>
+</ul>
+<% end
+end %>
+
+<%= footer(pg) %>

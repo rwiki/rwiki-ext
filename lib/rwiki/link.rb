@@ -53,9 +53,9 @@ module RWiki
 		end
 
 		module LinkSectionMixIn
-			def new_page_name(book)
+			def new_page_name(pages)
 				@base_name +
-					book.collect do |page|
+					pages.collect do |page|
 						md = @pattern.match(page.name)
 						if md and !page.empty?
 							md[1].to_i
@@ -197,6 +197,19 @@ module RWiki
 			end
 
 			private
+			def dispatch_view_html(format, &block)
+				mode, = block ? block.call('mode') : nil
+				if mode.nil? or /\A\s*\z/ =~ mode
+					mode = "custom"
+				end
+				
+				if format.respond_to?("#{mode}_view")
+					format.send("#{mode}_view", self)
+				else
+					format.view(self)
+				end
+			end
+
 			def update_index_page_src
 				ind_pg = index_page
 				ind_pg.src = ind_pg.format.new().create_src(ind_pg, '')
@@ -279,17 +292,14 @@ module RWiki
 			def set_src(*args)
 				super
 				update_index_page_src
-				forget
 			end
 
 			def view_html(env={}, &block)
 				format = @format.new(env, &block)
-
 				if dirty?
 					self.src = format.make_src(self) 
 				end
-
-				format.view(self)
+				dispatch_view_html(format, &block)
 			end
 
 			private
@@ -335,8 +345,17 @@ module RWiki
 
 			def set_src(*args)
 				super
-				update_index_page_src
-				categories.each {|x| update_category_page_src(x)}
+				cats = categories
+				if cats.empty?
+					update_index_page_src
+				else
+					cats.each {|cat| update_category_page_src(cat)}
+				end
+			end
+
+			def view_html(env={}, &block)
+				format = @format.new(env, &block)
+				dispatch_view_html(format, &block)
 			end
 
 			private
@@ -376,18 +395,14 @@ module RWiki
 
 			def view_html(env={}, &block)
 				format = @format.new(env, &block)
-				mode, = block ? block.call('mode') : nil
-
 				if dirty?
 					self.src = format.make_src(self) 
 				end
+				dispatch_view_html(format, &block)
+			end
 
-				case mode
-				when 'default'
-					format.view(self)
-				else
-					format.detail_view(self)
-				end
+			def find_all_category(&block)
+				categories.find_all(&block)
 			end
 
 			private
@@ -443,6 +458,11 @@ module RWiki
 		end
 
 		class CategoryFormat < PageFormat
+			def create_src(pg, src)
+				make_src(pg)
+			end
+
+			private
 			def default_recent_changes_number
 				10
 			end
@@ -451,11 +471,6 @@ module RWiki
 				30
 			end
 
-			def create_src(pg, src)
-				make_src(pg)
-			end
-
-			private
 			def link_navis(pg)
 				index_pg = pg.index_page
 				[
@@ -464,7 +479,7 @@ module RWiki
 			end
 
 			@rhtml = {
-				:view => ::RWiki::ERbLoader.new("view(pg)", "link_category.rhtml"),
+				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_category.rhtml"),
 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_category_edit.rhtml"),
 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_category.rrd"),
 			}
@@ -490,7 +505,7 @@ module RWiki
 			end
 
 			@rhtml = {
-				:view=> ::RWiki::ERbLoader.new("view(pg)", "link_link.rhtml"),
+				:custom_view=> ::RWiki::ERbLoader.new("custom_view(pg)", "link_link.rhtml"),
 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_link_edit.rhtml"),
 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_link.rrd"),
 			}
@@ -503,14 +518,56 @@ module RWiki
 			end
 
 			private
-			def link_navis(pg, titles={},*args)
+			def default_recent_changes_number
+				10
+			end
+
+			def added_recent_changes_number
+				30
+			end
+
+			def search_pages_by_or(pages, keywords)
+				keyword_re = Regexp.new(keywords.collect do |keyword|
+																	Regexp.escape(keyword)
+																end.join("|"), Regexp::IGNORECASE)
+				pages.find_all{|pg| pg.match?(keyword_re)}
+			end
+
+			def search_pages_by_and(pages, keywords)
+				keyword_res = keywords.collect{|keyword| /#{Regexp.escape(keyword)}/i}
+				pages.find_all do |pg|
+					res = false
+					keyword_res.each do |keyword_re|
+						if pg.match?(keyword_re)
+							res = true
+						else
+							res = false
+							break
+						end
+					end
+					res
+				end
+			end
+
+			def link_navis(pg, titles={}, *args)
+				name = pg.name
+				modified = pg.modified
 				[
+					make_anchor(ref_name(name),
+											titles[:index] || "Index",
+											modified),
 					make_anchor(ref_name(new_category_page_name(pg), {}, "edit"),
-											titles[:category],
+											titles[:category] || "Register new category",
 											nil),
 					make_anchor(ref_name(new_link_page_name(pg), {}, "edit"),
-											titles[:link],
+											titles[:link] || "Register new link",
 											nil),
+					make_anchor(ref_name(name, {"mode" => "refine"}),
+											titles[:refine] || "Refine category",
+											modified),
+					make_anchor(ref_name(name, {"mode" => "search"}),
+											titles[:search] || "Search",
+											modified),
 				]
 			end
 
@@ -526,22 +583,14 @@ module RWiki
 				pg.section.name
 			end
 
-			private
 			def new_page_name(pages, section)
-				pattern = section.pattern
-				section.base_name +
-					pages.collect do |page|
-						md = pattern.match(page.name)
-						if md and !page.empty?
-							md[1].to_i
-						else
-							-1
-						end
-				end.max.to_i.succ.to_s
+				section.new_page_name(pages)
 			end
 
 			@rhtml = {
-				:detail_view => ::RWiki::ERbLoader.new("detail_view(pg)", "link_index.rhtml"),
+				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_index.rhtml"),
+				:search_view => ::RWiki::ERbLoader.new("search_view(pg)", "link_index_search.rhtml"),
+				:refine_view => ::RWiki::ERbLoader.new("refine_view(pg)", "link_index_refine.rhtml"),
 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_index_edit.rhtml"),
 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_index.rrd"),
 			}
