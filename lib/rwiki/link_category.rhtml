@@ -13,18 +13,18 @@
 		end
 	end
 
-  req_pages, = var('pages')
-  num_of_pages = if req_pages
-      req_pages.to_i
-    else
-      default_recent_changes_number
-    end
-  range =
-    if 0 < num_of_pages
-      0...num_of_pages
-    else
-      0..num_of_pages
-    end
+	req_pages, = var('pages')
+	num_of_pages = if req_pages
+			req_pages.to_i
+		else
+			default_recent_changes_number
+		end
+	range =
+		if 0 < num_of_pages
+			0...num_of_pages
+		else
+			0..num_of_pages
+		end
 	full_recent_changes = maneger.recent_changes.find_all do |uri, channel, item, name|
 		link_page.has_key?(uri)
 	end
@@ -39,7 +39,7 @@
 <% pg.descriptions.each do |desc| %>
 <p><%=h desc %></p>
 <% end %>
-<h2>リンク先の更新状況</h2>
+<h2>リンク先の更新順一覧</h2>
 <ol>
 <% recent_changes.each do |uri, channel, item, name| %>
 	<li><p><%= am(channel, item, name) %> <%= hotbar(item.dc_date) %></p>
@@ -60,7 +60,19 @@
 <h2>リンク一覧</h2>
 <ul>
 <% link_pages.each do |link_pg| %>
-	<li><%= make_anchor(ref_name(link_pg.name), link_pg.title, link_pg.modified) %>: <%=h link_pg.description %></li>
+	<li>
+		<%= make_anchor(ref_name(link_pg.name), link_pg.title, link_pg.modified) %>: <%=h link_pg.description %>
+	<% if link_pg.rss %>
+		<%=h link_pg.rss %>
+		<ul>
+			<% maneger.items(link_pg.rss)[0...3].each do |item| %>
+				<li>
+					<%= ia(item) %><% if item.description then %>: <%=h item.description.shorten %><% end %>
+				</li>
+			<% end %>
+		</ul>
+	<% end %>
+	</li>
 <% end %>
 </ul>
 </div>
