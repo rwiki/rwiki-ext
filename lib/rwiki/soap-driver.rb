@@ -8,17 +8,13 @@ module RWiki
     class Driver < ::SOAP::RPC::Driver
   
       APP_NAME = 'RWikiSOAPDriver'
-      LOG_ID = 'RWikiSOAPDriver'
 
-      def initialize(log_dir, endPoint, httpProxy=nil, soapAction=nil)
-				log = nil
+      def initialize(log_dir, end_point, http_proxy=nil, soap_action=nil)
+        super(RWiki::SOAP::NS, end_point, soap_action)
 				unless log_dir.nil?
-					log = Logger.new(File.join(log_dir, APP_NAME + '.log'),
-													 'weekly')
-					setWireDumpFileBase(File.join(log_dir, APP_NAME))
+					self.wire_dump_file_base = File.join(log_dir, APP_NAME)
 				end
-
-        super(log, LOG_ID, RWiki::SOAP::NS, endPoint, httpProxy, soapAction)
+				self.httpproxy = http_proxy
 
         add_method('allow_get_page')
         add_method('page', 'name')
