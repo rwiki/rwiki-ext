@@ -6,15 +6,15 @@ module RWiki
 			def store(string)
 				string.gsub!(/<%=\s*(\S*)\s*%>/m) do |s|
 					case $1
-					when 'DATE'
+					when 'date'
 						Time.now.strftime("%Y-%m-%d")
-					when 'TIME'
+					when 'time'
 						Time.now.strftime("%Y-%m-%d %H:%M:%S(%Z)")
 					else
 						s
 					end
 				end
-				string.gsub!(/「(\S{1,20})」/m) do |s|
+				string.gsub!(/「([^\s」]{1,20})」/m) do |s|
 					if !$1.include?('))')
 						"「((<#{$1}>))」"
 					else
