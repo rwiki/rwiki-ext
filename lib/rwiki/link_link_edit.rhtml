@@ -4,7 +4,7 @@
 <div class="edit">
 <h1><%=h pg.title %></h1>
 
-全ての項目を記述する必要はありません．
+<p>全ての項目を記述する必要はありません．</p>
 
 <form action="<%= form_action %>" method="post">
 <p>
@@ -12,15 +12,15 @@
 <input type="hidden" name="rev" value="<%= pg.revision %>" />
 <input type="hidden" name="src" value="<%=h pg.src %>" />
 <ul>
-	<li>タイトル: <input type="text" name="title" <%=tabindex%> value="<%=h pg.title %>" accesskey="T" /></li>
-	<li>URL: <input type="text" name="url" value="<%=h pg.url %>" <%=tabindex%> accesskey="U" /></li>
-	<li>RSS: <input type="text" name="rss" value="<%=h pg.rss %>" <%=tabindex%> accesskey="R" /></li>
-	<li>カテゴリー:
+	<li><span class="item-title">タイトル: </span><input type="text" size="30" name="title" <%=tabindex%> value="<%=h pg.title %>" accesskey="T" /></li>
+	<li><span class="item-title">URL: </span><input type="text" size="30" name="url" value="<%=h pg.url %>" <%=tabindex%> accesskey="U" /></li>
+	<li><span class="item-title">RSSのあるURL: </span><input type="text" size="30" name="rss" value="<%=h pg.rss %>" <%=tabindex%> accesskey="R" /></li>
+	<li><span class="item-title">カテゴリー(複数選択可): </span>
 		<select name="categories" multiple="true" <%=tabindex%> accesskey="C" size="5">
 <%
 cats = pg.categories || []
 cat_names = cats.collect {|cat| cat.name}
-pg.all_category.each do |cat_pg|
+pg.all_category.sort{|x, y| x.title <=> y.title}.each do |cat_pg|
  %>
 			<option value="<%=h cat_pg.name%>"<%= if cat_names.include?(cat_pg.name) then ' selected="selected"' end%>><%=h cat_pg.title%></option>
 <%
@@ -29,7 +29,8 @@ end
 		</select>
 	</li>
 </ul>
-説明: <textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description %></textarea>
+<span class="item-title">説明: </span>
+<textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description %></textarea>
 <input type="submit" name="commit" value="保存" <%=tabindex%> accesskey="S" />
 </p>
 </form>

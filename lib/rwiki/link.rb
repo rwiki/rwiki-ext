@@ -70,7 +70,7 @@ module RWiki
 
 			include LinkSectionMixIn
 
-			attr_accessor :index_section, :category_section
+			attr_accessor :index_section, :category_section, :base_name, :pattern
 
 			def initialize(config, base_name)
 				super(config, /\A#{Regexp.escape(base_name)}(\d+)\z/)
@@ -84,7 +84,7 @@ module RWiki
 
 			include LinkSectionMixIn
 
-			attr_reader :link_section
+			attr_reader :link_section, :base_name, :pattern
 			attr_accessor :index_section
 
 			def initialize(config, base_name, link_section)
@@ -132,6 +132,8 @@ module RWiki
 
 		module LinkPageMixIn
 
+			attr_accessor :dirty
+
 			def edit_html(env={}, &block)
 				format = @format.new(env, &block)
 				mode, = block ? block.call('mode') : nil
@@ -156,6 +158,7 @@ module RWiki
 
 			def forget
 				@property = nil
+				@dirty = false
 			end
 
 			def property
@@ -175,6 +178,7 @@ module RWiki
 			end
 
 			def dirty?
+				return true if @dirty
 				newer = hot_links[0]
 				return true if newer.nil?
 				return false unless @book.include_name?(newer)
@@ -184,7 +188,6 @@ module RWiki
       end
 
 			def set_src(*args)
-				forget
 				super
 				forget
 			end
@@ -228,9 +231,16 @@ module RWiki
 			end
 
 			def find_all_page(section)
-				@book.find_all do |page|
-					section.match?(page.name)
+				base_name = section.base_name
+				rv = []
+				i = 0
+				loop do
+					pg = @book[base_name + i.to_s]
+					break if pg.src.nil?
+					rv << pg
+					i += 1
 				end
+				rv
 			end
 
 		end
@@ -383,6 +393,15 @@ module RWiki
 			end
 			alias er escape_rd
 
+			def update_index_page_src(pg)
+				ind_pg = index_page(pg)
+				ind_pg.src = ind_pg.format.new().create_src(ind_pg, '')
+			end
+
+			def update_category_page_src(cat_pg)
+				cat_pg.src = cat_pg.format.new().create_src(cat_pg, '')
+			end
+
 			@rhtml = {
 				:link_navi => ::RWiki::ERbLoader.new("link_navi(pg, *args)", "link_navi.rhtml"),
 			}
@@ -401,6 +420,7 @@ module RWiki
 			end
 
 			def create_src(pg, src)
+				update_index_page_src(pg)
 				make_src(pg)
 			end
 
@@ -426,6 +446,8 @@ module RWiki
 
 		class LinkFormat < PageFormat
 			def create_src(pg, src)
+				update_index_page_src(pg)
+				category_pages(pg).each {|x| update_category_page_src(x)}
 				make_src(pg)
 			end
 
@@ -464,15 +486,29 @@ module RWiki
 			end
 
 			def new_category_page_name(pg)
-				pg.section.new_category_page_name(pg.book)
+				new_page_name(pg.categories, pg.section.category_section)
 			end
 			
 			def new_link_page_name(pg)
-				pg.section.new_link_page_name(pg.book)
+				new_page_name(pg.links, pg.section.link_section)
 			end
 
 			def title(pg)
 				pg.section.name
+			end
+
+			private
+			def new_page_name(pages, section)
+				pattern = section.pattern
+				section.base_name +
+					pages.collect do |page|
+						md = pattern.match(page.name)
+						if md and !page.empty?
+							md[1].to_i
+						else
+							-1
+						end
+				end.max.succ.to_s
 			end
 
 			@rhtml = {
