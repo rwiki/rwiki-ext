@@ -137,6 +137,7 @@ module RWiki
 							has_update_info = false
 
 							items.each do |item|
+								next if /\A\s*\z/ =~ item.title.to_s
 								@@mutex.synchronize do
 									pubDate_to_dc_date(item)
 									if !has_update_info and (channel.dc_date or item.dc_date)
