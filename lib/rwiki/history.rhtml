@@ -1,0 +1,23 @@
+<%= header(pg) %>
+<%= navi(pg) %>
+<%= body(pg) %>
+<div class="history">
+[<a href="<%= ref_name(target) %>"><%= h target %></a>]
+<ul>
+<%
+	targ = target
+	logs = pg.logs(targ)
+	size = logs.size
+%>
+<% logs.each_with_index do |log, i| %>
+	<li><% rev = size - i - 1 %>
+		<%=h log.date %>:
+		<%= rev %>(<%= h log.revision %>):
+		<%= diff_link(targ, rev - 1, rev) %>:
+		<%=h log.lines %>
+	</li>
+<% prev = log %>
+<% end %>
+</ul>
+</div>
+<%= footer(pg) %>

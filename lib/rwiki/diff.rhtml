@@ -1,0 +1,35 @@
+<%= header(pg) %>
+<%= navi(pg) %>
+<%= body(pg) %>
+<div class="diff">
+
+<%
+  logs = pg.logs(target).reverse
+  size = logs.size
+	r1 = rev1
+	log1 = logs[r1]
+	r1 = logs.index(log1) if r1 < 0
+	r2 = rev2
+	log2 = logs[r2]
+	r2 = logs.index(log2) if r2 < 0
+	dif = diff(pg, log1, log2)
+%>
+
+<p class="diff-navi">
+[<a href="<%= ref_name(target) %>"><%= h target %></a>]
+<% if r1 > 0 %>
+<%= diff_link(target, r1 - 1, r1) %>
+<% end %>
+<% if 0 < r2 and r2 < size - 1 %>
+<%= diff_link(target, r2, r2 + 1) %>
+<% end %>
+</p>
+
+<% if dif %>
+<pre class="diff"><%= h dif %></pre>
+<% else %>
+<p>No diff.</p>
+<% end %>
+
+</div>
+<%= footer(pg) %>

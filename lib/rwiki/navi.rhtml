@@ -11,4 +11,7 @@
     end
   }.compact.join("\n")
 %>
+<% if defined?(::RWiki::FooterNavis) %>
+<span class="navi">[<a href="#footer-navi">more...</a>]</span>
+<% end %>
 </div>
