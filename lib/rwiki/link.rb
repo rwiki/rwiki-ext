@@ -445,18 +445,28 @@ module RWiki
 			end
 
 			def match?(regexp)
-				super or rss_match?(regexp)
+				super(regexp) or rss_match?(regexp)
 			end
 
 			def rss_match?(regexp)
-				if rss and maneger[rss] and	maneger[rss][:description]
-					regexp =~ maneger[rss][:description]
+				if rss and target_rss = maneger[rss]
+					regexp.match(target_rss[:name]) or
+						(target_rss[:description] and
+							 regexp =~ target_rss[:description]) or
+						rss_item_match?(regexp, maneger.items(rss))
 				else
 					false
 				end
 			end
 
 			private
+			def rss_item_match?(regexp, items)
+				items.find do |item|
+					regexp =~ item.title or
+						(item.description and regexp =~ item.description)
+				end
+			end
+
 			def property_key
 				:link
 			end

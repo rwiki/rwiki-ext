@@ -30,19 +30,20 @@
 <%= dedicated_navi(pg) %>
 <div class="body">
 <%= dedicated_refine_form(pg, refine_type, pg.all_category, category_name, true) %>
-</div>
 
 <% unless categories.empty? then %>
 <h2>選択したカテゴリに属するリンクの更新状況</h2>
 <%= dedicated_list_recent_link(pg, link_pages, params) %>
+
+</div>
 </div>
 
 <div class="sidebar">
 <h2>最近見られたリンク</h2>
-<%= dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0..5]) %>
+<%= dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0...5]) %>
 
 <h2>多く見られたリンク</h2>
-<%= dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0..5]) %>
+<%= dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0...5]) %>
 
 <h2>選択したカテゴリ</h2>
 <%= dedicated_list_category(pg, categories.sort{|x, y| x.title <=> y.title}) %>

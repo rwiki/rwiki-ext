@@ -27,7 +27,7 @@
 #	params = keywords.collect {|keyword| ["em", keyword]}
 	params = {}
 
-	found_page = (not category_pages.empty?) or (not link_pages.empty?)
+	found_page = ((not category_pages.empty?) or (not link_pages.empty?))
 %>
 
 <% if found_page then %><div class="main"><% end %>
@@ -44,10 +44,10 @@
 
 <div class="sidebar">
 <h2>最近見られたリンク</h2>
-<%= hilighten(dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0..5]), keywords) %>
+<%= hilighten(dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0...5]), keywords) %>
 
 <h2>多く見られたリンク</h2>
-<%= hilighten(dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0..5]), keywords) %>
+<%= hilighten(dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0...5]), keywords) %>
 
 <h2>カテゴリ</h2>
 <%= hilighten(dedicated_list_category(pg, category_pages.sort{|x, y| x.title <=> y.title}), keywords) %>

@@ -3,5 +3,5 @@
 <% link_navis(pg, *args).each do |anchor| %>
 <span class="link-navi">[<%= anchor %>]</span>
 <% end %>
-<%= dedicated_search_form(pg, "or", var("key")) %>
+<%= dedicated_search_form(pg, "and", var("key")) %>
 </div>
