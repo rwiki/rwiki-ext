@@ -1,4 +1,4 @@
-require "rwiki/rddoc"
+require "rwiki/rd/rddoc"
 require "rwiki/rss-maneger"
 
 require "nkf"

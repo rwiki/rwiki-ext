@@ -372,7 +372,7 @@ module RWiki
 				categories.each do |cat_pg|
 					link_pgs = link_pgs.send(refine_funcname, cat_pg.link_pages)
 				end
-				lnik_pgs.delete_if {|pg| pg.modified.nil?}
+				link_pgs.delete_if {|pg| pg.modified.nil?}
 				link_pgs.uniq! if refine_type == "and"
 				link_pgs.sort! {|x, y| x.title <=> y.title}
 				link_pgs
