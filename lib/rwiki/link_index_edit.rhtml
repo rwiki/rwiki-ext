@@ -11,7 +11,7 @@
 <input type="hidden" name="src" value="<%=h pg.src %>" />
 <span class="item-title">タイトル: </span><input type="text" size="30" name="title" <%=tabindex%> value="<%=h pg.title %>" accesskey="T" />
 <br />
-<span class="item-title">説明: </span><textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description.join("\n\n") %></textarea>
+<span class="item-title">説明: </span><textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description %></textarea>
 <input type="submit" name="commit" value="保存" <%=tabindex%> accesskey="S" />
 </p>
 </form>

@@ -1,6 +1,6 @@
 = <%=er (var("title").first || pg.title) %>
 
-<%=er((var("description").first || pg.description.join("\n\n")), true)%>
+<%=er((var("description").first || pg.description), true)%>
 
 == カテゴリー
 <% pg.categories(true).each do |cat_pg| %>

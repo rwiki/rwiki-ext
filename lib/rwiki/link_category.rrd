@@ -4,7 +4,7 @@
 %>
 = <%=er title %>
 
-<%=er((var("description").first || pg.description.join("\n\n")), true)%>
+<%=er((var("description").first || pg.description), true)%>
 
 == ¥ê¥ó¥¯
 <% pg.categorized_links.each do |link_pg| %>

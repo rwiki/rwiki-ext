@@ -156,6 +156,10 @@ module RWiki
 				get_property(:description)
 			end
 
+			def descriptions
+				get_property(:descriptions, [])
+			end
+
 			def forget
 				@property = nil
 				@dirty = false
@@ -214,7 +218,8 @@ module RWiki
 				if pr and pr[:top_level]
 					rd_section = pr[:top_level]
 					rv[:title] = rd_section.name
-					rv[:description] = rd_section.texts
+					rv[:description] = rd_section.texts.join("\n\n")
+					rv[:descriptions] = rd_section.texts
 					rd_sections = rd_section.sections
 					getting_property_infos.each_with_index do |get_info, i|
 						sec = rd_sections[i]
