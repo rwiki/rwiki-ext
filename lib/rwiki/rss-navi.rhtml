@@ -4,7 +4,7 @@
 	cmd = cmd.first if cmd.kind_of?(Array)
 	if cmd == 'view' and not pg.empty?
 %>
-<div class="rss_topic">
+<div class="rss-topic">
 <%
 	topics = ::RWiki::RSS::Topic.topics
 	number = ::RWiki::RSS::Topic.number
@@ -12,12 +12,12 @@
 	::RWiki::RSS::Topic.each_topics do |uri, channel, items, name, time|
 		if topics.has_key?(uri) and not items.empty?
 %>
-	<div class="rss_topic_item">
-		<span class="rss_topic_title">
+	<div class="rss-topic-item">
+		<span class="rss-topic-title">
 			<%= tta(channel, name) %>(<%=h modified(channel.dc_date)%>)
 		</span>
 <%		items[0...number].each do |item| %>
-		<span class="rss_topic_content">[<%= ttia(item, characters) %>]</span>
+		<span class="rss-topic-content">[<%= ttia(item, characters) %>]</span>
 <%		end %>
 	</div>
 <%
