@@ -621,6 +621,17 @@ module RWiki
 
 			include ::RWiki::RSS::FormatUtils
 
+			def default_display_update_info
+				true
+			end
+			def default_list_number
+				3
+			end
+
+			def default_rss_description_character_number
+				20
+			end
+
 			def generate_src(pg, src)
 				if have_contents(pg)
 					make_src(pg)
@@ -663,7 +674,7 @@ module RWiki
 				:dedicated_navi => ::RWiki::ERbLoader.new("dedicated_navi(pg, *args)", "link_dedicated_navi.rhtml"),
 				:dedicated_footer => ::RWiki::ERbLoader.new("dedicated_footer(pg)", "link_dedicated_footer.rhtml"),
 				:dedicated_list_recent_link => ::RWiki::ERbLoader.new("dedicated_list_recent_link(pg, link_pages, *params)", "link_dedicated_list_recent_link.rhtml"),
-				:dedicated_list_link => ::RWiki::ERbLoader.new("dedicated_list_link(pg, link_pages, display_update_info=false)", "link_dedicated_list_link.rhtml"),
+				:dedicated_list_link => ::RWiki::ERbLoader.new("dedicated_list_link(pg, link_pages, display_update_info=default_display_update_info)", "link_dedicated_list_link.rhtml"),
 				:dedicated_list_category => ::RWiki::ERbLoader.new("dedicated_list_category(pg, category_pages)", "link_dedicated_list_category.rhtml"),
 				:dedicated_list_group => ::RWiki::ERbLoader.new("dedicated_list_group(pg, group_pages)", "link_dedicated_list_group.rhtml"),
 				:dedicated_list_detail_of_group => ::RWiki::ERbLoader.new("dedicated_list_detail_of_group(pg, group_pages)", "link_dedicated_list_detail_of_group.rhtml"),

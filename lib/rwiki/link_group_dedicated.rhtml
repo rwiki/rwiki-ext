@@ -10,7 +10,12 @@
 <div class="body">
 
 <div class="group-info">
-絞りこみタイプ: <%= pg.refine_type %>
+<span class="group-info">絞りこみタイプ: <%= pg.refine_type %></span>
+<span class="group-info">
+<% pg.categories.sort{|x, y| x.title <=> y.title}.each do |cat_pg| %>
+	<span class="category">[<%= make_anchor(ref_name(cat_pg.name), cat_pg.title, cat_pg.modified) %>]</span>
+<% end %>
+</span>
 </div>
 
 <div class="description">
@@ -27,13 +32,10 @@
 
 <div class="sidebar">
 <h2>最近見られたリンク</h2>
-<%= dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0...5]) %>
+<%= dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0...default_list_number]) %>
 
 <h2>多く見られたリンク</h2>
-<%= dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0...5]) %>
-
-<h2>グループに属するカテゴリ</h2>
-<%= dedicated_list_category(pg, pg.categories.sort{|x, y| x.title <=> y.title}) %>
+<%= dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0...default_list_number]) %>
 
 <h2>グループに属するリンク</h2>
 <%= dedicated_list_link(pg, link_pages) %>
