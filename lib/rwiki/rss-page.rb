@@ -215,6 +215,10 @@ module RWiki
 				end
 			end
 
+			def extract_text_from_html(html)
+				html.to_s.gsub(/([^<]*)(<[^>]*>)?/, '\1')
+			end
+
 		end
 
 	end
