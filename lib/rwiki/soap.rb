@@ -86,11 +86,6 @@ module RWiki
 		end
 
 		class PageFormat < Custom::EditFormat
-			private
-			def get_var(name, default='')
-				tmp, = var(name)
-				tmp || default
-			end
 			@rhtml = { :view => RWiki::ERbLoader.new('view(pg)', 'soap.rhtml') }
 			reload_rhtml
 		end
