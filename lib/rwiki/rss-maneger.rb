@@ -1,4 +1,4 @@
-require "net/http"
+require "open-uri"
 require "uri/generic"
 require "thread"
 require "time"
@@ -169,6 +169,7 @@ module RWiki
 				SocketError,
 				Net::HTTPBadResponse,
 				Net::HTTPHeaderSyntaxError,
+				OpenURI::HTTPError,
 				SystemCallError, # for sysread
 				EOFError # for sysread
 					@@mutex.synchronize do 
@@ -187,16 +188,14 @@ module RWiki
 
 			def fetch_rss(uri, cache_time)
 				rss = nil
-				Net::HTTP.start(uri.host, uri.port || 80) do |http|
-					path = uri.path
-					path << "?#{uri.query}" if uri.query
-					req = http.request_get(path, http_header(cache_time))
-					case req.code
+				uri.open(http_header(cache_time)) do |f|
+					case f.status.first
 					when "200"
-						rss = req.body
+						rss = f.read
+						puts "Got RSS of #{uri}"
 					when "304"
 						# not modified
-						puts "#{uri.to_s} does not modified"
+						puts "#{uri} does not modified"
 					else
 						raise InvalidResourceError
 					end

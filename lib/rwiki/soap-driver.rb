@@ -12,7 +12,7 @@ module RWiki
       def initialize(log_dir, end_point, http_proxy=nil, soap_action=nil)
         super(RWiki::SOAP::NS, end_point, soap_action)
 				unless log_dir.nil?
-					self.wire_dump_file_base = File.join(log_dir, APP_NAME)
+					self.wiredump_file_base = File.join(log_dir, APP_NAME)
 				end
 				self.httpproxy = http_proxy
 
