@@ -301,7 +301,7 @@ module RWiki
         update_src(src)
       end
 
-      def src
+      def src(rev=nil)
         reload_src
         @src
       end
