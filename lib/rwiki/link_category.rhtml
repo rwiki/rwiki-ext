@@ -4,7 +4,7 @@
 <%
 	index_pg = pg.index_page
 	maneger = ::RWiki::RSS::Maneger.new
-	link_pages = pg.links.sort {|x, y| x.title <=> y.title}
+	link_pages = pg.link_pages.sort {|x, y| x.title <=> y.title}
 	link_page = {}
 	link_pages.each do |link_pg|
 		if link_pg.rss

@@ -1,10 +1,9 @@
 require "rwiki/rddoc"
+require "rwiki/rss-maneger"
 
 module RWiki
 	module RSS
 		
-		MINIMUM_EXPIRE = 60 * 60 unless const_defined?(:MINIMUM_EXPIRE)
-		EXPIRE = 2 * 60 * 60 unless const_defined?(:EXPIRE)
 		DISPLAY = true unless const_defined?(:DISPLAY)
 		DISPLAY_PAGES = 5 unless const_defined?(:DISPLAY_PAGES)
 		DISPLAY_CHARACTERS = 20 unless const_defined?(:DISPLAY_CHARACTERS)

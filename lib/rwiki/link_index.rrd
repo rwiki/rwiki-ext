@@ -8,6 +8,6 @@
 <% end %>
 
 == ¥ê¥ó¥¯
-<% pg.links(true).each do |link_pg| %>
+<% pg.link_pages(true).each do |link_pg| %>
 * ((<<%=er(link_pg.title, {:accept_slash => false})%>|<%=er link_pg.name %>>))
 <% end %>

@@ -18,10 +18,10 @@
 	else
 		if search_type == "or"
 			category_pages = search_pages_by_or(pg.categories, keywords)
-			link_pages = search_pages_by_or(pg.links, keywords)
+			link_pages = search_pages_by_or(pg.link_pages, keywords)
 		else
 			category_pages = search_pages_by_and(pg.categories, keywords)
-			link_pages = search_pages_by_and(pg.links, keywords)
+			link_pages = search_pages_by_and(pg.link_pages, keywords)
 		end
 	end
 

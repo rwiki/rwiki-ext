@@ -10,6 +10,9 @@ require "rss/dublincore"
 module RWiki
 	module RSS
 
+		MINIMUM_EXPIRE = 60 * 60 unless const_defined?(:MINIMUM_EXPIRE)
+		EXPIRE = 2 * 60 * 60 unless const_defined?(:EXPIRE)
+
 		class Error < StandardError; end
 		class InvalidResourceError < Error; end
 		
@@ -29,7 +32,8 @@ module RWiki
 
 			class << self
 				
-				def forget(expire)
+				def forget(expire=EXPIRE)
+					expire = EXPIRE if expire.to_i < MINIMUM_EXPIRE
 					@@mutex.synchronize do
 						@@cache.delete_if do |uri, values|
 							values[:time] + expire  < Time.now

@@ -178,7 +178,7 @@ module RWiki
 			end
 
 			def all_links
-				index_page.links
+				index_page.link_pages
 			end
 
 			def dirty?
@@ -276,7 +276,7 @@ module RWiki
 
 			include LinkPageMixIn
 
-			def links
+			def link_pages
 				get_property(:links, [])
 			end
 
@@ -349,7 +349,7 @@ module RWiki
 				if cats.empty?
 					update_index_page_src
 				else
-					cats.each {|cat| update_category_page_src(cat)}
+ 					cats.each {|cat| update_category_page_src(cat)}
 				end
 			end
 
@@ -385,7 +385,7 @@ module RWiki
 				end
 			end
 
-			def links(force_recalc=false)
+			def link_pages(force_recalc=false)
 				if force_recalc
 					find_all_page(@section.link_section)
 				else
@@ -424,6 +424,10 @@ module RWiki
 		end
 		
 		class PageFormat < ::RWiki::PageFormat
+			def create_src(pg, src)
+				make_src(pg)
+			end
+
 			private
 
 			include ::RWiki::RSS::FormatUtils
@@ -458,10 +462,6 @@ module RWiki
 		end
 
 		class CategoryFormat < PageFormat
-			def create_src(pg, src)
-				make_src(pg)
-			end
-
 			private
 			def default_recent_changes_number
 				10
@@ -487,10 +487,6 @@ module RWiki
 		end
 
 		class LinkFormat < PageFormat
-			def create_src(pg, src)
-				make_src(pg)
-			end
-
 			private
 			def link_navis(pg)
 				index_pg = pg.index_page
@@ -513,10 +509,6 @@ module RWiki
 		end
 
 		class IndexFormat < PageFormat
-			def create_src(pg, src)
-				make_src(pg)
-			end
-
 			private
 			def default_recent_changes_number
 				10
@@ -576,7 +568,7 @@ module RWiki
 			end
 			
 			def new_link_page_name(pg)
-				new_page_name(pg.links, pg.section.link_section)
+				new_page_name(pg.link_pages, pg.section.link_section)
 			end
 
 			def title(pg)

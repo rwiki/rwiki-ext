@@ -1,5 +1,5 @@
-require "rwiki/rss-maneger"
 require "rwiki/rss-page"
+require "rwiki/rss-maneger"
 
 module RWiki
 	module RSS
