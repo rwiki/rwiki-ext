@@ -1,23 +1,9 @@
 require "uri"
 
 require "rwiki/rddoc"
+require "rwiki/custom-edit"
 
 RWiki::Version.regist('InportWiki', '2003-07-10')
-
-module RWiki
-	class PageFormat
-		def create_src(pg, src)
-			src
-		end
-	end
-
-	class Page
-		alias_method(:_set_src, :set_src)
-		def set_src(v, rev, env={}, &block)
-			_set_src(@format.new(env, &block).create_src(self, v), rev, &block)
-		end
-	end
-end
 
 module RWiki
 	module ImportWiki
@@ -32,6 +18,7 @@ module RWiki
 			def install
 				config = ::RWiki::BookConfig.default.dup
 				config.format = AdminPageFormat
+				config.page = ::RWiki::Custom::EditPage
 				sec = Section.new(config, 'ImportWiki')
 				::RWiki::Book.section_list.push(sec)
 			end

@@ -1,4 +1,5 @@
 require 'rwiki/soap-driver'
+require "rwiki/custom-edit"
 
 RWiki::Version.regist('rw-soap', '2003-04-01')
 
@@ -8,7 +9,10 @@ module RWiki
 		class << self
 
 			def install
-				sec = Section.new(nil, /\Asoap\z/)
+				config = BookConfig.default.dup
+				config.page = Custom::EditPage
+				config.format = RWiki::SOAP::PageFormat
+				sec = RWiki::SOAP::Section.new(config, "soap")
 				RWiki::Book.section_list.push(sec)
 				RWiki.install_page_module('soap', RWiki::SOAP::PageFormat, 'SOAP')
 			end
@@ -24,39 +28,52 @@ module RWiki
 			end
 		end
 
-		class Document < RDDoc::SectionDocument
+		class Document
+
+			def initialize(tree)
+				@section = RDDoc::Section.new_by_tree(tree)
+			end
+
 			def to_prop
 				prop = {}
-				each_section do |head, content|
-					next unless head
-					if head.level == 2
-						case title = as_str(head.title).strip.downcase
-						when 'entry', 'エントリー'
-							EntrySection.new(prop).apply_Section(content)
-						end
-					end
+				if @section
+					ep = EntryParser.new(@section["entry"] || @section["エントリー"])
+					prop[:entry] = ep.prop
 				end
 				prop
 			end
 		end
 
-		class PropSection < RDDoc::PropSection
-			def apply_Item(str)
-				if /^([^:]*):\s*(.*)$/ =~ str
-					apply_Prop($1.strip, $2.strip)
+		class EntryParser
+			attr_reader :prop
+
+			def initialize(section = nil)
+				@prop = {}
+				if section
+					section.item_list.each do |item|
+						add_entry(item)
+					end
 				end
 			end
-		end
 
-		class EntrySection < PropSection
-			def apply_Prop(display_name, uri)
-				display_name = nil if display_name.empty?
-				@prop[:entry] ||= {}
-				@prop[:entry][uri] = display_name
+			def add_entry(text)
+				name, uri = parse(text)
+				name = nil if name and name.empty?
+				@prop[uri] = name if uri
 			end
+
+			private
+			def parse(str)
+				if str
+					str.split(":", 2).collect {|x| x.strip}
+				else
+					[nil, nil]
+				end
+			end
+
 		end
 
-		class Section < RWiki::Section
+		class Section < Custom::EditSection
 
 			def initialize(config, pattern)
 				super(config, pattern)
@@ -68,7 +85,7 @@ module RWiki
 
 		end
 
-		class PageFormat < RWiki::PageFormat
+		class PageFormat < Custom::EditFormat
 			private
 			def get_var(name, default='')
 				tmp, = var(name)

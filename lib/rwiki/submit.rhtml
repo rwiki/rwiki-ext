@@ -10,7 +10,7 @@
 <body>
 Wait or <a href="<%= ref_name(pg.name) %>">Click here!</a>
 <%
-  if defined?(::RWiki::PageStoreCVS) and pg.section.db.is_a?(::RWiki::PageStoreS)
+  if defined?(::RWiki::PageStoreCVS) and pg.section.db.is_a?(::RWiki::PageStoreCVS)
     last_cvs_messages = pg.section.db.last_cvs_messages
     message = last_cvs_messages[pg.name]
     last_cvs_messages[pg.name] = nil
