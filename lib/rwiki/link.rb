@@ -7,7 +7,7 @@ module RWiki
 
 		class << self
 
-			def install(index_name, link_base_name, category_base_name)
+			def install(index_name, link_base_name, category_base_name, default_mode="custom")
 				config = BookConfig.default.dup
 				config.format = LinkFormat
 				config.page = LinkPage
@@ -19,7 +19,7 @@ module RWiki
 				RWiki::Book.section_list.push(cat_sec)
 				config.format = IndexFormat
 				config.page = IndexPage
-				index_sec = IndexSection.new(config, index_name, link_sec, cat_sec)
+				index_sec = IndexSection.new(config, index_name, link_sec, cat_sec, default_mode)
 				RWiki::Book.section_list.push(index_sec)
 			end
 
@@ -27,15 +27,16 @@ module RWiki
 
 		class IndexSection < ::RWiki::Section
 
-			attr_reader :name, :link_section, :category_section
+			attr_reader :name, :link_section, :category_section, :default_mode
 
-			def initialize(config, name, link_section, category_section)
+			def initialize(config, name, link_section, category_section, default_mode)
 				super(config, name)
 				@name = name
 				@link_section = link_section
 				@link_section.index_section = self
 				@category_section = category_section
 				@category_section.index_section = self
+				@default_mode = default_mode
 				add_prop_loader(:index, PropLoader.new)
 			end
 
@@ -54,6 +55,17 @@ module RWiki
 		end
 
 		module LinkSectionMixIn
+			
+			attr_accessor :index_section
+
+			def default_mode
+				if index_section
+					index_section.default_mode
+				else
+					nil
+				end
+			end
+
 			def new_page_name(pages)
 				page_numbers = pages.collect do |page|
 					md = @pattern.match(page.name)
@@ -77,7 +89,8 @@ module RWiki
 
 			include LinkSectionMixIn
 
-			attr_accessor :index_section, :category_section, :base_name, :pattern
+			attr_accessor :category_section
+			attr_reader :base_name, :pattern
 
 			def initialize(config, base_name)
 				super(config, /\A#{Regexp.escape(base_name)}(\d+)\z/)
@@ -92,7 +105,6 @@ module RWiki
 			include LinkSectionMixIn
 
 			attr_reader :link_section, :base_name, :pattern
-			attr_accessor :index_section
 
 			def initialize(config, base_name, link_section)
 				super(config, /\A#{Regexp.escape(base_name)}(\d+)\z/)
@@ -142,15 +154,7 @@ module RWiki
 			attr_accessor :dirty
 
 			def edit_html(env={}, &block)
-				format = @format.new(env, &block)
-				mode, = block ? block.call('mode') : nil
-
-				case mode
-				when 'default'
-					format.edit(self)
-				else
-					format.custom_edit(self)
-				end
+				dispatch_edit_html(@format.new(env, &block), &block)
 			end
 
 			def title
@@ -180,6 +184,10 @@ module RWiki
 				@book[index_page_name]
 			end
 
+			def index_page_name
+				index_section.name
+			end
+
 			def all_category
 				index_page.categories
 			end
@@ -203,27 +211,42 @@ module RWiki
 				forget
 			end
 
+			def mode(&block)
+				mod, = block ? block.call('mode') : nil
+				if mod.nil? or /\A\s*\z/ =~ mod
+					mod = default_mode
+				end
+				mod
+			end
+
+			def default_mode
+				index_section.default_mode
+			end
+
 			private
+			def dispatch_html(html_type, format, &block)
+				method_name = "#{mode(&block)}_#{html_type}"
+				unless format.respond_to?(method_name)
+					method_name = html_type
+				end
+				format.send(method_name, self, &block)
+			end
+
 			def dispatch_view_html(format, &block)
-				mode, = block ? block.call('mode') : nil
-				if mode.nil? or /\A\s*\z/ =~ mode
-					mode = "custom"
-				end
-				
-				if format.respond_to?("#{mode}_view")
-					format.send("#{mode}_view", self)
-				else
-					format.view(self)
-				end
+				dispatch_html("view", format, &block)
+			end
+
+			def dispatch_edit_html(format, &block)
+				dispatch_html("edit", format, &block)
 			end
 
 			def update_index_page_src
 				ind_pg = index_page
-				ind_pg.src = ind_pg.format.new().create_src(ind_pg, '')
+				ind_pg.src = ind_pg.format.new().make_src(ind_pg)
 			end
 
 			def update_category_page_src(cat_pg)
-				cat_pg.src = cat_pg.format.new().create_src(cat_pg, '')
+				cat_pg.src = cat_pg.format.new().make_src(cat_pg)
 			end
 
 			def get_property(key, default_value=nil, &validation)
@@ -309,11 +332,11 @@ module RWiki
 				dispatch_view_html(format, &block)
 			end
 
-			private
-			def index_page_name
-				@section.index_section.index_page_name
+			def index_section
+				@section.index_section
 			end
 
+			private
 			def property_key
 				:category
 			end
@@ -342,8 +365,12 @@ module RWiki
 				get_property(:categories, [])
 			end
 
-			def index_page_name
-				@section.index_section.index_page_name
+			def count
+				get_property(:count)
+			end
+
+			def index_section
+				@section.index_section
 			end
 
 			def category_pages
@@ -362,6 +389,8 @@ module RWiki
 
 			def view_html(env={}, &block)
 				format = @format.new(env, &block)
+				state = current_state
+				self.src = @format.new(env){|key| state[key]}.make_src(self)
 				dispatch_view_html(format, &block)
 			end
 
@@ -375,7 +404,20 @@ module RWiki
 					[:url, "texts", get_first_element_proc],
 					[:rss, "texts", get_first_element_proc],
 					[:categories, "item_list", collect_page_proc],
+					[:count, "texts", get_first_element_proc],
 				]
+			end
+
+			def current_state
+				Hash.new([]).update(
+				{
+					"title" => [title],
+					"description" => [description],
+					"url" => [url],
+					"rss" => [rss],
+				 	"categories" => categories.collect{|cat_pg| cat_pg.name},
+					"count" => [count],
+				})
 			end
 
 		end
@@ -405,6 +447,7 @@ module RWiki
 				if dirty?
 					self.src = format.make_src(self) 
 				end
+				::RWiki::RSS::Maneger.forget
 				dispatch_view_html(format, &block)
 			end
 
@@ -412,11 +455,11 @@ module RWiki
 				categories.find_all(&block)
 			end
 
-			private
-			def index_page_name
-				@section.name
+			def index_section
+				@section
 			end
 
+			private
 			def property_key
 				:index
 			end
@@ -432,7 +475,11 @@ module RWiki
 		
 		class PageFormat < ::RWiki::PageFormat
 			def create_src(pg, src)
-				make_src(pg)
+				if var('mode').first == pg.default_mode
+					make_src(pg)
+				else
+					src
+				end
 			end
 
 			private
@@ -464,6 +511,12 @@ module RWiki
 				:link_navi => ::RWiki::ERbLoader.new("link_navi(pg, *args)", "link_navi.rhtml"),
 				:list_recent_link => ::RWiki::ERbLoader.new("list_recent_link(pg, link_pages, *params)", "link_list_recent_link.rhtml"),
 				:list_link => ::RWiki::ERbLoader.new("list_link(pg, link_pages)", "link_list_link.rhtml"),
+				:dedicated_header => ::RWiki::ERbLoader.new("dedicated_header(pg, *args)", "link_dedicated_header.rhtml"),
+				:dedicated_navi => ::RWiki::ERbLoader.new("dedicated_navi(pg, *args)", "link_dedicated_navi.rhtml"),
+				:dedicated_footer => ::RWiki::ERbLoader.new("dedicated_footer(pg)", "link_dedicated_footer.rhtml"),
+				:dedicated_list_recent_link => ::RWiki::ERbLoader.new("dedicated_list_recent_link(pg, link_pages, *params)", "link_dedicated_list_recent_link.rhtml"),
+				:dedicated_list_link => ::RWiki::ERbLoader.new("dedicated_list_link(pg, link_pages, display_update_info=false)", "link_dedicated_list_link.rhtml"),
+				:dedicated_list_category => ::RWiki::ERbLoader.new("dedicated_list_category(pg, category_pages)", "link_dedicated_list_category.rhtml"),
 			}
 			
 			reload_rhtml
@@ -490,6 +543,8 @@ module RWiki
 			@rhtml = {
 				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_category.rhtml"),
 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_category_edit.rhtml"),
+				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_category_dedicated.rhtml"),
+				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_category_dedicated_edit.rhtml"),
 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_category.rrd"),
 			}
 			reload_rhtml
@@ -512,6 +567,8 @@ module RWiki
 			@rhtml = {
 				:custom_view=> ::RWiki::ERbLoader.new("custom_view(pg)", "link_link.rhtml"),
 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_link_edit.rhtml"),
+				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_link_dedicated.rhtml"),
+				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_link_dedicated_edit.rhtml"),
 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_link.rrd"),
 			}
 			reload_rhtml
@@ -563,10 +620,10 @@ module RWiki
 					make_anchor(ref_name(new_link_page_name(pg), {}, "edit"),
 											titles[:link] || "Register new link",
 											nil),
-					make_anchor(ref_name(name, {"mode" => "refine"}),
+				 make_anchor(ref_name(name, {"mode" => "#{pg.mode}_refine"}),
 											titles[:refine] || "Refine category",
 											modified),
-					make_anchor(ref_name(name, {"mode" => "search"}),
+					make_anchor(ref_name(name, {"mode" => "#{pg.mode}_search"}),
 											titles[:search] || "Search",
 											modified),
 				]
@@ -591,11 +648,17 @@ module RWiki
 			@rhtml = {
 				:link_navi => ::RWiki::ERbLoader.new("link_navi(pg)", "link_index_navi.rhtml"),
 				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_index.rhtml"),
-				:search_view => ::RWiki::ERbLoader.new("search_view(pg)", "link_index_search.rhtml"),
-				:refine_view => ::RWiki::ERbLoader.new("refine_view(pg)", "link_index_refine.rhtml"),
+				:custom_search_view => ::RWiki::ERbLoader.new("custom_search_view(pg)", "link_index_search.rhtml"),
+				:custom_refine_view => ::RWiki::ERbLoader.new("custom_refine_view(pg)", "link_index_refine.rhtml"),
 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_index_edit.rhtml"),
+				:dedicated_navi => ::RWiki::ERbLoader.new("dedicated_navi(pg)", "link_index_dedicated_navi.rhtml"),
+				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_index_dedicated.rhtml"),
+				:dedicated_search_view => ::RWiki::ERbLoader.new("dedicated_search_view(pg)", "link_index_dedicated_search.rhtml"),
+				:dedicated_refine_view => ::RWiki::ERbLoader.new("dedicated_refine_view(pg)", "link_index_dedicated_refine.rhtml"),
+				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_index_dedicated_edit.rhtml"),
 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_index.rrd"),
 			}
+			
 			reload_rhtml
 
 		end

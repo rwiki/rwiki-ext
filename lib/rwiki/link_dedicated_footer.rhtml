@@ -1,0 +1,19 @@
+<hr />
+
+<div class="footer">
+<% 
+  if @@address
+%>
+<address>
+<% 
+    if @@mailto
+      %><a href="<%=h @@mailto%>"><%=h @@address %></a><%
+    end
+%>
+</address>
+<%
+  end
+%>
+</div>
+</body>
+</html>

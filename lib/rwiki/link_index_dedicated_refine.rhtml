@@ -1,5 +1,4 @@
-<%= header(pg) %>
-<%= navi(pg) %>
+<%= dedicated_header(pg) %>
 
 <%
 	refine_type, = var("type")
@@ -25,12 +24,12 @@
 
 	params = categories.collect {|cat_pg| ["cat", cat_pg.name]}
 	params.unshift(["type", refine_type])
-	params.unshift(["mode", "#{pg.mode}_refine"])
+	params.unshift(["mode", "dedicated_refine"])
+%>
 
-%><%= link_navi(pg) %>
-
+<% unless categories.empty? then %><div class="main"><% end %>
+<%= dedicated_navi(pg) %>
 <div class="body">
-<h1><%=h pg.title %></h1>
 <form action="<%= form_action %>" method="get">
 <p>
 <%= form_hidden(pg.name) %>
@@ -47,20 +46,25 @@
 <input type="submit" value="決定" <%=tabindex%> accesskey="D" />
 </p>
 </form>
-
-
+</div>
 <% unless categories.empty? then %>
-<h2>選択したカテゴリ</h2>
-<p>
-	<% categories.each do |cat_pg| %>
-[<%= make_anchor(ref_name(cat_pg.name), cat_pg.title, cat_pg.modified)%>]
-	<% end %>
-</p>
-
 <h2>選択したカテゴリに属するリンクの更新状況</h2>
-<%= list_recent_link(pg, link_pages, params) %>
-<h2>選択したカテゴリに属するリンク一覧</h2>
-<%= list_link(pg, link_pages) %>
-<% end %>
+<%= dedicated_list_recent_link(pg, link_pages, params) %>
+</div>
 
-<%= footer(pg) %>
+<div class="sidebar">
+<h2>最近見られたリンク</h2>
+<%= dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0..5]) %>
+
+<h2>多く見られたリンク</h2>
+<%= dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0..5]) %>
+
+<h2>選択したカテゴリ</h2>
+<%= dedicated_list_category(pg, categories.sort{|x, y| x.title <=> y.title}) %>
+
+<h2>選択したカテゴリに属するリンク一覧</h2>
+<%= dedicated_list_link(pg, link_pages) %>
+<% end %>
+</div>
+
+<%= dedicated_footer(pg) %>

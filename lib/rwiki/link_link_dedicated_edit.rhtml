@@ -1,10 +1,9 @@
-<%= header(pg) %>
-<%= navi(pg) %>
-<%= link_navi(pg) %>
+<%= dedicated_header(pg) %>
+
+<div class="body">
+<%= dedicated_navi(pg) %>
 
 <div class="edit">
-<h1><%=h pg.title %></h1>
-
 <p>全ての項目を記述する必要はありません．</p>
 
 <p>登録したいカテゴリが無い場合は<%= link_navis(pg) %>で新しいカテゴリを登録して下さい．何度でも編集できるので，一度保存して，カテゴリを追加して，また編集しても構いません．</p>
@@ -39,10 +38,11 @@ end
 </p>
 </form>
 </div>
+</div>
 
 <% unless pg.empty? %>
 <hr />
 <%= body(pg) %>
 <% end %>
 
-<%= footer(pg) %>
+<%= dedicated_footer(pg) %>

@@ -7,12 +7,12 @@
 <%=er(var("description").first, {:accept_textblock => true})%>
 
 == URL
-<% if /\A\s*\z/ !~ var("url").first %>
+<% if /\A\s*\z/ !~ var("url").first.to_s %>
 ((<URL:<%=er(var("url").first)%>>))
 <% end %>
 
 == RSS
-<% if /\A\s*\z/ !~ var("rss").first %>
+<% if /\A\s*\z/ !~ var("rss").first.to_s %>
 ((<URL:<%=er(var("rss").first)%>>))
 <% end %>
 
@@ -21,3 +21,7 @@
 <% var("categories").each do |name| %>
 * ((<<%=er(pg.book[name].title, {:accept_slash => false})%>|<%=er name %>>))
 <% end %>
+
+== カウンタ
+
+<%= pg.count.to_i.succ %>

@@ -1,0 +1,34 @@
+<%
+	link_page = {}
+	parsed_rsses = []
+	link_pages.each do |link_pg|
+		if link_pg.rss
+			parsed_rsses << [link_pg.rss, @@charset, link_pg.title]
+			link_page[link_pg.rss] = link_pg
+		end
+	end
+	maneger.parallel_parse(parsed_rsses)
+
+	req_pages, = var('pages')
+	num_of_pages = number_of_pages(var('pages').first)
+	full_recent_changes = maneger.recent_changes.find_all do |uri,|
+		link_page.has_key?(uri)
+	end
+	recent_changes = full_recent_changes[display_range(num_of_pages)]
+ %>
+<% recent_changes.each do |uri, channel, image, item, name| %>
+<div class="content">
+	<h3><%= ia(item) %><%= make_modified(item.dc_date) %></h3>
+	<div class="link-target"><%= ca(channel, image, name) %></div>
+  <% unless item.description.nil? %>
+	<div class="description"><p><%=h item.description.shorten %></p></div>
+  <% end %>
+	<% if item.dc_date then %><div class="date"><%= item.dc_date %></div><% end %>
+</div>
+<% end %>
+<% if 0 < num_of_pages and num_of_pages < full_recent_changes.size %>
+<div class="link-navi">
+	<span class="link-navi">[<a href="<%= full_ref_name(pg.name, 'pages' => num_of_pages + added_recent_changes_number) %>">もっと見たい</a>]</span>
+	<span class="link-navi">[<a href="<%= full_ref_name(pg.name, 'pages' => -1) %>">全部見たい</a>]</span>
+</div>
+<% end %>

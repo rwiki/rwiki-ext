@@ -1,0 +1,22 @@
+<%= dedicated_header(pg) %>
+
+<div class="main">
+<%= dedicated_navi(pg) %>
+<div class="body">
+
+<div class="description">
+<% pg.descriptions.each do |desc| %>
+<p><%=h desc %></p>
+<% end %>
+</div>
+
+<%= dedicated_list_recent_link(pg, pg.link_pages.sort {|x, y| x.modified <=> y.modified}) %>
+
+</div>
+</div>
+
+<div class="sidebar">
+<%= dedicated_list_link(pg, pg.link_pages.sort {|x, y| x.title <=> y.title}) %>
+</div>
+
+<%= dedicated_footer(pg) %>

@@ -1,10 +1,9 @@
-<%= header(pg) %>
-<%= navi(pg) %>
-<%= link_navi(pg) %>
+<%= dedicated_header(pg) %>
+
+<div class="body">
+<%= dedicated_navi(pg) %>
 
 <div class="edit">
-<h1><%=h pg.title %></h1>
-
 <form action="<%= form_action %>" method="post">
 <p>
 <%= form_hidden(pg.name, 'submit') %>
@@ -18,10 +17,11 @@
 </p>
 </form>
 </div>
+</div>
 
 <% unless pg.empty? %>
 <hr />
 <%= body(pg) %>
 <% end %>
 
-<%= footer(pg) %>
+<%= dedicated_footer(pg) %>

@@ -1,0 +1,61 @@
+<%= dedicated_header(pg) %>
+
+<%
+	if pg.rss
+		maneger.parse(pg.rss, @@charset, pg.title)
+		rss = maneger[pg.rss]
+	else
+		rss = nil
+	end
+%>
+
+<div class="main">
+<%= dedicated_navi(pg) %>
+<div class="body">
+
+<div class="content">
+<div class="link-info">
+<% if pg.url or pg.rss %>
+	<% if rss and rss[:channel] %>
+	<%= ca(rss[:channel], rss[:image], pg.title) %>
+	<% elsif pg.url %>
+	<%= make_anchor(pg.url, pg.title) %>
+	<% end %>
+	<% if pg.rss then %>[<%= make_anchor(pg.rss, "RSS") %>]<% end %>
+<% end %>
+[<%= pg.count %>]
+</div>
+<% unless pg.descriptions.empty? %>
+<div class="description">
+<% pg.descriptions.each do |desc| %>
+<p><%=h desc %></p>
+</div>
+<% end %>
+</div>
+<% end %>
+</div>
+
+<% if rss and rss[:items] %>
+	<% rss[:items].each do |item| %>
+<div class="content">
+	<h2><%= ia(item) %></h2>
+		<% if item.description %>
+	<div class="description">
+	<p><%=h item.description %></p>
+	</div>
+		<% end %>
+		<% if item.dc_date then %><div class="date"><%=make_modified(item.dc_date)%></div><% end %>
+</div>
+	<% end %>
+<% end %>
+</div>
+</div>
+
+<div class="sidebar">
+<% unless pg.categories.empty? %>
+<h2>¥«¥Æ¥´¥ê</h2>
+<%= dedicated_list_category(pg, pg.categories.sort{|x, y| x.title <=> y.title}) %>
+<% end %>
+</div>
+
+<%= dedicated_footer(pg) %>

@@ -1,5 +1,4 @@
-<%= header(pg) %>
-<%= navi(pg) %>
+<%= dedicated_header(pg) %>
 
 <%
 	keywords = var("key")
@@ -28,10 +27,12 @@
 #	params = keywords.collect {|keyword| ["em", keyword]}
 	params = {}
 
-%><%= link_navi(pg) %>
+	found_page = (not category_pages.empty?) or (not link_pages.empty?)
+%>
 
+<% if found_page then %><div class="main"><% end %>
+<%= dedicated_navi(pg) %>
 <div class="body">
-<h1><%=h pg.title %></h1>
 <form action="<%= form_action %>" method="get">
 <p>
 <%= form_hidden(pg.name) %>
@@ -43,21 +44,26 @@
 </p>
 </form>
 
-<% if (not category_pages.empty?) or (not link_pages.empty?) %>
-<h2>検索結果</h2>
-<%
-[
-	["カテゴリ", category_pages],
-	["リンク", link_pages],
-].each do |section_title, target_pages|
-%>
-<h2><%= section_title %></h2>
-<ul>
-	<% target_pages.sort{|x, y| x.title <=> y.title}.each do |target_pg| %>
-	<li><%= make_anchor(ref_name(target_pg.name, params), target_pg.title, target_pg.modified) %>: <%=h target_pg.description %></li>
-	<% end %>
-</ul>
-<% end
-end %>
+<% if found_page %>
+<h2>リンク先の更新状況</h2>
+<%= dedicated_list_recent_link(pg, link_pages) %>
+</div>
 
-<%= footer(pg) %>
+</div>
+
+<div class="sidebar">
+<h2>最近見られたリンク</h2>
+<%= dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0..5]) %>
+
+<h2>多く見られたリンク</h2>
+<%= dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0..5]) %>
+
+<h2>カテゴリ</h2>
+<%= dedicated_list_category(pg, category_pages.sort{|x, y| x.title <=> y.title}) %>
+
+<h2>リンク先一覧</h2>
+<%= dedicated_list_link(pg, link_pages.sort {|x, y| x.title <=> y.title}) %>
+<% end %>
+</div>
+
+<%= dedicated_footer(pg) %>

@@ -1,0 +1,31 @@
+<%= dedicated_header(pg) %>
+
+<% link_pages = pg.link_pages %>
+
+<div class="main">
+<%= dedicated_navi(pg) %>
+<div class="body">
+
+<div class="description">
+<% pg.descriptions.each do |desc| %>
+<p><%=h desc %></p>
+<% end %>
+</div>
+
+<%= dedicated_list_recent_link(pg, link_pages) %>
+
+</div>
+</div>
+
+<div class="sidebar">
+<h2>最近見られたリンク</h2>
+<%= dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0..5]) %>
+
+<h2>多く見られたリンク</h2>
+<%= dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0..5]) %>
+
+<h2>カテゴリ</h2>
+<%= dedicated_list_category(pg, pg.categories.sort{|x, y| x.title <=> y.title}) %>
+</div>
+
+<%= dedicated_footer(pg) %>

@@ -5,6 +5,10 @@ require "rwiki/rss-topic"
 RWiki::Version.regist("rw-rss", "2003-8-04")
 
 module RWiki
+	class Page
+		alias title name
+	end
+
 	module RSS
 		class PageFormat < RWiki::BookConfig.default.format
 			private

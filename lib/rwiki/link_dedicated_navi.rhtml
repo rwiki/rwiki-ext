@@ -1,0 +1,6 @@
+<div class="link-navi">
+<span class="link-navi">[<a href="<%= ref_name(pg.name, {}, "edit") %>">йт╫╦</a>]</span>
+<% link_navis(pg, *args).each do |anchor| %>
+<span class="link-navi">[<%= anchor %>]</span>
+<% end %>
+</div>
