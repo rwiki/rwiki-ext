@@ -15,13 +15,13 @@ function show_hide(id) {
 	var target_element = document.getElementById(id);
 	var navi_text = document.getElementById("<%= rss_display_toggle_name %>").firstChild;
 	if (target_element.style.display == "none") {
-		document.cookie = "rss_display=none";
-		target_element.style.display = "";
-		navi_text.data = "show";
-	} else {
 		document.cookie = "rss_display=show";
-		target_element.style.display = "none";
+		target_element.style.display = "";
 		navi_text.data = "hide";
+	} else {
+		document.cookie = "rss_display=none";
+		target_element.style.display = "none";
+		navi_text.data = "show";
 	}
 }
 document.write('<div class="<%= rss_display_toggle_name %>" id="<%= rss_display_toggle_name %>" onclick="show_hide(' + "'rss-topic-contents'" + ')">hide</div>');
