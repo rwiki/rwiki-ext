@@ -7,7 +7,7 @@ use_as_cgi_stub = true  # SETUP
 
 module RWiki
   module SOAP
-    class RWikiControler
+    class Servant
       ALLOW_GET_PAGE = false  # SETUP
     end
   end

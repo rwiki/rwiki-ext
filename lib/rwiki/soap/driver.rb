@@ -9,12 +9,8 @@ module RWiki
   
       APP_NAME = 'RWikiSOAPDriver'
 
-      def initialize(log_dir, end_point, http_proxy=nil, soap_action=nil)
+      def initialize(end_point, soap_action=nil)
         super(end_point, RWiki::SOAP::NS, soap_action)
-        unless log_dir.nil?
-          self.wiredump_file_base = File.join(log_dir, APP_NAME)
-        end
-        self.httpproxy = http_proxy
 
         add_method('allow_get_page')
         add_method('page', 'name')
@@ -33,7 +29,15 @@ module RWiki
         add_method('append', 'name', 'src')
         add_method('submit', 'name', 'src', 'rev', 'log')
       end
-      
+
+      def log_dir=(new_value)
+        if new_value.nil?
+          self.wiredump_file_base = nil
+        else
+          self.wiredump_file_base = File.join(new_value, APP_NAME)
+        end
+      end
+
     end
   end
 end
