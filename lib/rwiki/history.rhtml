@@ -2,7 +2,11 @@
 <%= navi(pg) %>
 <%= body(pg) %>
 <div class="history">
+
+<p class="history-navi">
 [<a href="<%= ref_name(target) %>"><%= h target %></a>]
+</p>
+
 <ul>
 <%
 	targ = target
@@ -27,5 +31,7 @@
 	</li>
 <% end %>
 </ul>
+
 </div>
+
 <%= footer(pg) %>

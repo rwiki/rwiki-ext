@@ -73,7 +73,12 @@ module RWiki
 						line.split(";").each do |param|
 							name, *value = param.split(":")
 							unless value.empty?
-								log.send("#{name.strip}=", value.join(":").strip)
+								value = value.join(":").strip
+								if name == "date" and /\s+[+-]\d\d\d\d\z/ !~ value
+									# offset is not given
+									value << " -0000"
+								end
+								log.send("#{name.strip}=", value)
 							end
 						end
 					end
@@ -126,6 +131,7 @@ module RWiki
 			else
 				@date = Time.parse(val)
 			end
+			@date.localtime
 		end
 
 	end
