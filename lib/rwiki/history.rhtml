@@ -22,6 +22,7 @@
 <% end %>
 <% if show_logs > 0 && size > show_logs %>
 	<li><a href="<%= full_ref_name(pg.name, 'target' => targ, 'logs' => show_logs + 30) %>">more ...</a></li>
+	<li><a href="<%= full_ref_name(pg.name, 'target' => targ, 'logs' => -1) %>">show all</a></li>
 <% end %>
 </ul>
 </div>
