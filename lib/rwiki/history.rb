@@ -167,5 +167,5 @@ class DiffFormat < RWiki::PageFormat
   end
 end
 
-RWiki::install_page_module('hisotry', HistoryFormat, "History")
+RWiki::install_page_module('history', HistoryFormat, "History")
 RWiki::install_page_module('diff', DiffFormat, "Diff")
