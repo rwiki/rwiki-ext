@@ -77,7 +77,7 @@ module RWiki
 						fetch(name) unless @mtime.has_key?(name)
 					rescue InvalidResourceError
 					end
-					Time.at(@mtime[name].to_i) rescue nil
+					Time.at(@mtime[name].to_i).localtime rescue nil
 				end
 
 			end

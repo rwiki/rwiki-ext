@@ -108,11 +108,11 @@ module RWiki
 					synchronize do
 						if @local
 							begin
-								@modified[name] = @front.page(page_name(name)).modified
+								@modified[name] = @front.page(page_name(name)).modified.localtime
 							rescue NameError
 							end
 						elsif !@driver.nil?
-							@modified[name] = Time.parse(@driver.modified(name).to_s)
+							@modified[name] = Time.parse(@driver.modified(name).to_s).localtime
 						end
 					end
 				end
