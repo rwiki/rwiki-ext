@@ -140,12 +140,12 @@ module RWiki
 
 			def set_src(v, rev, env={}, &block)
 				begin
-					new_src = @format.new(env, &block).create_src(self, v)
+					new_src = format.new(env, &block).create_src(self, v)
 					super(new_src, rev, &block)
 				rescue NameError
-					p @format
-					p @format.new(env, &block)
-					p @format.new(env, &block).methods
+					p format
+					p format.new(env, &block)
+					p format.new(env, &block).methods
 					raise
 				end
 			end
