@@ -188,7 +188,7 @@ module RWiki
 				wiki_name, page_name = split_name(name)
 				begin
 					connector(wiki_name).submit(page_name, src)
-					cache(name, src)
+					cache(name, src, false)
 				rescue NameError
 					nil
 				end
@@ -204,13 +204,19 @@ module RWiki
 				end
 			end
 
-			def cache(name, src)
+			def cache(name, src, recache=true)
 				synchronize do
 					unless src.nil?
+						p "This is recache? #{recache}"
+						@recache_table[name] = recache
 						p "Writing cache of #{fname(name)}. src is #{src}"
 						File.open(fname(name), 'w') {|fp| fp.write(src)}
 					end
 				end
+			end
+
+			def recached?(name)
+				@recache_table[name]
 			end
 
 			def read_cache(name)
@@ -274,6 +280,14 @@ module RWiki
 
 			def _src=(src)
 				update_src(src)
+			end
+
+			def src
+				if @section.db.recached?(@name)
+					@book.gc
+					@book[@name]
+				end
+				@src
 			end
 
 		end
