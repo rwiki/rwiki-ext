@@ -28,7 +28,7 @@ URL: <a href="<%= urlStr %>"><%= h(CGI.unescape(urlStr)) %></a><br/>
 %>[<%= link_and_modified(link) %>] <%
   end
   if num_links > 0 && links.size > num_links
-    %> [<a href="<%= ref_name(pg.name)%>;num_links=all">...</a> (more)] <%
+    %> [<a href="<%= ref_name(pg.name)%>;num_links=all#link">...</a> (more)] <%
   end
 %><br/>
 </small>

@@ -51,14 +51,14 @@ class CGIApp < Devel::Application
       if ( @query.has_key?( 'cmd' ))
 	msg = "exec_proc_#{ @cgi.request_method.to_s.downcase }_#{ @query[ 'cmd' ][0] }"
 	if self.respond_to?( msg, true )
-	  response = send( msg.intern )
+	  response = __send__( msg.intern )
 	end
       end
 
       unless response
 	msg = "exec_proc_#{ @cgi.request_method.to_s.downcase }"
 	if self.respond_to?( msg, true )
-	  response = send( msg.intern )
+	  response = __send__( msg.intern )
 	end
       end
 
@@ -274,7 +274,7 @@ class RWikiCGIApp < CGIApp
   AppName = 'RWikiCGIApp'
 
   def prologue
-		@log.sevThreshold = SEV_INFO
+    @log.sevThreshold = SEV_INFO
   end
 
   def exec_proc_head_view
@@ -340,8 +340,8 @@ class RWikiCGIApp < CGIApp
       req = parseRequest()
       raise RWiki::InvalidRequest unless req.name
       modified = @rwiki.page( req.name ).modified
-			if not_modified_since?(modified)
-				return Response.new( Response::Header.new( 304 ) )
+      if not_modified_since?(modified)
+        return Response.new( Response::Header.new( 304 ) )
       end
       Response.new( Response::Header.new(), Response::Body.new( nil, modified ))
     rescue RWiki::InvalidRequest
@@ -392,7 +392,7 @@ class RWikiCGIApp < CGIApp
       page = @rwiki.page( req.name )
       page.set_src( req.src, req.rev ) { |key| @query[key] }
       header = Response::Header.new()
-			res = page.submit_html( getEnv ) { |key| @query[key] }
+      res = page.submit_html( getEnv ) { |key| @query[key] }
       Response.new( header, Response::Body.new( res ))
     rescue RWiki::InvalidRequest
       requestError
@@ -407,7 +407,7 @@ class RWikiCGIApp < CGIApp
 
   def revisionError( req )
     errMessage =<<__EOM__
-Source revision mismatch.
+#{$!.message}
 
 Page '#{ req.name }' has changed since editing started.
 Back to the edit page and press 'RELOAD' to refresh the page,

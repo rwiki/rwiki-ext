@@ -1,8 +1,8 @@
-require "uri/generic"
+require "uri"
 
 require "rwiki/rddoc"
 
-RWiki::Version.regist('InportWiki', '2003-05-16')
+RWiki::Version.regist('InportWiki', '2003-07-10')
 
 module RWiki
 	class PageFormat
@@ -14,7 +14,7 @@ module RWiki
 	class Page
 		alias_method(:_set_src, :set_src)
 		def set_src(v, rev, env={}, &block)
-			_set_src(@format.new(env, &block).create_src(self, v), rev, env, &block)
+			_set_src(@format.new(env, &block).create_src(self, v), rev, &block)
 		end
 	end
 end
