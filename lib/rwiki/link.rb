@@ -9,7 +9,7 @@ module RWiki
 
 		class << self
 
-			def install(index_name, link_base_name, category_base_name, default_mode="custom")
+			def install(index_name, link_base_name, category_base_name, group_base_name, default_mode="custom")
 				config = BookConfig.default.dup
 				config.format = LinkFormat
 				config.page = LinkPage
@@ -19,9 +19,13 @@ module RWiki
 				config.page = CategoryPage
 				cat_sec = CategorySection.new(config, category_base_name, link_sec)
 				RWiki::Book.section_list.push(cat_sec)
+				config.format = GroupFormat
+				config.page = GroupPage
+				grp_sec = GroupSection.new(config, group_base_name, cat_sec)
+				RWiki::Book.section_list.push(grp_sec)
 				config.format = IndexFormat
 				config.page = IndexPage
-				index_sec = IndexSection.new(config, index_name, link_sec, cat_sec, default_mode)
+				index_sec = IndexSection.new(config, index_name, link_sec, cat_sec, grp_sec, default_mode)
 				RWiki::Book.section_list.push(index_sec)
 			end
 
@@ -29,15 +33,18 @@ module RWiki
 
 		class IndexSection < ::RWiki::Section
 
-			attr_reader :name, :link_section, :category_section, :default_mode
+			attr_reader :name, :link_section, :category_section,
+					:group_section, :default_mode
 
-			def initialize(config, name, link_section, category_section, default_mode)
+			def initialize(config, name, link_section, category_section, group_section, default_mode)
 				super(config, name)
 				@name = name
 				@link_section = link_section
 				@link_section.index_section = self
 				@category_section = category_section
 				@category_section.index_section = self
+				@group_section = group_section
+				@group_section.index_section = self
 				@default_mode = default_mode
 				add_prop_loader(:index, PropLoader.new)
 			end
@@ -48,6 +55,10 @@ module RWiki
 
 			def new_category_page_name(book)
 				@category_section.new_page_name(book)
+			end
+
+			def new_group_page_name(book)
+				@group_section.new_page_name(book)
 			end
 
 			def index_page_name
@@ -106,6 +117,7 @@ module RWiki
 
 			include LinkSectionMixIn
 
+			attr_accessor :group_section
 			attr_reader :link_section, :base_name, :pattern
 
 			def initialize(config, base_name, link_section)
@@ -114,6 +126,22 @@ module RWiki
 				@link_section = link_section
 				@link_section.category_section = self
 				add_prop_loader(:category, PropLoader.new)
+			end
+
+		end
+
+		class GroupSection < ::RWiki::Section
+
+			include LinkSectionMixIn
+
+			attr_reader :category_section, :base_name, :pattern
+
+			def initialize(config, base_name, category_section)
+				super(config, /\A#{Regexp.escape(base_name)}(\d+)\z/)
+				@base_name = base_name
+				@category_section = category_section
+				@category_section.group_section = self
+				add_prop_loader(:group, PropLoader.new)
 			end
 
 		end
@@ -321,8 +349,32 @@ module RWiki
 				end
 			end
 
-			def category_pages
+			def categories
 				get_property(:categories, [])
+			end
+
+			def grouped_categories
+				cat_sec = @section.category_section
+				@revlinks.find_all do |name|
+					cat_sec.match?(name)
+				end.compact.uniq.collect do |name|
+					@book[name]
+				end
+			end
+
+			def link_pages
+				refine_funcname = if refine_type == "and" then "&" else "|" end
+				link_pgs = if refine_type == "and" and not categories.empty?
+										 categories.first.link_pages
+									 else
+										 []
+									 end
+				categories.each do |cat_pg|
+					link_pgs = link_pgs.send(refine_funcname, cat_pg.link_pages)
+				end
+				link_pgs.uniq! if refine_type == "and"
+				link_pgs.sort! {|x, y| x.title <=> y.title}
+				link_pgs
 			end
 
 			def set_src(*args)
@@ -498,6 +550,14 @@ module RWiki
 
 			include LinkPageMixIn
 
+			def groups(force_recalc=false)
+				if force_recalc
+					find_all_page(@section.group_section)
+				else
+					get_property(:groups, [])
+				end
+			end
+
 			def categories(force_recalc=false)
 				if force_recalc
 					find_all_page(@section.category_section)
@@ -525,6 +585,10 @@ module RWiki
 				categories.find_all(&block)
 			end
 
+			def find_all_group(&block)
+				groupes.find_all(&block)
+			end
+
 			def index_section
 				@section
 			end
@@ -536,6 +600,7 @@ module RWiki
 
 			def getting_property_infos
 				[
+					[:groups, "item_list", collect_page_proc],
 					[:categories, "item_list", collect_page_proc],
 					[:links, "item_list", collect_page_proc],
 				]
@@ -600,6 +665,8 @@ module RWiki
 				:dedicated_list_recent_link => ::RWiki::ERbLoader.new("dedicated_list_recent_link(pg, link_pages, *params)", "link_dedicated_list_recent_link.rhtml"),
 				:dedicated_list_link => ::RWiki::ERbLoader.new("dedicated_list_link(pg, link_pages, display_update_info=false)", "link_dedicated_list_link.rhtml"),
 				:dedicated_list_category => ::RWiki::ERbLoader.new("dedicated_list_category(pg, category_pages)", "link_dedicated_list_category.rhtml"),
+				:dedicated_list_group => ::RWiki::ERbLoader.new("dedicated_list_group(pg, group_pages)", "link_dedicated_list_group.rhtml"),
+				:dedicated_list_detail_of_group => ::RWiki::ERbLoader.new("dedicated_list_detail_of_group(pg, group_pages)", "link_dedicated_list_detail_of_group.rhtml"),
 				:dedicated_refine_form => ::RWiki::ERbLoader.new("dedicated_refine_form(pg, refine_type='and', categories=[], selected_category_names={}, have_refine_option=false)", "link_dedicated_refine_form.rhtml"),
 				:dedicated_search_form => ::RWiki::ERbLoader.new("dedicated_search_form(pg, search_type='and', keywords=[], have_search_option=false)", "link_dedicated_search_form.rhtml"),
 			}
@@ -637,11 +704,11 @@ module RWiki
 			end
 
 			@rhtml = {
-# 				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_category.rhtml"),
-# 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_category_edit.rhtml"),
-# 				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_category_dedicated.rhtml"),
-# 				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_category_dedicated_edit.rhtml"),
-# 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_category.rrd"),
+# 				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_group.rhtml"),
+# 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_group_edit.rhtml"),
+ 				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_group_dedicated.rhtml"),
+ 				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_group_dedicated_edit.rhtml"),
+ 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_group.rrd"),
 			}
 			reload_rhtml
 		end
@@ -703,21 +770,31 @@ module RWiki
 					make_anchor(ref_name(name),
 											titles[:index] || "Index",
 											modified),
-					make_anchor(ref_name(new_category_page_name(pg), {}, "edit"),
-											titles[:category] || "Register new category",
-											nil),
-					make_anchor(ref_name(new_link_page_name(pg), {}, "edit"),
-											titles[:link] || "Register new link",
-											nil),
+				 make_anchor(ref_name(new_group_page_name(pg), {}, "edit"),
+										 titles[:group] || "Register new group",
+										 nil),
+				 make_anchor(ref_name(new_category_page_name(pg), {}, "edit"),
+										 titles[:category] || "Register new category",
+										 nil),
+				 make_anchor(ref_name(new_link_page_name(pg), {}, "edit"),
+										 titles[:link] || "Register new link",
+										 nil),
 				 make_anchor(ref_name(name, {"mode" => "#{pg.mode}_refine"}),
-											titles[:refine] || "Refine category",
-											modified),
-					make_anchor(ref_name(name, {"mode" => "#{pg.mode}_search"}),
-											titles[:search] || "Search",
-											modified),
+										 titles[:refine] || "Refine category",
+										 modified),
+				 make_anchor(ref_name(name, {"mode" => "#{pg.mode}_search"}),
+										 titles[:search] || "Search",
+										 modified),
+				 make_anchor(ref_name(name, {"mode" => "#{pg.mode}_help"}),
+										 titles[:help] || "Help",
+										 modified),
 				]
 			end
 
+			def new_group_page_name(pg)
+				new_page_name(pg.groups, pg.section.group_section)
+			end
+			
 			def new_category_page_name(pg)
 				new_page_name(pg.categories, pg.section.category_section)
 			end
@@ -739,11 +816,13 @@ module RWiki
 				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_index.rhtml"),
 				:custom_search_view => ::RWiki::ERbLoader.new("custom_search_view(pg)", "link_index_search.rhtml"),
 				:custom_refine_view => ::RWiki::ERbLoader.new("custom_refine_view(pg)", "link_index_refine.rhtml"),
+				:custom_help_view => ::RWiki::ERbLoader.new("custom_help_view(pg)", "link_index_help.rhtml"),
 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_index_edit.rhtml"),
 				:dedicated_navi => ::RWiki::ERbLoader.new("dedicated_navi(pg)", "link_index_dedicated_navi.rhtml"),
 				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_index_dedicated.rhtml"),
 				:dedicated_search_view => ::RWiki::ERbLoader.new("dedicated_search_view(pg)", "link_index_dedicated_search.rhtml"),
 				:dedicated_refine_view => ::RWiki::ERbLoader.new("dedicated_refine_view(pg)", "link_index_dedicated_refine.rhtml"),
+				:dedicated_help_view => ::RWiki::ERbLoader.new("dedicated_help_view(pg)", "link_index_dedicated_help.rhtml"),
 				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_index_dedicated_edit.rhtml"),
 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_index.rrd"),
 			}

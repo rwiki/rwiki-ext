@@ -1,0 +1,41 @@
+<%= dedicated_header(pg) %>
+
+<div class="body">
+<%= dedicated_navi(pg) %>
+
+<div class="edit">
+<form action="<%= form_action %>" method="post">
+<p>
+<%= form_hidden(pg.name, 'submit') %>
+<input type="hidden" name="rev" value="<%= pg.revision %>" />
+<input type="hidden" name="src" value="<%=h pg.src %>" />
+<input type="hidden" name="mode" value="<%=h pg.mode %>" />
+<div class="item"><span class="item-title">タイトル: </span><input type="text" size="30" name="title" <%=tabindex%> value="<%=h pg.title %>" accesskey="T" /></div>
+
+<div class="item"><span class="item-title">カテゴリ(複数選択可): </span>
+	<select name="categories" multiple="true" <%=tabindex%> accesskey="C" size="5">
+<%
+	cats = pg.categories || []
+	cat_names = {}		
+	cats.each {|cat| cat_names[cat.name] = nil}
+	pg.all_category.sort{|x, y| x.title <=> y.title}.each do |cat_pg|
+%>
+		<option value="<%=h cat_pg.name%>"<%= if cat_names.has_key?(cat_pg.name) then ' selected="selected"' end%>><%=h cat_pg.title%></option>
+<% end %>
+	</select>
+</div>
+
+<div class="item">
+<input type="radio" name="type" value="and" <%=tabindex%> accesskey="A"<%= if pg.refine_type == "and" then ' checked="true"' end %>>全てのカテゴリに含まれているリンクのみ(AND)</input><br />
+<input type="radio" name="type" value="or" <%=tabindex%> accesskey="O"<%= if pg.refine_type == "or" then ' checked="true"' end %>>どれかのカテゴリに含まれているリンク(OR)</input>
+</div>
+
+<div class="item"><span class="item-title">説明: </span><textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description %></textarea></div>
+
+<input type="submit" name="commit" value="保存" <%=tabindex%> accesskey="S" />
+</p>
+</form>
+</div>
+</div>
+
+<%= dedicated_footer(pg) %>

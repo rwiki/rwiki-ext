@@ -1,0 +1,14 @@
+<%= dedicated_header(pg) %>
+
+<%= dedicated_navi(pg) %>
+<div class="body">
+
+<div class="description">
+<% pg.descriptions.each do |desc| %>
+<p><%=h desc %></p>
+<% end %>
+</div>
+
+</div>
+
+<%= dedicated_footer(pg) %>

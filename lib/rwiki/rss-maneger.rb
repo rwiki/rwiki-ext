@@ -197,6 +197,12 @@ module RWiki
 								# OK
 							elsif channel.dc_date
 								next if used_channel.has_key?(channel)
+								unless item.respond_to?(:dc_date=)
+									# For RSS 0.9x and 2.0
+									def item.dc_date=(new_value)
+										self.pubDate = new_value
+									end
+								end
 								item.dc_date = channel.dc_date
 								used_channel[channel] = nil
 							else

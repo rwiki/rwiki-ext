@@ -1,6 +1,6 @@
 <ul>
 <% category_pages.each do |cat_pg| %>
-	<li><%= send(:make_anchor, ref_name(cat_pg.name), cat_pg.title, cat_pg.modified) %><% unless cat_pg.descriptions.empty? %>:
+	<li><%= make_anchor(ref_name(cat_pg.name), cat_pg.title, cat_pg.modified) %><% unless cat_pg.descriptions.empty? %>:
 	 <span class="description"><%=h cat_pg.descriptions.first %></span>
 	<% end %>
 	</li>

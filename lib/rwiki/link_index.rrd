@@ -2,6 +2,11 @@
 
 <%=er((var("description").first || pg.description), {:accept_textblock => true})%>
 
+== グループ
+<% pg.groups(true).sort{|x, y| x.name <=> y.name}.each do |group_pg| %>
+* ((<<%=er(group_pg.title, {:accept_slash => false})%>|<%=er group_pg.name %>>))
+<% end %>
+
 == カテゴリ
 <% pg.categories(true).sort{|x, y| x.name <=> y.name}.each do |cat_pg| %>
 * ((<<%=er(cat_pg.title, {:accept_slash => false})%>|<%=er cat_pg.name %>>))

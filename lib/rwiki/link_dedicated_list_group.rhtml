@@ -1,0 +1,12 @@
+<div class="groups">
+<% group_pages.sort {|x, y| x.title <=> y.title}.each do |group_page| %>
+	<div class="group">
+		<span class="group"><%= make_anchor(ref_name(group_page.name), group_page.title, group_page.modified) %><span class="group-info">(<%= group_page.refine_type %>)</span>:</span>
+		<span class="categories">
+		<% group_page.categories.sort {|x, y| x.title <=> y.title}.each do |cat_pg| %>
+			<span class="category">[<%= make_anchor(ref_name(cat_pg.name), cat_pg.title, cat_pg.modified) %>]</span>
+		<% end %>
+		</span>
+	</div>
+<% end %>
+</div>

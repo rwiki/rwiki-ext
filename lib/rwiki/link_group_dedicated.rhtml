@@ -1,16 +1,26 @@
 <%= dedicated_header(pg) %>
 
-<% link_pages = pg.link_pages %>
+<%
+	link_pages = pg.link_pages
+	params = []
+%>
 
 <div class="main">
 <%= dedicated_navi(pg) %>
 <div class="body">
 
-<h2>グループ</h2>
-<%= dedicated_list_group(pg, pg.groups) %>
+<div class="group-info">
+絞りこみタイプ: <%= pg.refine_type %>
+</div>
 
-<h2>リンク先の更新状況</h2>
-<%= dedicated_list_recent_link(pg, link_pages) %>
+<div class="description">
+<% pg.descriptions.each do |desc| %>
+<p><%=h desc %></p>
+<% end %>
+</div>
+
+<h2>選択したグループに属するリンクの更新状況</h2>
+<%= dedicated_list_recent_link(pg, link_pages, params) %>
 
 </div>
 </div>
@@ -22,8 +32,11 @@
 <h2>多く見られたリンク</h2>
 <%= dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0...5]) %>
 
-<h2>カテゴリ</h2>
+<h2>グループに属するカテゴリ</h2>
 <%= dedicated_list_category(pg, pg.categories.sort{|x, y| x.title <=> y.title}) %>
+
+<h2>グループに属するリンク</h2>
+<%= dedicated_list_link(pg, link_pages) %>
 </div>
 
 <%= dedicated_footer(pg) %>
