@@ -24,6 +24,25 @@ module RWiki
 		end
 
 		class PageFormat < RWiki::BookConfig.default.format
+			private
+			def make_topic_title_anchor(channel, name)
+				name = channel.title if name.to_s =~ /\A\s*\z/
+				%Q!<a href="#{h channel.link.to_s.strip}">#{h name}</a>!
+			end
+			alias tta make_topic_title_anchor
+			
+			def make_topic_item_anchor(item, characters)
+				href = h(item.link.to_s.strip)
+				rv = %Q!<a href="#{href}">#{h item.title.to_s}</a>!
+				rv << %Q|(#{h modified(item.dc_date)})|
+				desc = item.description
+				if desc
+					rv << %Q! : #{desc.shorten(characters)} <a href="#{href}">more</a>!
+				end
+				rv
+			end
+			alias ttia make_topic_item_anchor
+			
 			@rhtml = {
 				:navi => RWiki::ERbLoader.new('navi(pg)', 'rss-navi.rhtml')
 			}

@@ -62,13 +62,24 @@ module RWiki
 				def display() @@display end
 				def display=(new_value) @@display = new_value end
 
+				def topics
+					@@topics
+				end
+
 				def add_topic(uri, charset, name, expire)
 					@@topics[uri] = [charset, name, expire]
 				end
-				
-				def topics
-					return '' unless @@display
-						
+
+				def each_topics(&block)
+					if @@display
+						parse
+						@@maneger.each(&block)
+					else
+						[]
+					end
+				end
+
+				def parse
 					if @@use_thread
 						arg = @@topics.collect {|uri, values| [uri, *values]}
 						@@maneger.parallel_parse(arg)
@@ -77,51 +88,6 @@ module RWiki
 							@@maneger.parse(uri, *values)
 						end
 					end
-						
-					rv = pre_html
-
-					@@maneger.each do |uri, channel, items, name, time|
-						if @@topics.has_key?(uri) and !items.empty?
-							rv << %Q! <div class="rss_topic_item">\n! <<
-								%Q! <span class="rss_topic_title">! <<
-								%Q!#{tta(channel, name)}(#{time})</span>\n!
-							items[0...@@number].each do |item|
-								rv << %Q! <span class="rss_topic_content">! <<
-									%Q![#{ttia(item, @@characters)}]</span>\n!
-							end
-							rv << %Q! </div>\n!
-						end
-					end
-
-					rv << post_html
-
-					rv
-				end
-
-				private
-				def make_topic_title_anchor(channel, name)
-					name = channel.title if name.to_s =~ /\A\s*\z/
-					%Q!<a href="#{h channel.link.to_s.strip}">#{h name}</a>!
-				end
-				alias tta make_topic_title_anchor
-				
-				def make_topic_item_anchor(item, characters)
-					href = h(item.link.to_s.strip)
-					rv = %Q!<a href="#{href}">#{h item.title.to_s}</a>!
-					desc = item.description
-					if desc
-						rv << %Q! : #{desc.shorten(characters)} <a href="#{href}">more</a>!
-					end
-					rv
-				end
-				alias ttia make_topic_item_anchor
-				
-				def pre_html
-					%Q|<div class="rss_topic">\n|
-				end
-					
-				def post_html
-					%Q|</div>|
 				end
 
 			end
