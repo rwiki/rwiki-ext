@@ -456,6 +456,11 @@ module RWiki
 
 			include LinkPageMixIn
 
+      def initialize(*args, &block)
+        super(*args, &block)
+        @count = nil
+      end
+      
 			def rss
 				get_property(:rss)
 			end
@@ -469,7 +474,7 @@ module RWiki
 			end
 
 			def count
-				get_property(:count)
+				(@count ||= get_property(:count)).to_i
 			end
 
 			def index_section
@@ -492,8 +497,11 @@ module RWiki
 
 			def view_html(env={}, &block)
 				fmt = format.new(env, &block)
-				state = current_state
-				self.src = format.new(env){|key| state[key]}.make_src(self)
+        @count = count + 1
+        if dirty?
+          state = current_state
+          self.src = format.new(env){|key| state[key]}.make_src(self)
+        end
 				dispatch_view_html(fmt, &block)
 			end
 
@@ -513,6 +521,10 @@ module RWiki
 			end
 
 			private
+      def dirty?
+        @count.to_i - get_property(:count).to_i > 10
+      end
+      
 			def rss_item_match?(regexp, items)
 				items.find do |item|
 					regexp =~ item.title or

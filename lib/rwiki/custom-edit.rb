@@ -11,12 +11,12 @@ module RWiki
 		end
 
 		def pop_format
-			@format = @old_formats.pop unless @old_formats.empty?
+			self._format = @old_formats.pop unless @old_formats.empty?
 		end
 
 		alias _format= format=
 		def format=(new_format)
-			@old_formats.push(@format)
+			@old_formats.push(format)
 			self._format = new_format
 		end
 
@@ -68,7 +68,7 @@ module RWiki
 												admin_pg = admin_page(book, admin_pg_name)
 												admin_pg.format.new({}).find_format(admin_pg, name)
 											end
-					pg.format ||= @format
+					pg.format ||= format
 				end
 				pg
 			end
