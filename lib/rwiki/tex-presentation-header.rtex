@@ -1,4 +1,4 @@
-\documentclass[slideColor,pdf,nuancegris]{prosper}
+\documentclass[slideColor,pdf,<%= @info["theme"] || "default" %>]{prosper}
 % frames, lignesbleues, azure, troispoints, contemporain, nuancegris,
 % darkblue, alienglow, autumn
 \usepackage{pst-node,alltt,latexsym,times,mathptm,ascmac,epsfig}

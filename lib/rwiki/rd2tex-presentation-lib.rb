@@ -50,7 +50,7 @@ module RD
 			@first_headline = true
 			@second_headline = false
 			@indent = 1
-			@title = ""
+			@info = {}
     end
     
     def visit(tree)
@@ -87,7 +87,7 @@ module RD
 			if element.level == 1
 				text = ""
 				if @first_headline
-					@title = title
+					@info["title"] = title
 					@first_headline = false
 					@second_headline = true
 					[:headline, false]
@@ -120,10 +120,14 @@ module RD
     end
 
     def apply_to_ItemList(element, items)
-			indent do
-				[%Q[\\begin{itemize}],
-				 items.collect{|x| x.chomp},
-				 %Q[\\end{itemize}\n]].flatten
+			if in_first_slide
+				""
+			else
+				indent do
+					[%Q[\\begin{itemize}],
+					 items.collect{|x| x.chomp},
+					 %Q[\\end{itemize}\n]].flatten
+				end
 			end
     end
   
@@ -152,8 +156,15 @@ module RD
     end
     
     def apply_to_ItemListItem(element, content)
-			indent do
-				%Q[\\item #{content.join("\n").chomp}]
+			if in_first_slide
+				if /\A(\S+)\s*:\s*(.+)/ =~ content.join("\n").chomp
+					@info[$1] = $2
+				end
+				""
+			else
+				indent do
+					%Q[\\item #{content.join("\n").chomp}]
+				end
 			end
     end
     
@@ -243,6 +254,7 @@ module RD
       #meta_char_escape(element)
     end
 
+		private
 		def indent
 			@indent += 1
 			ret = yield
@@ -253,6 +265,10 @@ module RD
 			end
 			@indent -= 1
 			result
+		end
+
+		def in_first_slide
+			!@first_headline and @second_headline
 		end
     
   end # RD2TeXPresentationVisitor

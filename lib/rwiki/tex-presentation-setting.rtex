@@ -1,4 +1,4 @@
-\title{<%= @title %>}
-\author{¿ÜÆ£¸ùÊ¿}
-\institution{COZMIXNG}
-\DefaultTransition{Dissolve}
+\title{<%= @info["title"] %>}
+\author{<%= @info["author"] %>}
+\institution{<%= @info["institution"] %>}
+\DefaultTransition{<%= @info["transition"] || "Dissolve" %>}
