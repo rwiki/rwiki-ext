@@ -2,7 +2,7 @@
 
 <%=er((var("description").first || pg.description), true)%>
 
-== カテゴリー
+== カテゴリ
 <% pg.categories(true).each do |cat_pg| %>
 * ((<<%=er cat_pg.title %>|<%=er cat_pg.name %>>))
 <% end %>

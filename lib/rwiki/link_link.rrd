@@ -16,7 +16,7 @@
 ((<URL:<%=er var("rss").first %>>))
 <% end %>
 
-== カテゴリー
+== カテゴリ
 
 <% var("categories").each do |name| %>
 * ((<<%=er pg.book[name].title %>|<%=er name %>>))

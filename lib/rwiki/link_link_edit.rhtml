@@ -6,7 +6,7 @@
 
 <p>全ての項目を記述する必要はありません．</p>
 
-<p>登録したいカテゴリーが無い場合は<%= link_navis(pg) %>で新しいカテゴリーを登録して下さい．何度でも編集できるので，一度保存して，カテゴリーを追加して，また編集しても構いません．</p>
+<p>登録したいカテゴリが無い場合は<%= link_navis(pg) %>で新しいカテゴリを登録して下さい．何度でも編集できるので，一度保存して，カテゴリを追加して，また編集しても構いません．</p>
 
 <form action="<%= form_action %>" method="post">
 <p>
@@ -17,7 +17,7 @@
 	<li><span class="item-title">タイトル: </span><input type="text" size="30" name="title" <%=tabindex%> value="<%=h pg.title %>" accesskey="T" /></li>
 	<li><span class="item-title">URL: </span><input type="text" size="30" name="url" value="<%=h pg.url %>" <%=tabindex%> accesskey="U" /></li>
 	<li><span class="item-title">RSSのあるURL: </span><input type="text" size="30" name="rss" value="<%=h pg.rss %>" <%=tabindex%> accesskey="R" /></li>
-	<li><span class="item-title">カテゴリー(複数選択可): </span>
+	<li><span class="item-title">カテゴリ(複数選択可): </span>
 		<select name="categories" multiple="true" <%=tabindex%> accesskey="C" size="5">
 <%
 cats = pg.categories || []
