@@ -1,7 +1,7 @@
 require 'logger'
 require 'soap/rpc/driver'
 
-require 'rwiki/soap-lib'
+require 'rwiki/soap/common'
 
 module RWiki
   module SOAP
@@ -36,27 +36,4 @@ module RWiki
       
     end
   end
-end
-
-if __FILE__ == $0
-      
-  $KCODE = 'EUC'	# SETUP
-  soap_server_uri =
-    'http://localhost/~kou/rwiki/rw-soap-server.rb' # for CGIStub
-    # 'http://localhost:8080/' # for StandaloneServer
-  
-  driver = RWiki::SOAP::Driver.new(RWiki::SOAP::LOG_DIR, soap_server_uri)
-
-  %w(top hoooo).each do |name|
-    puts "test using name #{name}"
-    puts driver.include(name)
-    p driver.find(name)
-    puts driver.src(name)
-    puts driver.body(name)
-    puts driver.modified(name)
-  end
-  puts "copy test"
-  puts driver.copy('hoge', '((<test>))')
-  puts "appned test"
-  puts driver.append('hoge', '((<top>))')
 end

@@ -1,7 +1,7 @@
-require 'rwiki/soap-driver'
+require 'rwiki/soap/driver'
 require "rwiki/custom-edit"
 
-RWiki::Version.regist('rw-soap', '2003-04-01')
+RWiki::Version.regist('rwiki/soap', '2004-09-06')
 
 module RWiki
 	module SOAP
@@ -81,12 +81,12 @@ module RWiki
 				add_default_src_proc(method(:default_src))
 			end
 
-			RWiki::ERbLoader.new('default_src(name)', 'soap.erd').load(self)
+			RWiki::ERbLoader.new('default_src(name)', 'soap/src.erd').load(self)
 
 		end
 
 		class PageFormat < Custom::EditFormat
-			@rhtml = { :view => RWiki::ERbLoader.new('view(pg)', 'soap.rhtml') }
+			@rhtml = { :view => RWiki::ERbLoader.new('view(pg)', 'soap/view.rhtml') }
 			reload_rhtml
 		end
 

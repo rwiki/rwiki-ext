@@ -13,7 +13,7 @@ module RWiki
 	end
 end
 
-require 'rwiki/soap-controller'
+require 'rwiki/soap/servant'
 
 if use_as_cgi_stub
   # cgistub
@@ -30,5 +30,5 @@ server.set_log(File.join(rwiki_log_dir, 'RWikiSOAPServer.log')) if rwiki_log_dir
 
 DRb.start_service()
 rwiki = DRbObject.new(nil, rwiki_uri)
-server.add_servant(RWiki::SOAP::Controller.new(rwiki))
+server.add_servant(RWiki::SOAP::Servant.new(rwiki))
 server.start

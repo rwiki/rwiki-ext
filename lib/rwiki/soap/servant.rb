@@ -3,12 +3,12 @@ require 'socket'
 require 'uri'
 require 'drb/drb'
 
-require 'rwiki/soap-lib'
+require 'rwiki/soap/common'
 
 module RWiki
 	module SOAP
 		
-		class Controller
+		class Servant
 			extend Forwardable
 
 			def_delegators(:@rwiki, :find, :src, :modified)

@@ -71,6 +71,17 @@ module RWiki
 							((@@cache[uri_str][:time] + expire) < Time.now)
 					end
 
+					begin
+#							STDERR.print("#{Time.now}: uri:#{uri} ",
+#													 "need_update:#{need_update} ",
+#													"@@cache[uri][:time]:#{@@cache[uri][:time]} ",
+#													"expire:#{expire} ",
+#													"(@@cache[uri][:time] + expire) < Time.now:",
+#													"#{(@@cache[uri][:time] + expire) < Time.now}")
+#							STDERR.puts
+					rescue NameError
+					end
+
 					if need_update
 						puts "updating... #{uri_str}"
 						source = get_rss_source(uri, name)

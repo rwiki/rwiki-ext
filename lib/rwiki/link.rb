@@ -552,6 +552,13 @@ module RWiki
 
 			include LinkPageMixIn
 
+      def format=(new_value)
+        #p 11111
+        #puts caller.join("\n")
+        #p new_value
+        super if new_value.instance_methods.include?("make_src")
+      end
+
 			def groups(force_recalc=false)
 				if force_recalc
 					find_all_page(@section.group_section)
