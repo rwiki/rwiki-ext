@@ -17,6 +17,10 @@ module RWiki
         @@description = @@title
       end
 
+      if const_defined?("IMAGE")
+        @@image = IMAGE
+      end
+
       def navi_view(pg, title, referer)
         %Q[<span class="navi">[<a href="#{ ref_name(pg.name, {}, 'rss') }">#{ h title }</a>]</span>]
       end
