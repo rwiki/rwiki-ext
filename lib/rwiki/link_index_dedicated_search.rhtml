@@ -46,23 +46,23 @@
 
 <% if found_page %>
 <h2>リンク先の更新状況</h2>
-<%= dedicated_list_recent_link(pg, link_pages) %>
+<%= hilighten(dedicated_list_recent_link(pg, link_pages), keywords) %>
 </div>
 
 </div>
 
 <div class="sidebar">
 <h2>最近見られたリンク</h2>
-<%= dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0..5]) %>
+<%= hilighten(dedicated_list_link(pg, link_pages.sort {|x, y| y.modified <=> x.modified}[0..5]), keywords) %>
 
 <h2>多く見られたリンク</h2>
-<%= dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0..5]) %>
+<%= hilighten(dedicated_list_link(pg, link_pages.sort{|x, y| y.count.to_i <=> x.count.to_i}[0..5]), keywords) %>
 
 <h2>カテゴリ</h2>
-<%= dedicated_list_category(pg, category_pages.sort{|x, y| x.title <=> y.title}) %>
+<%= hilighten(dedicated_list_category(pg, category_pages.sort{|x, y| x.title <=> y.title}), keywords) %>
 
 <h2>リンク先一覧</h2>
-<%= dedicated_list_link(pg, link_pages.sort {|x, y| x.title <=> y.title}) %>
+<%= hilighten(dedicated_list_link(pg, link_pages.sort {|x, y| x.title <=> y.title}), keywords) %>
 <% end %>
 </div>
 

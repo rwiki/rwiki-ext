@@ -223,6 +223,10 @@ module RWiki
 				index_section.default_mode
 			end
 
+			def maneger
+				@maneger ||= ::RWiki::RSS::Maneger.new
+			end
+
 			private
 			def dispatch_html(html_type, format, &block)
 				method_name = "#{mode(&block)}_#{html_type}"
@@ -392,6 +396,18 @@ module RWiki
 				state = current_state
 				self.src = @format.new(env){|key| state[key]}.make_src(self)
 				dispatch_view_html(format, &block)
+			end
+
+			def match?(regexp)
+				super or rss_match?(regexp)
+			end
+
+			def rss_match?(regexp)
+				if rss and maneger[rss] and	maneger[rss][:description]
+					regexp =~ maneger[rss][:description]
+				else
+					false
+				end
 			end
 
 			private
