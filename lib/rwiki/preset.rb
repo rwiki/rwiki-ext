@@ -14,13 +14,13 @@ module RWiki
 						s
 					end
 				end
-				string.gsub!(/「([^\s」]{1,20})」/m) do |s|
-					if !$1.include?('))')
-						"「((<#{$1}>))」"
-					else
-						s
-					end
-				end
+# 				string.gsub!(/「([^\s」]{1,20})」/m) do |s|
+# 					if !$1.include?('))')
+# 						"「((<#{$1}>))」"
+# 					else
+# 						s
+# 					end
+# 				end
 				super(string)
 			end
 
