@@ -6,7 +6,7 @@ class ConcatFormat < RWiki::PageFormat
 	LABEL_PREFIX = "concat_"
 
 	def navi_view(pg, title, referer)
-		%Q[<span class="navi"><a href="#{ref_name(pg.name, 'top' => ref_url(u(referer.name)))}">#{ h title }</a></span>]
+		%Q!<span class="navi">[<a href="#{ref_name(pg.name, 'top' => ref_url(u(referer.name)))}">#{ h title }</a>]</span>!
 	end
 
 	private
