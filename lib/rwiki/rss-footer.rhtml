@@ -3,6 +3,8 @@ if ::RWiki::RSS::Topic.display
 	cmd = var('cmd')
 	cmd = cmd.first if cmd.kind_of?(Array)
 	if cmd == 'view' and not pg.empty?
+
+	rss_display_toggle_name = "rss-display-toggle"
 %>
 </div>
 <div class="rss-topic">
@@ -10,15 +12,19 @@ if ::RWiki::RSS::Topic.display
 <!--
 function show_hide(id) {
 	if (! document.getElementById) return;
-	if (document.getElementById(id).style.visibility != "hidden") {
-		document.cookie = "rss_visibility=hidden";
-		document.getElementById(id).style.visibility = "hidden";
+	var target_element = document.getElementById(id);
+	var navi_text = document.getElementById("<%= rss_display_toggle_name %>").firstChild;
+	if (target_element.style.display == "none") {
+		document.cookie = "rss_display=none";
+		target_element.style.display = "";
+		navi_text.data = "show";
 	} else {
-		document.cookie = "rss_visibility=visible";
-		document.getElementById(id).style.visibility = "visible";
+		document.cookie = "rss_display=show";
+		target_element.style.display = "none";
+		navi_text.data = "hide";
 	}
 }
-document.write('<div class="rss-visibility-toggle" onclick="show_hide(' + "'rss-topic-contents'" + ')">show / hide</div>');
+document.write('<div class="<%= rss_display_toggle_name %>" id="<%= rss_display_toggle_name %>" onclick="show_hide(' + "'rss-topic-contents'" + ')">hide</div>');
 // -->
 </script>
 	<div class="rss-topic-contents" id="rss-topic-contents" ondblclick="show_hide('rss-topic-contents')">
@@ -45,7 +51,7 @@ document.write('<div class="rss-visibility-toggle" onclick="show_hide(' + "'rss-
 </div>
 <script type="text/javascript">
 <!--
-if (/rss_visibility=hidden/.exec(document.cookie)) {
+if (/rss_display=none/.exec(document.cookie)) {
 	show_hide("rss-topic-contents");
 }
 // -->
