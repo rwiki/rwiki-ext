@@ -72,7 +72,8 @@ module RWiki
 
 					if need_update
 						puts "updating... #{uri_str}"
-						parsed = update_cache(uri_str, charset, name, get_rss_source(uri))
+						source = get_rss_source(uri, name)
+						parsed = update_cache(uri_str, charset, name, source)
 					end
 					
 					if !parsed and @@cache[uri_str][:items].empty?
@@ -160,7 +161,7 @@ module RWiki
 			end
 
 			private
-			def get_rss_source(uri)
+			def get_rss_source(uri, name)
 				rss_source = nil
 				begin
 					rss_source = fetch_rss(uri, @@cache[uri.to_s][:time])

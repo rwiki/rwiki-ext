@@ -19,8 +19,8 @@ module RWiki
 
       if RSS.const_defined?("IMAGE")
         @@image = IMAGE
-			else
-				@@image = nil
+      else
+        @@image = nil
       end
 
       def navi_view(pg, title, referer)
