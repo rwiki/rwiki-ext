@@ -34,6 +34,7 @@ module RWiki
 				def initialize(uri, encoding)
 					super
 					@modified = {}
+					@revision = {}
 					@local = false
 					@front = nil
 
@@ -63,7 +64,7 @@ module RWiki
 
 				end
 
-				def submit(name, src)
+				def submit(name, src, log_message)
 					if @local
 						synchronize do 
 							unless @called
@@ -73,7 +74,7 @@ module RWiki
 							end
 						end
 					elsif not @driver.nil?
-						@driver.copy(name, src)
+						@driver.submit(name, src, revision(name), log_message)
 					end
 					set_modified(name)
 				end
@@ -91,7 +92,12 @@ module RWiki
 				end
 
 				def revision(name)
-					modified(name).to_s
+					synchronize do
+						unless @revision.has_key?(name)
+							set_revision(name)
+						end
+					end
+					@revision[name]
 				end
 
 				def modified(name)
@@ -113,6 +119,19 @@ module RWiki
 							end
 						elsif !@driver.nil?
 							@modified[name] = Time.parse(@driver.modified(name).to_s).localtime
+						end
+					end
+				end
+
+				def set_modified(name)
+					synchronize do
+						if @local
+							begin
+								@revision[name] = @front.page(page_name(name)).revision
+							rescue NameError
+							end
+						elsif !@driver.nil?
+							@revision[name] = @driver.revision(name)
 						end
 					end
 				end

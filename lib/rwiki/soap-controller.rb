@@ -44,6 +44,11 @@ module RWiki
 				@rwiki.include?(name)
 			end
 
+			def revision(name)
+				page = @rwiki.page(name)
+				page.revision
+			end
+
 			def copy(name, src)
 				page = @rwiki.page(name)
 				page.src = src
@@ -56,6 +61,12 @@ module RWiki
 				name
 			end
 
+			def submit(name, src, rev, log_message)
+				page = @rwiki.page(name)
+				page.set_src(src, rev, log_message)
+				name
+			end
+  
 			def drb_host_and_port
 				[@drb_host, @drb_port]
 			end

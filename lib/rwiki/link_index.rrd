@@ -1,4 +1,4 @@
-= <%=er (var("title").first || pg.title) %>
+= <%= er(var("title").first || pg.title) %>
 
 <%=er((var("description").first || pg.description), {:accept_textblock => true})%>
 

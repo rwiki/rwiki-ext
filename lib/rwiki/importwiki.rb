@@ -187,12 +187,30 @@ module RWiki
 				@recache_table[name]
 			end
 
+      def []=(*arg)
+        k = arg.shift
+        v = arg.pop
+        rev = arg.shift
+        opt = {
+          :query => arg.shift,
+          :revision => rev,
+        }
+        # check_revision(k, rev)
+        set(k, store(v), opt)
+      end
+
 			private
 			def set(name, src, opt=nil)
 				return if src.nil?
 				wiki_name, page_name = split_name(name)
 				begin
-					connector(wiki_name).submit(page_name, src)
+					query = opt[:query]
+					if query
+						commit_message = query['commit_log'].to_s
+					else
+						commit_message = ''
+					end
+					connector(wiki_name).submit(page_name, src, commit_message)
 					cache(name, src, false)
 				rescue NameError
 					nil

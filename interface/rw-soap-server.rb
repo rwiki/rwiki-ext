@@ -17,18 +17,18 @@ require 'rwiki/soap-controller'
 
 if use_as_cgi_stub
   # cgistub
-  require 'soap/cgistub'
-  server = SOAP::CGIStub.new('CGIStub', RWiki::SOAP::NS)
+  require 'soap/rpc/cgistub'
+  server = SOAP::RPC::CGIStub.new('CGIStub', RWiki::SOAP::NS)
 else
   # standalone server
-  require 'soap/standaloneServer'
-  server = SOAP::StandaloneServer.new('Standalone', RWiki::SOAP::NS,
-                                      'localhost', 8080)
+  require 'soap/rpc/standaloneServer'
+  server = SOAP::RPC::StandaloneServer.new('Standalone', RWiki::SOAP::NS,
+																					 'localhost', 8080)
 end
 
-server.setLog(File.join(rwiki_log_dir, 'RWikiSOAPServer.log')) if rwiki_log_dir
+server.set_log(File.join(rwiki_log_dir, 'RWikiSOAPServer.log')) if rwiki_log_dir
 
 DRb.start_service()
 rwiki = DRbObject.new(nil, rwiki_uri)
-server.addServant(RWiki::SOAP::Controller.new(rwiki))
+server.add_servant(RWiki::SOAP::Controller.new(rwiki))
 server.start

@@ -22,14 +22,6 @@ module RWiki
 
 	end
 	
-	class PageFormat
-		private
-		def get_var(name, default='')
-			tmp, = var(name)
-			tmp || default
-		end
-	end
-
 	class Book
 
 		alias _section section

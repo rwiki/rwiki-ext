@@ -1,10 +1,11 @@
-require 'soap/driver'
+require 'logger'
+require 'soap/rpc/driver'
 
 require 'rwiki/soap-lib'
 
 module RWiki
   module SOAP
-    class Driver < ::SOAP::Driver
+    class Driver < ::SOAP::RPC::Driver
   
       APP_NAME = 'RWikiSOAPDriver'
       LOG_ID = 'RWikiSOAPDriver'
@@ -12,27 +13,29 @@ module RWiki
       def initialize(log_dir, endPoint, httpProxy=nil, soapAction=nil)
 				log = nil
 				unless log_dir.nil?
-					log = Devel::Logger.new(File.join(log_dir, APP_NAME + '.log'),
-																	'weekly')
+					log = Logger.new(File.join(log_dir, APP_NAME + '.log'),
+													 'weekly')
 					setWireDumpFileBase(File.join(log_dir, APP_NAME))
 				end
 
         super(log, LOG_ID, RWiki::SOAP::NS, endPoint, httpProxy, soapAction)
 
-        addMethod('allow_get_page')
-        addMethod('page', 'name')
+        add_method('allow_get_page')
+        add_method('page', 'name')
 
-        addMethod('drb_host_and_port')
+        add_method('drb_host_and_port')
 
-        addMethod('include', 'name')
-        addMethod('find', 'str')
-        addMethod('src', 'name')
-        addMethod('body', 'name')
-        addMethod('modified', 'name')
-        addMethod('rd2content', 'src')
-        addMethod('recent_changes')
-        addMethod('copy', 'name', 'src')
-        addMethod('append', 'name', 'src')
+        add_method('include', 'name')
+        add_method('find', 'str')
+        add_method('src', 'name')
+        add_method('body', 'name')
+        add_method('modified', 'name')
+        add_method('revision', 'name')
+        add_method('rd2content', 'src')
+        add_method('recent_changes')
+        add_method('copy', 'name', 'src')
+        add_method('append', 'name', 'src')
+        add_method('submit', 'name', 'src', 'rev', 'log')
       end
       
     end

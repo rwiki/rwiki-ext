@@ -23,7 +23,7 @@ module RWiki
 					@mtime = {}
 				end
 
-				def submit(name, src)
+				def submit(name, src, log_message)
 					Net::HTTP.start(@uri.host, @uri.port || 80) do |http|
 						path = @uri.path
 
@@ -32,10 +32,10 @@ module RWiki
 						data = "commit=true&c=c&p=#{page_name(name)}&mtime=#{mtime}&"
 						tree = RD::RDTree.new("=begin\n#{src}\n=end\n")
 						visitor = RD::RD2WiLiKiVisitor.new
-						data << "content=#{escape(visitor.visit(tree))}"
-
-						req = http.request_post(path, data, HTTP_HEADER)
-
+						data << "content=#{escape(visitor.visit(tree))}&"
+						data << "logmsg=#{escape(log_message)}"
+						
+						res = http.request_post(path, data, HTTP_HEADER)
 					end
 				end
 
