@@ -4,20 +4,20 @@
 %>
 = <%=er title %>
 
-<%=er(var("description").first, true)%>
+<%=er(var("description").first, {:accept_textblock => true})%>
 
 == URL
 <% if /\A\s*\z/ !~ var("url").first %>
-((<URL:<%=er var("url").first %>>))
+((<URL:<%=er(var("url").first)%>>))
 <% end %>
 
 == RSS
 <% if /\A\s*\z/ !~ var("rss").first %>
-((<URL:<%=er var("rss").first %>>))
+((<URL:<%=er(var("rss").first)%>>))
 <% end %>
 
 == ¥«¥Æ¥´¥ê
 
 <% var("categories").each do |name| %>
-* ((<<%=er pg.book[name].title %>|<%=er name %>>))
+* ((<<%=er(pg.book[name].title, {:accept_slash => false})%>|<%=er name %>>))
 <% end %>

@@ -62,7 +62,7 @@ module RWiki
 						else
 							-1
 						end
-					end.max.succ.to_s
+					end.max.to_i.succ.to_s
 			end
 		end
 
@@ -413,11 +413,22 @@ module RWiki
 
 			include ::RWiki::RSS::FormatUtils
 
-			def escape_rd(str, accept_textblock=false)
+			def default_escape_rd_options
+				{
+					:accept_textblock => false,
+					:accept_slash => true,
+				}
+			end
+
+			def escape_rd(str, options={})
+				options = default_escape_rd_options.update(options)
 				str = str.to_s
 				str = str.gsub(/\(\(/, '( (').gsub(/\)\)/, ') )').gsub(/\A(=|\*|\(|:)/, %q[(('\1'))])
-				unless accept_textblock
-					str.gsub(/\r?\n/, '')
+				unless options[:accept_slash]
+					str.gsub!(/\//, "(('/'))")
+				end
+				unless options[:accept_textblock]
+					str.gsub!(/\r?\n/, '')
 				end
 				str
 			end
@@ -526,7 +537,7 @@ module RWiki
 						else
 							-1
 						end
-				end.max.succ.to_s
+				end.max.to_i.succ.to_s
 			end
 
 			@rhtml = {
@@ -540,3 +551,5 @@ module RWiki
 
 	end
 end
+
+
