@@ -1,18 +1,14 @@
 <%= header(pg) %>
 <%= navi(pg) %>
 
-<%= link_navi(pg) %>
 <%
 	if pg.rss
-		maneger = ::RWiki::RSS::Maneger.new
 		maneger.parse(pg.rss, @@charset, pg.title)
 		rss = maneger[pg.rss]
 	else
-		maneger = rss = nil
+		rss = nil
 	end
-%>
-
-<hr />
+%><%= link_navi(pg) %>
 
 <div class="links">
 <h1><%=h pg.title %></h1>

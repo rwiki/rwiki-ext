@@ -1,0 +1,35 @@
+<%
+	link_page = {}
+	parsed_rsses = []
+	link_pages.each do |link_pg|
+		if link_pg.rss
+			parsed_rsses << [link_pg.rss, @@charset, link_pg.title]
+			link_page[link_pg.rss] = link_pg
+		end
+	end
+	maneger.parallel_parse(parsed_rsses)
+
+	req_pages, = var('pages')
+	num_of_pages = number_of_pages(var('pages').first)
+	full_recent_changes = maneger.recent_changes.find_all do |uri,|
+		link_page.has_key?(uri)
+	end
+	recent_changes = full_recent_changes[display_range(num_of_pages)]
+ %>
+<ol>
+<% recent_changes.each do |uri, channel, image, item, name| %>
+	<li><p><%= am(channel, image, item, name) %> <%= hotbar(item.dc_date) %></p>
+	  <% unless item.description.nil? %>
+	    <p><%=h item.description.shorten %></p>
+	  <% end %>
+	</li>
+<% end %>
+<% if 0 < num_of_pages and num_of_pages < full_recent_changes.size %>
+	<li>
+		<ul>
+			<li><a href="<%= full_ref_name(pg.name, 'pages' => num_of_pages + added_recent_changes_number) %>">もっと見たい</a></li>
+			<li><a href="<%= full_ref_name(pg.name, 'pages' => -1) %>">全部見たい</a></li>
+		</ul>
+	</li>
+<% end %>
+</ol>

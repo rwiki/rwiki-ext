@@ -109,6 +109,14 @@ module RWiki
 
 		module FormatUtils
 
+			def default_recent_changes_number
+				10
+			end
+
+			def added_recent_changes_number
+				30
+			end
+
 			def make_anchor(href, name, time=nil, image_src=nil, image_title=nil)
 				anchor = if image_src
 									 image_title ||= name
@@ -150,6 +158,26 @@ module RWiki
 				%Q|<a href="#{h uri}">#{h name} : #{h uri}</a>|
 			end
 			alias ua make_uri_anchor
+
+			def maneger
+				@maneger ||= ::RWiki::RSS::Maneger.new
+			end
+
+			def number_of_pages(request_pages)
+				if request_pages
+					request_pages.to_i
+				else
+					default_recent_changes_number
+				end
+			end
+			
+			def display_range(num_of_pages)
+				if 0 < num_of_pages
+					0...num_of_pages
+				else
+					0..num_of_pages
+				end
+			end
 		end
 
 	end

@@ -461,6 +461,8 @@ module RWiki
 
 			@rhtml = {
 				:link_navi => ::RWiki::ERbLoader.new("link_navi(pg, *args)", "link_navi.rhtml"),
+				:list_recent_link => ::RWiki::ERbLoader.new("list_recent_link(pg, link_pages, *params)", "link_list_recent_link.rhtml"),
+				:list_link => ::RWiki::ERbLoader.new("list_link(pg, link_pages)", "link_list_link.rhtml"),
 			}
 			
 			reload_rhtml
@@ -586,6 +588,7 @@ module RWiki
 			end
 
 			@rhtml = {
+				:link_navi => ::RWiki::ERbLoader.new("link_navi(pg)", "link_index_navi.rhtml"),
 				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_index.rhtml"),
 				:search_view => ::RWiki::ERbLoader.new("search_view(pg)", "link_index_search.rhtml"),
 				:refine_view => ::RWiki::ERbLoader.new("refine_view(pg)", "link_index_refine.rhtml"),

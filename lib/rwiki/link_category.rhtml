@@ -1,88 +1,17 @@
 <%= header(pg) %>
 <%= navi(pg) %>
-
-<%
-	index_pg = pg.index_page
-	maneger = ::RWiki::RSS::Maneger.new
-	link_pages = pg.link_pages.sort {|x, y| x.title <=> y.title}
-	link_page = {}
-	link_pages.each do |link_pg|
-		if link_pg.rss
-			maneger.parse(link_pg.rss, @@charset, link_pg.title)
-			link_page[link_pg.rss] = link_pg
-		end
-	end
-
-	req_pages, = var('pages')
-	num_of_pages = if req_pages
-			req_pages.to_i
-		else
-			default_recent_changes_number
-		end
-	range =
-		if 0 < num_of_pages
-			0...num_of_pages
-		else
-			0..num_of_pages
-		end
-	full_recent_changes = maneger.recent_changes.find_all do |uri, channel, item, name|
-		link_page.has_key?(uri)
-	end
-	recent_changes = full_recent_changes[range]
- %>
 <%= link_navi(pg) %>
-
-<hr />
 
 <div class="links">
 <h1><%=h pg.title %></h1>
 <% pg.descriptions.each do |desc| %>
 <p><%=h desc %></p>
 <% end %>
+<% link_pages = pg.link_pages.sort {|x, y| x.title <=> y.title} %>
 <h2>リンク先の更新順一覧</h2>
-<ol>
-<% recent_changes.each do |uri, channel, image, item, name| %>
-	<li><p><%= am(channel, image, item, name) %> <%= hotbar(item.dc_date) %></p>
-	  <% unless item.description.nil? %>
-	    <p><%=h item.description.shorten %></p>
-	  <% end %>
-	</li>
-<% end %>
-<% if num_of_pages > 0 && full_recent_changes.size > num_of_pages %>
-	<li>
-		<ul>
-			<li><a href="<%= full_ref_name(pg.name, 'pages' => num_of_pages + added_recent_changes_number) %>">もっと見たい</a></li>
-			<li><a href="<%= full_ref_name(pg.name, 'pages' => -1) %>">全部見たい</a></li>
-		</ul>
-	</li>
-<% end %>
-</ol>
+<%= list_recent_link(pg, link_pages) %>
 <h2>リンク一覧</h2>
-<ul>
-<% link_pages.each do |link_pg|
-		rss = maneger[link_pg.rss]
-		image_infos = []
-		if rss[:image]
-			image_infos << rss[:image].url
-			image_infos << rss[:image].title
-		end
-%>
-	<li>
-		<%= send(:make_anchor, ref_name(link_pg.name), link_pg.title, link_pg.modified, *image_infos) %>: <%=h link_pg.description %>
-	<% if rss and rss[:items] %>
-		<ul>
-			<% rss[:items][0...3].each do |item| %>
-				<li>
-					<%= ia(item) %>
-					<% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
-					<% if item.description then %>: <%=h item.description.shorten %><% end %>
-				</li>
-			<% end %>
-		</ul>
-	<% end %>
-	</li>
-<% end %>
-</ul>
+<%= list_link(pg, link_pages) %>
 </div>
 
 <%= footer(pg) %>
