@@ -73,7 +73,7 @@ module RWiki
 								SocketError,
 								Net::HTTPBadResponse,
 								Net::HTTPHeaderSyntaxError,
-								Errno::ECONNRESET # for FreeBSD
+								SystemCallError
 							@@mutex.synchronize do 
 								@@cache[uri] = {
 									:time => Time.now,
