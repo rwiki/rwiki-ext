@@ -1,3 +1,4 @@
+require "rwiki/rss-writer"
 require "rwiki/rss-recent"
 require "rwiki/rss-topic"
 
@@ -33,24 +34,6 @@ end
 
 module RWiki
 	module RSS
-		class Writer < PageFormat
-			if const_defined?("DESCRIPTION")
-				@@description = DESCRIPTION
-			else
-				@@description = @@title
-			end
-			
-			def navi_view(pg, title, referer)
-				%Q!<span class="navi">[<a href="#{ ref_name(pg.name, {}, 'rss') }">#{ h title }</a>]</span>!
-			end
-
-			private
-			@rhtml = {
-				:view => ERbLoader.new('view(pg)', 'recent1.0.rrdf')
-			}
-			reload_rhtml
-		end
-
 		class PageFormat < RWiki::BookConfig.default.format
 			private
 			def make_topic_title_anchor(channel, name)
@@ -73,7 +56,7 @@ module RWiki
 			
 			@rhtml = {
 				:navi => RWiki::ERbLoader.new('navi(pg)', 'rss-navi.rhtml'),
-#				:footer => RWiki::ERbLoader.new('footer(pg)', 'rss-footer.rhtml')
+				:footer => RWiki::ERbLoader.new('footer(pg)', 'rss-footer.rhtml')
 			}
 			reload_rhtml
 		end
@@ -84,12 +67,10 @@ module RWiki
 			topic_section = Topic::Section.new(nil, /\Arss_topic\z/)
 			RWiki::Book.section_list.push(topic_section)
 			RWiki::BookConfig.default.format = PageFormat
-			RWiki::Request::COMMAND << 'rss'
 		end
 		module_function :install
 	end
 
-	install_page_module('rss1.0', RWiki::RSS::Writer, 'RSS 1.0')
 	install_page_module('rss_recent', RWiki::RSS::Recent::PageFormat, 'RSS Recent')
 	install_page_module('rss_topic', RWiki::RSS::Topic::PageFormat, 'RSS Topic')
 
