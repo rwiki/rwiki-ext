@@ -295,7 +295,7 @@ module RWiki
 			end
 
 			@rhtml = {
-				:edit => RWiki::ERbLoader.new('edit(pg)', 'custom-edit.rhtml'),
+				:edit => RWiki::ERBLoader.new('edit(pg)', 'custom-edit.rhtml'),
 			}
 			reload_rhtml
 		end

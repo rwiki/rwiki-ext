@@ -106,13 +106,13 @@ module RWiki
 					add_default_src_proc(method(:default_src))
 				end
 
-				RWiki::ERbLoader.new('default_src(name)', 'rss-topic.erd').load(self)
+				RWiki::ERBLoader.new('default_src(name)', 'rss-topic.erd').load(self)
 			end
 
 
 			class PageFormat < RWiki::PageFormat
 				private
-				@rhtml = { :view => ERbLoader.new('view(pg)', 'rss-topic.rhtml') }
+				@rhtml = { :view => ERBLoader.new('view(pg)', 'rss-topic.rhtml') }
 				reload_rhtml
 			end
 

@@ -31,8 +31,8 @@ module RWiki
 			alias ttia make_topic_item_anchor
 			
 			@rhtml = {
-				:navi => RWiki::ERbLoader.new('navi(pg)', 'rss-navi.rhtml'),
-				:footer => RWiki::ERbLoader.new('footer(pg)', 'rss-footer.rhtml')
+				:navi => RWiki::ERBLoader.new('navi(pg)', 'rss-navi.rhtml'),
+				:footer => RWiki::ERBLoader.new('footer(pg)', 'rss-footer.rhtml')
 			}
 			reload_rhtml
 		end

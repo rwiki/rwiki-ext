@@ -2,6 +2,7 @@ require "open-uri"
 require "uri/generic"
 require "thread"
 require "time"
+require "timeout"
 
 require "rss/parser"
 require "rss/1.0"
@@ -83,7 +84,7 @@ module RWiki
 					end
 
 					if need_update
-						puts "updating... #{uri_str}"
+						STDERR.puts "updating... #{uri_str}"
 						source = get_rss_source(uri, name)
 						parsed = update_cache(uri_str, charset, name, source)
 					end
@@ -142,8 +143,8 @@ module RWiki
 						end
 					end
 				end
-				has_update_info_values.sort do |x, y|
-					y[3].dc_date <=> x[3].dc_date
+				has_update_info_values.sort_by do |_, _, _, item, _|
+					item.dc_date
 				end
 			end
 
@@ -204,10 +205,10 @@ module RWiki
 					case f.status.first
 					when "200"
 						rss = f.read
-						puts "Got RSS of #{uri}"
+						STDERR.puts "Got RSS of #{uri}"
 					when "304"
 						# not modified
-						puts "#{uri} does not modified"
+						STDERR.puts "#{uri} does not modified"
 					else
 						raise InvalidResourceError
 					end
@@ -262,6 +263,7 @@ module RWiki
 				begin
 					rss = ::RSS::Parser.parse(source, true)
 				rescue ::RSS::InvalidRSSError
+					STDERR.puts "#{uri} is invalid RSS: [#{$!.class}] #{$!.message}"
 					rss = ::RSS::Parser.parse(source, false)
 					@mutex.synchronize do
 						@invalid_resources << [uri, name]

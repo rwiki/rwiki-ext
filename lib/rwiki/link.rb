@@ -676,19 +676,19 @@ module RWiki
 			alias er escape_rd
 
 			@rhtml = {
-				:link_navi => ::RWiki::ERbLoader.new("link_navi(pg, *args)", "link_navi.rhtml"),
-				:list_recent_link => ::RWiki::ERbLoader.new("list_recent_link(pg, link_pages, *params)", "link_list_recent_link.rhtml"),
-				:list_link => ::RWiki::ERbLoader.new("list_link(pg, link_pages)", "link_list_link.rhtml"),
-				:dedicated_header => ::RWiki::ERbLoader.new("dedicated_header(pg, *args)", "link_dedicated_header.rhtml"),
-				:dedicated_navi => ::RWiki::ERbLoader.new("dedicated_navi(pg, *args)", "link_dedicated_navi.rhtml"),
-				:dedicated_footer => ::RWiki::ERbLoader.new("dedicated_footer(pg)", "link_dedicated_footer.rhtml"),
-				:dedicated_list_recent_link => ::RWiki::ERbLoader.new("dedicated_list_recent_link(pg, link_pages, *params)", "link_dedicated_list_recent_link.rhtml"),
-				:dedicated_list_link => ::RWiki::ERbLoader.new("dedicated_list_link(pg, link_pages, display_update_info=default_display_update_info)", "link_dedicated_list_link.rhtml"),
-				:dedicated_list_category => ::RWiki::ERbLoader.new("dedicated_list_category(pg, category_pages)", "link_dedicated_list_category.rhtml"),
-				:dedicated_list_group => ::RWiki::ERbLoader.new("dedicated_list_group(pg, group_pages)", "link_dedicated_list_group.rhtml"),
-				:dedicated_list_detail_of_group => ::RWiki::ERbLoader.new("dedicated_list_detail_of_group(pg, group_pages)", "link_dedicated_list_detail_of_group.rhtml"),
-				:dedicated_refine_form => ::RWiki::ERbLoader.new("dedicated_refine_form(pg, refine_type='and', categories=[], selected_category_names={}, have_refine_option=false)", "link_dedicated_refine_form.rhtml"),
-				:dedicated_search_form => ::RWiki::ERbLoader.new("dedicated_search_form(pg, search_type='and', keywords=[], have_search_option=false)", "link_dedicated_search_form.rhtml"),
+				:link_navi => ERBLoader.new("link_navi(pg, *args)", "link_navi.rhtml"),
+				:list_recent_link => ERBLoader.new("list_recent_link(pg, link_pages, *params)", "link_list_recent_link.rhtml"),
+				:list_link => ERBLoader.new("list_link(pg, link_pages)", "link_list_link.rhtml"),
+				:dedicated_header => ERBLoader.new("dedicated_header(pg, *args)", "link_dedicated_header.rhtml"),
+				:dedicated_navi => ERBLoader.new("dedicated_navi(pg, *args)", "link_dedicated_navi.rhtml"),
+				:dedicated_footer => ERBLoader.new("dedicated_footer(pg)", "link_dedicated_footer.rhtml"),
+				:dedicated_list_recent_link => ERBLoader.new("dedicated_list_recent_link(pg, link_pages, *params)", "link_dedicated_list_recent_link.rhtml"),
+				:dedicated_list_link => ERBLoader.new("dedicated_list_link(pg, link_pages, display_update_info=default_display_update_info)", "link_dedicated_list_link.rhtml"),
+				:dedicated_list_category => ERBLoader.new("dedicated_list_category(pg, category_pages)", "link_dedicated_list_category.rhtml"),
+				:dedicated_list_group => ERBLoader.new("dedicated_list_group(pg, group_pages)", "link_dedicated_list_group.rhtml"),
+				:dedicated_list_detail_of_group => ERBLoader.new("dedicated_list_detail_of_group(pg, group_pages)", "link_dedicated_list_detail_of_group.rhtml"),
+				:dedicated_refine_form => ERBLoader.new("dedicated_refine_form(pg, refine_type='and', categories=[], selected_category_names={}, have_refine_option=false)", "link_dedicated_refine_form.rhtml"),
+				:dedicated_search_form => ERBLoader.new("dedicated_search_form(pg, search_type='and', keywords=[], have_search_option=false)", "link_dedicated_search_form.rhtml"),
 			}
 			
 			reload_rhtml
@@ -705,11 +705,11 @@ module RWiki
 			end
 
 			@rhtml = {
-				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_category.rhtml"),
-				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_category_edit.rhtml"),
-				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_category_dedicated.rhtml"),
-				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_category_dedicated_edit.rhtml"),
-				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_category.rrd"),
+				:custom_view => ERBLoader.new("custom_view(pg)", "link_category.rhtml"),
+				:custom_edit => ERBLoader.new("custom_edit(pg)", "link_category_edit.rhtml"),
+				:dedicated_view => ERBLoader.new("dedicated_view(pg)", "link_category_dedicated.rhtml"),
+				:dedicated_edit => ERBLoader.new("dedicated_edit(pg)", "link_category_dedicated_edit.rhtml"),
+				:make_src => ERBLoader.new("make_src(pg)", "link_category.rrd"),
 			}
 			reload_rhtml
 		end
@@ -724,11 +724,11 @@ module RWiki
 			end
 
 			@rhtml = {
-# 				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_group.rhtml"),
-# 				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_group_edit.rhtml"),
- 				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_group_dedicated.rhtml"),
- 				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_group_dedicated_edit.rhtml"),
- 				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_group.rrd"),
+# 				:custom_view => ERBLoader.new("custom_view(pg)", "link_group.rhtml"),
+# 				:custom_edit => ERBLoader.new("custom_edit(pg)", "link_group_edit.rhtml"),
+ 				:dedicated_view => ERBLoader.new("dedicated_view(pg)", "link_group_dedicated.rhtml"),
+ 				:dedicated_edit => ERBLoader.new("dedicated_edit(pg)", "link_group_dedicated_edit.rhtml"),
+ 				:make_src => ERBLoader.new("make_src(pg)", "link_group.rrd"),
 			}
 			reload_rhtml
 		end
@@ -749,11 +749,11 @@ module RWiki
 			end
 
 			@rhtml = {
-				:custom_view=> ::RWiki::ERbLoader.new("custom_view(pg)", "link_link.rhtml"),
-				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_link_edit.rhtml"),
-				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_link_dedicated.rhtml"),
-				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_link_dedicated_edit.rhtml"),
-				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_link.rrd"),
+				:custom_view=> ERBLoader.new("custom_view(pg)", "link_link.rhtml"),
+				:custom_edit => ERBLoader.new("custom_edit(pg)", "link_link_edit.rhtml"),
+				:dedicated_view => ERBLoader.new("dedicated_view(pg)", "link_link_dedicated.rhtml"),
+				:dedicated_edit => ERBLoader.new("dedicated_edit(pg)", "link_link_dedicated_edit.rhtml"),
+				:make_src => ERBLoader.new("make_src(pg)", "link_link.rrd"),
 			}
 			reload_rhtml
 		end
@@ -832,19 +832,19 @@ module RWiki
 			end
 
 			@rhtml = {
-				:link_navi => ::RWiki::ERbLoader.new("link_navi(pg)", "link_index_navi.rhtml"),
-				:custom_view => ::RWiki::ERbLoader.new("custom_view(pg)", "link_index.rhtml"),
-				:custom_search_view => ::RWiki::ERbLoader.new("custom_search_view(pg)", "link_index_search.rhtml"),
-				:custom_refine_view => ::RWiki::ERbLoader.new("custom_refine_view(pg)", "link_index_refine.rhtml"),
-				:custom_help_view => ::RWiki::ERbLoader.new("custom_help_view(pg)", "link_index_help.rhtml"),
-				:custom_edit => ::RWiki::ERbLoader.new("custom_edit(pg)", "link_index_edit.rhtml"),
-				:dedicated_navi => ::RWiki::ERbLoader.new("dedicated_navi(pg)", "link_index_dedicated_navi.rhtml"),
-				:dedicated_view => ::RWiki::ERbLoader.new("dedicated_view(pg)", "link_index_dedicated.rhtml"),
-				:dedicated_search_view => ::RWiki::ERbLoader.new("dedicated_search_view(pg)", "link_index_dedicated_search.rhtml"),
-				:dedicated_refine_view => ::RWiki::ERbLoader.new("dedicated_refine_view(pg)", "link_index_dedicated_refine.rhtml"),
-				:dedicated_help_view => ::RWiki::ERbLoader.new("dedicated_help_view(pg)", "link_index_dedicated_help.rhtml"),
-				:dedicated_edit => ::RWiki::ERbLoader.new("dedicated_edit(pg)", "link_index_dedicated_edit.rhtml"),
-				:make_src => ::RWiki::ERbLoader.new("make_src(pg)", "link_index.rrd"),
+				:link_navi => ERBLoader.new("link_navi(pg)", "link_index_navi.rhtml"),
+				:custom_view => ERBLoader.new("custom_view(pg)", "link_index.rhtml"),
+				:custom_search_view => ERBLoader.new("custom_search_view(pg)", "link_index_search.rhtml"),
+				:custom_refine_view => ERBLoader.new("custom_refine_view(pg)", "link_index_refine.rhtml"),
+				:custom_help_view => ERBLoader.new("custom_help_view(pg)", "link_index_help.rhtml"),
+				:custom_edit => ERBLoader.new("custom_edit(pg)", "link_index_edit.rhtml"),
+				:dedicated_navi => ERBLoader.new("dedicated_navi(pg)", "link_index_dedicated_navi.rhtml"),
+				:dedicated_view => ERBLoader.new("dedicated_view(pg)", "link_index_dedicated.rhtml"),
+				:dedicated_search_view => ERBLoader.new("dedicated_search_view(pg)", "link_index_dedicated_search.rhtml"),
+				:dedicated_refine_view => ERBLoader.new("dedicated_refine_view(pg)", "link_index_dedicated_refine.rhtml"),
+				:dedicated_help_view => ERBLoader.new("dedicated_help_view(pg)", "link_index_dedicated_help.rhtml"),
+				:dedicated_edit => ERBLoader.new("dedicated_edit(pg)", "link_index_dedicated_edit.rhtml"),
+				:make_src => ERBLoader.new("make_src(pg)", "link_index.rrd"),
 			}
 			
 			reload_rhtml
