@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 
-require "rwiki/soap-driver"
+require "rwiki/soap/driver"
 
 $KCODE = 'EUC'	# SETUP
 soap_server_uri =
-         'http://localhost/~rwiki/rw-soap-server.rb' # for CGIStub
+         'http://localhost/~rwiki/rw-soap.rb' # for CGIStub
 # 'http://localhost:8080/' # for StandaloneServer
   
 driver = RWiki::SOAP::Driver.new("/tmp", soap_server_uri)
