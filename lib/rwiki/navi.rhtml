@@ -1,0 +1,14 @@
+<div class="navi">
+<%=
+  footer_navis = if defined?(::RWiki::FooterNavis)
+                   ::RWiki::FooterNavis
+                 else
+                   []
+                 end
+  pg.book.navi.collect { |title, page|
+    unless footer_navis.include?(title)
+      page.navi_view(title, pg, @env, &@block)
+    end
+  }.compact.join("\n")
+%>
+</div>
