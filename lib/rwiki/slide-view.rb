@@ -76,21 +76,4 @@ module Slide
     end
   end
 
-	@slide_navi = Object.new
-	def @slide_navi.navi_view(title, pg, env = {}, &block)
-		env = env.dup
-		env[:slide_navi] ||= true
-		begin
-			orig_format = pg.format
-			pg.format = SlideFormat
-			pg.navi_view(title, pg, env, &block)
-		ensure
-			pg.format = orig_format
-		end
-	end
-
-	def self.install(title)
-		RWiki::PageModuleLeft.unshift([nil, @slide_navi, title])
-	end
-
 end
