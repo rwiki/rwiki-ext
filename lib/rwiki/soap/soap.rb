@@ -81,12 +81,12 @@ module RWiki
         add_default_src_proc(method(:default_src))
       end
 
-      RWiki::ERbLoader.new('default_src(name)', 'soap/src.erd').load(self)
+      RWiki::ERBLoader.new('default_src(name)', 'soap/src.erd').load(self)
 
     end
 
     class PageFormat < Custom::EditFormat
-      @rhtml = { :view => RWiki::ERbLoader.new('view(pg)', 'soap/view.rhtml') }
+      @rhtml = { :view => RWiki::ERBLoader.new('view(pg)', 'soap/view.rhtml') }
       reload_rhtml
     end
 

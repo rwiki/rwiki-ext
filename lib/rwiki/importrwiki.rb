@@ -2,7 +2,7 @@ require 'time'
 require 'socket'
 
 require 'rwiki/importwiki'
-require 'rwiki/soap-driver'
+require 'rwiki/soap/driver'
 
 RWiki::Version.regist('ImportRWiki', '2003-05-16')
 

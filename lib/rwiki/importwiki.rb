@@ -217,7 +217,7 @@ module RWiki
         end
       end
 
-      def get(name)
+      def get(name, rev=nil)
         wiki_name, page_name = split_name(name)
         begin
           cache(name, connector(wiki_name).fetch(page_name), false)
@@ -336,14 +336,14 @@ module RWiki
         add_default_src_proc(method(:default_src))
       end
 
-      ::RWiki::ERbLoader.new('default_src(name)', 'importwiki.erd').load(self)
+      ::RWiki::ERBLoader.new('default_src(name)', 'importwiki.erd').load(self)
 
     end
 
     class AdminPageFormat < ::RWiki::PageFormat
       @rhtml =
         {
-          :view => ERbLoader.new('view(pg)', 'importwiki.rhtml'),
+          :view => ERBLoader.new('view(pg)', 'importwiki.rhtml'),
       }
       reload_rhtml
 

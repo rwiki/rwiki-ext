@@ -175,5 +175,5 @@ module RD
   end # RD2WiLiKiVisitor
 end # RD
 
-$Visitor_Class = RD::RD2WiLiKiVisitor
+#$Visitor_Class = RD::RD2WiLiKiVisitor
 
