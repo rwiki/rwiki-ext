@@ -4,7 +4,7 @@
 %>
 = <%=er title %>
 
-<%=er var("description").first %>
+<%=er(var("description").first, true)%>
 
 == URL
 <% if /\A\s*\z/ !~ var("url").first %>

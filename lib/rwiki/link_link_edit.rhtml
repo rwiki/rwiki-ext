@@ -6,6 +6,8 @@
 
 <p>全ての項目を記述する必要はありません．</p>
 
+<p>登録したいカテゴリーが無い場合は<%= link_navis(pg) %>で新しいカテゴリーを登録して下さい．何度でも編集できるので，一度保存して，カテゴリーを追加して，また編集しても構いません．</p>
+
 <form action="<%= form_action %>" method="post">
 <p>
 <%= form_hidden(pg.name, 'submit') %>
@@ -30,7 +32,7 @@ end
 	</li>
 </ul>
 <span class="item-title">説明: </span>
-<textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description %></textarea>
+<textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description.join("\n\n") %></textarea>
 <input type="submit" name="commit" value="保存" <%=tabindex%> accesskey="S" />
 </p>
 </form>

@@ -7,7 +7,9 @@
 
 <div class="body">
 <h1><%=h pg.title %></h1>
-<p><%=h pg.description %></p>
+<% pg.description.each do |desc| %>
+<p><%=h desc %></p>
+<% end %>
 <%
 [
 	["カテゴリー", "categories"],

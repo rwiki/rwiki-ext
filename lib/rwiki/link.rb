@@ -214,7 +214,7 @@ module RWiki
 				if pr and pr[:top_level]
 					rd_section = pr[:top_level]
 					rv[:title] = rd_section.name
-					rv[:description] = rd_section.texts.join("\n\n")
+					rv[:description] = rd_section.texts
 					rd_sections = rd_section.sections
 					getting_property_infos.each_with_index do |get_info, i|
 						sec = rd_sections[i]
@@ -408,9 +408,13 @@ module RWiki
 
 			include ::RWiki::RSS::FormatUtils
 
-			def escape_rd(str)
+			def escape_rd(str, accept_textblock=false)
 				str = str.to_s
-				str.gsub(/\(\(/, '( (').gsub(/\)\)/, ') )').gsub(/\r?\n/, '').gsub(/\A(=|\*|\(|:)/, %q[(('\1'))])
+				str = str.gsub(/\(\(/, '( (').gsub(/\)\)/, ') )').gsub(/\A(=|\*|\(|:)/, %q[(('\1'))])
+				unless accept_textblock
+					str.gsub(/\r?\n/, '')
+				end
+				str
 			end
 			alias er escape_rd
 
@@ -457,6 +461,14 @@ module RWiki
 			end
 
 			private
+			def link_navis(pg)
+				index_pg = pg.index_page
+				[
+					make_anchor(ref_name(index_pg.name), index_pg.title, index_pg.modified)
+				]					
+			end
+
+
 			def index_page(pg)
 				pg.index_page
 			end
