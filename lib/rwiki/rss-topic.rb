@@ -47,7 +47,12 @@ module RWiki
 					end
 					EOC
 
-					if writable
+					mutex_attr_writer(id) if writable
+					
+				end
+
+				def mutex_attr_writer(*ids)
+					ids.each do |id|
 						module_eval(<<-EOC)
 						def self.#{id.id2name}=(new_value)
 							@@mutex.synchronize do
@@ -56,7 +61,6 @@ module RWiki
 						end
 						EOC
 					end
-					
 				end
 
 				def mutex_attr_reader(*ids)
