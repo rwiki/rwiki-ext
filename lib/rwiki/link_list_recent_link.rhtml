@@ -19,9 +19,9 @@
 <ol>
 <% recent_changes.each do |uri, channel, image, item, name| %>
 	<li><p><%= am(channel, image, item, name) %> <%= hotbar(item.dc_date) %></p>
-	  <% unless item.description.nil? %>
-	    <p><%=h item.description.shorten %></p>
-	  <% end %>
+		<% if /\A\s*\z/ !~ item.description.to_s %>
+			<p><%=h item.description.shorten %></p>
+		<% end %>
 	</li>
 <% end %>
 <% if 0 < num_of_pages and num_of_pages < full_recent_changes.size %>
