@@ -1,6 +1,7 @@
 require "net/http"
 require "uri/generic"
 require "thread"
+require "time"
 
 require "rss/parser"
 require "rss/1.0"
@@ -24,7 +25,7 @@ module RWiki
 			
 			HTTP_HEADER = {
 				"User-Agent" => "RWiki's RSS Maneger version #{VERSION}. " <<
-				"Using RSS parser version is #{::RSS::VERSION}."
+				"Using RSS parser version is #{::RSS::VERSION}.",
 			}
 
 			@@cache = Hash.new({})
@@ -54,124 +55,39 @@ module RWiki
 				@mutex = Mutex.new
 			end
 
-			def parse(uri, charset, name=nil, expire=nil)
+			def parse(uri_str, charset, name=nil, expire=nil)
 				begin
-					ur = URI.parse(uri)
+					uri = URI.parse(uri_str)
 					expire ||= EXPIRE
 
-					raise URI::InvalidURIError if ur.scheme != "http"
+					raise URI::InvalidURIError if uri.scheme != "http"
 
 					parsed = false
-
 					need_update = nil
 
 					@@mutex.synchronize do
-						need_update = !@@cache.has_key?(uri) or
-							((@@cache[uri][:time] + expire) < Time.now)
+						need_update = !@@cache.has_key?(uri_str) or
+							((@@cache[uri_str][:time] + expire) < Time.now)
 					end
 
 					if need_update
-
-						rss_source = nil
-						begin
-							rss_source = fetch_rss(ur)
-						rescue TimeoutError,
-								SocketError,
-								Net::HTTPBadResponse,
-								Net::HTTPHeaderSyntaxError,
-								SystemCallError, # for sysread
-								EOFError # for sysread
-							@@mutex.synchronize do 
-								@@cache[uri] = {
-									:time => Time.now,
-									:name => name,
-									:channel => nil,
-									:items => [],
-									:image => nil,
-								}
-							end
-							raise InvalidResourceError
-						end
-
-						# parse RSS
-						rss = nil
-						begin
-							rss = ::RSS::Parser.parse(rss_source, true)
-						rescue ::RSS::InvalidRSSError
-							rss = ::RSS::Parser.parse(rss_source, false)
-							@mutex.synchronize do
-								@invalid_resources << [uri, name]
-							end
-						end
-						raise ::RSS::Error if rss.nil?
-						channel = rss.channel
-						raise ::RSS::Error if channel.nil?
-						pubDate_to_dc_date(channel)
-
-						# pre processing
-						begin
-							rss.output_encoding = charset
-						rescue ::RSS::UnknownConvertMethod
-						end
-						@@mutex.synchronize do 
-							@@cache[uri] = {
-								:time => Time.now,
-								:name => name,
-								:channel => channel,
-								:items => [],
-							}
-							@@cache[uri][:image] = rss.image
-						end
-
-						items = rss.items
-
-						items.delete_if do |item|
-							item.link.to_s =~ /\A\s*\z/
-						end
-
-						if items.empty?
-							@mutex.synchronize do
-								@not_include_update_info_resources << [uri, name]
-							end
-						else
-							has_update_info = false
-
-							items.each do |item|
-								next if /\A\s*\z/ =~ item.title.to_s
-								@@mutex.synchronize do
-									pubDate_to_dc_date(item)
-									if !has_update_info and (channel.dc_date or item.dc_date)
-										has_update_info = true
-									end
-									@@cache[uri][:items] << item
-								end
-							end
-
-							unless has_update_info
-								@mutex.synchronize do
-									@not_include_update_info_resources << [uri, name]
-								end
-							end
-
-						end
-
-						parsed = true
-
+						puts "updating... #{uri_str}"
+						parsed = update_cache(uri_str, charset, name, get_rss_source(uri))
 					end
 					
-					if !parsed and @@cache[uri][:items].empty?
+					if !parsed and @@cache[uri_str][:items].empty?
 						@mutex.synchronize do
-							@not_include_update_info_resources << [uri, name]
+							@not_include_update_info_resources << [uri_str, name]
 						end
 					end
 
 				rescue URI::InvalidURIError
 					@mutex.synchronize do
-						@invalid_uris << [uri, name]
+						@invalid_uris << [uri_str, name]
 					end
 				rescue InvalidResourceError, ::RSS::Error
 					@mutex.synchronize do
-						@invalid_resources << [uri, name]
+						@invalid_resources << [uri_str, name]
 					end
 				end
 			end
@@ -244,15 +160,102 @@ module RWiki
 			end
 
 			private
-			def fetch_rss(uri)
-				rss = ''
+			def get_rss_source(uri)
+				rss_source = nil
+				begin
+					rss_source = fetch_rss(uri, @@cache[uri.to_s][:time])
+				rescue TimeoutError,
+				SocketError,
+				Net::HTTPBadResponse,
+				Net::HTTPHeaderSyntaxError,
+				SystemCallError, # for sysread
+				EOFError # for sysread
+					@@mutex.synchronize do 
+						@@cache[uri.to_s] = {
+							:time => Time.now,
+							:name => name,
+							:channel => nil,
+							:items => [],
+							:image => nil,
+						}
+					end
+					raise InvalidResourceError
+				end
+				rss_source
+			end
+
+			def fetch_rss(uri, cache_time)
+				rss = nil
 				Net::HTTP.start(uri.host, uri.port || 80) do |http|
 					path = uri.path
 					path << "?#{uri.query}" if uri.query
-					req = http.request_get(path, HTTP_HEADER)
-					raise InvalidResourceError unless req.code == "200"
-					rss << req.body
+					req = http.request_get(path, http_header(cache_time))
+					case req.code
+					when "200"
+						rss = req.body
+					when "304"
+						# not modified
+						puts "#{uri.to_s} does not modified"
+					else
+						raise InvalidResourceError
+					end
 				end
+				rss
+			end
+
+			def http_header(cache_time)
+				header = HTTP_HEADER.dup
+				if cache_time.respond_to?(:rfc2822)
+					header["If-Modified-Since"] = cache_time.rfc2822
+				end
+				header
+			end
+
+			def update_cache(uri, charset, name, source)
+				if source.nil? and @@cache[uri]
+					@@mutex.synchronize do
+						@@cache[uri][:time] = Time.now
+					end
+					return false
+				end
+				
+				rss = parse_rss(uri, name, source)
+				pubDate_to_dc_date(rss.channel)
+
+				begin
+					rss.output_encoding = charset
+				rescue ::RSS::UnknownConvertMethod
+				end
+				@@mutex.synchronize do 
+					@@cache[uri] = {
+						:time => Time.now,
+						:name => name,
+						:channel => rss.channel,
+						:items => [],
+					}
+					@@cache[uri][:image] = rss.image
+				end
+				
+				unless handle_items(uri, rss.items, !rss.channel.dc_date.nil?)
+					@mutex.synchronize do
+						@not_include_update_info_resources << [uri, name]
+					end
+				end
+				
+				true
+			end
+
+			def parse_rss(uri, name, source)
+				rss = nil
+				begin
+					rss = ::RSS::Parser.parse(source, true)
+				rescue ::RSS::InvalidRSSError
+					rss = ::RSS::Parser.parse(source, false)
+					@mutex.synchronize do
+						@invalid_resources << [uri, name]
+					end
+				end
+				raise ::RSS::Error if rss.nil? or rss.channel.nil?
 				rss
 			end
 
@@ -262,6 +265,23 @@ module RWiki
 						alias_method(:dc_date, :pubDate)
 					end
 				end
+			end
+			
+			def handle_items(uri, items, have_update_info)
+				items.delete_if do |item|
+					item.link.to_s =~ /\A\s*\z/
+				end
+
+				items.each do |item|
+					next if /\A\s*\z/ =~ item.title.to_s
+					@@mutex.synchronize do
+						pubDate_to_dc_date(item)
+						have_update_info = true if item.dc_date
+						@@cache[uri][:items] << item
+					end
+				end
+
+				have_update_info
 			end
 			
 		end

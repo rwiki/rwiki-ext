@@ -143,7 +143,7 @@ module RWiki
 			end
 		end
 
-		class PageCacheFile < ::RWiki::PageStore
+		class PageCacheFile < ::RWiki::DB::Base
 			include MonitorMixin
 
 			EXPIRE = 30 * 60
