@@ -72,7 +72,7 @@ module RWiki
 			end
 
 			def clear
-				@@wiki.each do |wiki|
+				@@wiki.each do |wiki_type, wiki|
 					wiki.clear
 				end
 			end

@@ -54,15 +54,21 @@ module RWiki
 
 		module LinkSectionMixIn
 			def new_page_name(pages)
+				page_numbers = pages.collect do |page|
+					md = @pattern.match(page.name)
+					if md and !page.empty?
+						md[1].to_i
+					else
+						-1
+					end
+				end
+
 				@base_name +
-					pages.collect do |page|
-						md = @pattern.match(page.name)
-						if md and !page.empty?
-							md[1].to_i
-						else
-							-1
-						end
-					end.max.to_i.succ.to_s
+					if page_numbers.empty?
+						"0"
+					else
+						page_numbers.max.succ.to_s
+					end
 			end
 		end
 
