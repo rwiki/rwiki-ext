@@ -30,13 +30,17 @@ module RWiki
 		class << self
 
 			def install
-				sec = Section.new(nil, 'ImportWiki')
+				config = ::RWiki::BookConfig.default.dup
+				config.format = AdminPageFormat
+				sec = Section.new(config, 'ImportWiki')
 				::RWiki::Book.section_list.push(sec)
 			end
 
 			def install_wiki(wiki_type, connector)
 				@@wiki[wiki_type] = {}
-				sec = ImportSection.new(nil, /\A#{wiki_type}:[^:]+:/, connector, wiki_type)
+				config = ::RWiki::BookConfig.default.dup
+				config = make_import_section_config(config, connector, wiki_type)
+				sec = ImportSection.new(config, /\A#{wiki_type}:[^:]+:/, connector, wiki_type)
 				::RWiki::Book.section_list.push(sec)
 			end
 
@@ -90,6 +94,15 @@ module RWiki
 				@@available_encodings
 			end
 
+			private
+
+			def make_import_section_config(config, connector, wiki_type)
+				config.db = PageCacheFile.new(DB_DIR, connector, wiki_type)
+				config.page = ImportPage
+				config.format = ImportPageFormat
+				config
+			end
+				
 		end
 
 		class PropLoader
@@ -184,8 +197,6 @@ module RWiki
 			end
 			
 			def recached?(name)
-				p name
-				p @recache_table.keys
 				@recache_table[name]
 			end
 
@@ -214,9 +225,9 @@ module RWiki
 			def cache(name, src, recache=true)
 				synchronize do
 					unless src.nil?
-						p "This is recache? #{recache}"
+#						p "This is recache? #{recache}"
 						@recache_table[name] = recache
-						p "Writing cache of #{fname(name)}. src is #{src}"
+#						p "Writing cache of #{fname(name)}. src is #{src}"
 						File.open(fname(name), 'w') {|fp| fp.write(src)}
 					end
 				end
@@ -224,7 +235,7 @@ module RWiki
 
 			def read_cache(name)
 				synchronize do
-					p "Reading cache of #{fname(name)}"
+#					p "Reading cache of #{fname(name)}"
 					File.open(fname(name)) {|fp| fp.read} rescue nil
 				end
 			end
@@ -232,16 +243,16 @@ module RWiki
 			def if_old_then_cache(name,	wiki_name, page_name)
 				begin
 					stat = File.stat(fname(name))
-					p "Comparing cache time #{stat.mtime} ... "
-					p "recache? #{stat.mtime + EXPIRE < Time.now}"
+#					p "Comparing cache time #{stat.mtime} ... "
+#					p "recache? #{stat.mtime + EXPIRE < Time.now}"
 					raise if stat.mtime + EXPIRE < Time.now
 				rescue
 					begin
 						cache(name, connector(wiki_name).fetch(page_name))
 					rescue Error, NameError
-						p "Error occured in caching"
-						p $!
-						puts $@ 
+#						p "Error occured in caching"
+#						p $!
+#						puts $@ 
 					end
 				end
 			end
@@ -291,12 +302,12 @@ module RWiki
 			end
 
 			def reload_src(force=false)
-				puts caller[0..3]
-				p "Force reload? #{force}"
-				p "Need reload? #{@section.db.recached?(@name)}"
+#				puts caller[0..3]
+#				p "Force reload? #{force}"
+#				p "Need reload? #{@section.db.recached?(@name)}"
 				if force or @section.db.recached?(@name)
-					@book.gc
-					@book[@name]
+#					p "RELOAD!!!!!!!!!!"
+					update_src(@section.db[name])
 				end
 			end
 
@@ -308,8 +319,6 @@ module RWiki
 				super(config, pattern)
 				add_prop_loader(:import_wiki, PropLoader.new)
 				@connector = connector
-				@db = PageCacheFile.new(DB_DIR, connector, wiki_type)
-				@page = ImportPage
 			end
 
 		end
@@ -318,7 +327,6 @@ module RWiki
 
 			def initialize(config, string)
 				super(config, string)
-				@page = ImportPage
 				add_prop_loader(:import_wiki, PropLoader.new)
 				add_default_src_proc(method(:default_src))
 			end
@@ -327,13 +335,13 @@ module RWiki
 
 		end
 
-		class PageFormat < ::RWiki::PageFormat
+		class AdminPageFormat < ::RWiki::PageFormat
 			@rhtml =
 				{
 					:view => ERbLoader.new('view(pg)', 'importwiki.rhtml'),
-					:edit => ERbLoader.new('edit(pg)', 'importwiki-edit.rhtml')
-				}
+			}
 			reload_rhtml
+
 
 			def create_src(pg, src)
 				rv = pg.src
@@ -356,6 +364,13 @@ module RWiki
 				rv
 			end
 
+		end
+
+		class ImportPageFormat < ::RWiki::PageFormat
+			def edit(pg)
+				pg.reload_src(true)
+				super
+			end
 		end
 
 		class BaseConnector
@@ -405,7 +420,7 @@ module RWiki
 
 	end
 
-	install_page_module('ImportWiki', ::RWiki::ImportWiki::PageFormat, 'ImportWiki')
+	install_page_module('ImportWiki', ::RWiki::ImportWiki::AdminPageFormat, 'ImportWiki')
 
 end
 
