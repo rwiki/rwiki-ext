@@ -24,6 +24,16 @@
 <link rel="stylesheet" type="text/css" href="<%=h @@css %>" />
 <%
   end
+  if defined?(RWiki::ICON) and RWiki::ICON
+%>
+<link rel="icon" type="image/png" href="<%= h RWiki::ICON %>" />
+<%
+  end
+  if defined?(RWiki::SHORTCUT_ICON) and RWiki::SHORTCUT_ICON
+%>
+<link rel="shortcut icon" type="image/x-icon" href="<%= h RWiki::SHORTCUT_ICON %>" />
+<%
+  end
 %>
 <title><%=h @@title %> - <%=h pg.title %></title>
 </head>
