@@ -1,29 +1,29 @@
 <ul>
 <% link_pages.each do |link_pg|
-		rss = maneger[link_pg.rss]
-		image_infos = []
-		if rss[:image]
-			image_infos << rss[:image].url
-			image_infos << rss[:image].title
-		end
+    rss = maneger[link_pg.rss]
+    image_infos = []
+    if rss[:image]
+      image_infos << rss[:image].url
+      image_infos << rss[:image].title
+    end
 %>
-	<li><%= send(:make_anchor, ref_name(link_pg.name), link_pg.title, link_pg.modified, *image_infos) %>(<%= link_pg.count %>)<%
-	 unless link_pg.descriptions.empty?
-	 %>: <span class="description"><%=h link_pg.descriptions.first %></span>
-	<% end %>
-	<% if display_update_info and rss and rss[:items] and !rss[:items].empty? %>
-		<ul>
-			<% rss[:items][0...3].each do |item| %>
-				<li>
-					<%= ia(item) %>
-					<% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
-					<% if item.content %>
-					: <%= item.content.shorten(default_rss_description_character_number) %>
-					<% end %>
-				</li>
-			<% end %>
-		</ul>
-	<% end %>
-	</li>
+  <li><%= send(:make_anchor, ref_name(link_pg.name), link_pg.title, link_pg.modified, *image_infos) %>(<%= link_pg.count %>)<%
+   unless link_pg.descriptions.empty?
+   %>: <span class="description"><%=h link_pg.descriptions.first %></span>
+  <% end %>
+  <% if display_update_info and rss and rss[:items] and !rss[:items].empty? %>
+    <ul>
+      <% rss[:items][0...3].each do |item| %>
+        <li>
+          <%= ia(item) %>
+          <% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
+          <% if item.content %>
+          : <%= item.content.shorten(default_rss_description_character_number) %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+  </li>
 <% end %>
 </ul>

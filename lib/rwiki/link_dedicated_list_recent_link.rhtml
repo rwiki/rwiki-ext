@@ -36,7 +36,8 @@
   <div class="link-target"><%= ca(channel, image, name) %></div>
   <% if /\A\s*\z/ !~ item.content.to_s %>
   <div class="description">
-    <p><%= item.content %></p>
+    <p class="description"><%= item.description %></p>
+    <p class="content"><%= item.content_encoded %></p>
     <% if item.respond_to?(:dc_rights) and /\A\s*\z/ !~ item.dc_rights.to_s then %><span class="rights"><%=h item.dc_rights %></span><% end %>
   </div>
   <% end %>

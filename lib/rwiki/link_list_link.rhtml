@@ -1,27 +1,27 @@
 <ul>
 <% link_pages.each do |link_pg|
-		rss = maneger[link_pg.rss]
-		image_infos = []
-		if rss[:image]
-			image_infos << rss[:image].url
-			image_infos << rss[:image].title
-		end
+    rss = maneger[link_pg.rss]
+    image_infos = []
+    if rss[:image]
+      image_infos << rss[:image].url
+      image_infos << rss[:image].title
+    end
 %>
-	<li>
-		<%= send(:make_anchor, ref_name(link_pg.name), link_pg.title, link_pg.modified, *image_infos) %>: <%=h link_pg.description %>
-	<% if rss and rss[:items] %>
-		<ul>
-			<% rss[:items][0...3].each do |item| %>
-				<li>
-					<%= ia(item) %>
-					<% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
-					<% if item.content %>
-					: <%= item.content.shorten %>
-					<% end %>
-				</li>
-			<% end %>
-		</ul>
-	<% end %>
-	</li>
+  <li>
+    <%= send(:make_anchor, ref_name(link_pg.name), link_pg.title, link_pg.modified, *image_infos) %>: <%=h link_pg.description %>
+  <% if rss and rss[:items] %>
+    <ul>
+      <% rss[:items][0...3].each do |item| %>
+        <li>
+          <%= ia(item) %>
+          <% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
+          <% if item.content %>
+          : <%= item.content.shorten %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+  </li>
 <% end %>
 </ul>
