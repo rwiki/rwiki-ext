@@ -4,7 +4,7 @@
 <div class="diff">
 
 <%
-  logs = pg.logs(target).reverse
+  logs = pg.book[target].logs.reverse
   size = logs.size
 	r1 = rev1
 	log1 = logs[r1]
@@ -27,6 +27,9 @@
 
 <% if dif %>
 <pre class="diff"><%= h dif %></pre>
+	<% if log2.commit_log %>
+<pre class="log"><%= h log2.commit_log %></pre>
+	<% end %>
 <% else %>
 <p>No diff.</p>
 <% end %>

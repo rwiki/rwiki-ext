@@ -6,7 +6,7 @@
 <ul>
 <%
 	targ = target
-	logs = pg.logs(targ)
+	logs = pg.book[targ].logs
 	size = logs.size
 %>
 <% logs.each_with_index do |log, i| %>
@@ -14,7 +14,8 @@
 		<%=h log.date %>:
 		<%= rev %>(<%= h log.revision %>):
 		<%= diff_link(targ, rev - 1, rev) %>:
-		<%=h log.lines %>
+		<%=h log.lines %>:
+		<%=h log.commit_log %>
 	</li>
 <% prev = log %>
 <% end %>

@@ -1,16 +1,27 @@
-RWiki::Version.regist('rw-history', '2004-02-09')
+RWiki::Version.regist('rw-history', '2004-02-10')
 
 require "time"
 
 module RWiki
 
 	class Page
-		def logs(target)
-			db.logs(target)
+
+		attr_reader(:logs)
+
+		alias __initialize initialize
+		def initialize(*args)
+			__initialize(*args)
+			@logs = db.logs(@name)
+		end
+		
+		alias _set_src set_src
+		def set_src(*args, &block)
+			_set_src(*args, &block)
+			@logs = db.logs(@name)
 		end
 
-		def diff(target, rev1, rev2)
-			db.diff(target, rev1, rev2)
+		def diff(rev1, rev2)
+			db.diff(@name, rev1, rev2)
 		end
 
 	end
@@ -65,7 +76,17 @@ module RWiki
 								log.send("#{name.strip}=", value.join(":").strip)
 							end
 						end
-						log = nil
+					end
+				when /\Abranches: /
+					# not need
+				when /\A(?:-+|=+)$/
+					log = nil
+				when "*** empty log message ***\n"
+					# no log message
+				else
+					if log
+						log.commit_log ||= ""
+						log.commit_log << KCode.kconv(line.gsub(/\\(\d\d\d)/) {$1.oct.chr})
 					end
 				end
 			end
@@ -92,7 +113,7 @@ module RWiki
 
 	class Log
 
-		attr_accessor :author, :state, :lines
+		attr_accessor :author, :state, :lines, :commit_log
 		attr_reader :date, :revision
 		
 		def initialize(rev)
@@ -156,7 +177,7 @@ class DiffFormat < RWiki::PageFormat
 	def diff(pg, log1, log2)
 		result = nil
 		if log1 and log2
-			result = pg.diff(target, log1.revision, log2.revision)
+			result = pg.book[target].diff(log1.revision, log2.revision)
 			result = nil if /\A\s*\z/ =~ result
 		end
 		result
