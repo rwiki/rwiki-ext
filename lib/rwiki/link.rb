@@ -1,5 +1,6 @@
 require "rwiki/custom-edit"
 require "rwiki/rss-maneger"
+require "rwiki/rss-page"
 
 module RWiki
 	module LinkSystem
