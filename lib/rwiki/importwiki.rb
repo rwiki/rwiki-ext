@@ -153,6 +153,7 @@ module RWiki
 				@connector_class = connector_class
 				@connector_cache = {}
 				@wiki_type = wiki_type
+				@recache_table = {}
 				super()
 			end
 
@@ -182,6 +183,12 @@ module RWiki
 				end
 			end
 			
+			def recached?(name)
+				p name
+				p @recache_table.keys
+				@recache_table[name]
+			end
+
 			private
 			def set(name, src, opt=nil)
 				return if src.nil?
@@ -197,7 +204,7 @@ module RWiki
 			def get(name)
 				wiki_name, page_name = split_name(name)
 				begin
-					cache(name, connector(wiki_name).fetch(page_name))
+					cache(name, connector(wiki_name).fetch(page_name), false)
 					read_cache(name)
 				rescue Error, NameError
 					nil
@@ -213,10 +220,6 @@ module RWiki
 						File.open(fname(name), 'w') {|fp| fp.write(src)}
 					end
 				end
-			end
-
-			def recached?(name)
-				@recache_table[name]
 			end
 
 			def read_cache(name)
@@ -283,11 +286,18 @@ module RWiki
 			end
 
 			def src
-				if @section.db.recached?(@name)
+				reload_src
+				@src
+			end
+
+			def reload_src(force=false)
+				puts caller[0..3]
+				p "Force reload? #{force}"
+				p "Need reload? #{@section.db.recached?(@name)}"
+				if force or @section.db.recached?(@name)
 					@book.gc
 					@book[@name]
 				end
-				@src
 			end
 
 		end
@@ -318,7 +328,11 @@ module RWiki
 		end
 
 		class PageFormat < ::RWiki::PageFormat
-			@rhtml = { :view => ERbLoader.new('view(pg)', 'importwiki.rhtml') }
+			@rhtml =
+				{
+					:view => ERbLoader.new('view(pg)', 'importwiki.rhtml'),
+					:edit => ERbLoader.new('edit(pg)', 'importwiki-edit.rhtml')
+				}
 			reload_rhtml
 
 			def create_src(pg, src)
@@ -341,6 +355,7 @@ module RWiki
 				end
 				rv
 			end
+
 		end
 
 		class BaseConnector
