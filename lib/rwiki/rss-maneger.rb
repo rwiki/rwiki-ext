@@ -69,7 +69,11 @@ module RWiki
 						rss_source = nil
 						begin
 							rss_source = fetch_rss(ur)
-						rescue TimeoutError, SocketError, Errno::ECONNRESET # for FreeBSD
+						rescue TimeoutError,
+								SocketError,
+								Net::HTTPBadResponse,
+								Net::HTTPHeaderSyntaxError,
+								Errno::ECONNRESET # for FreeBSD
 							@@mutex.synchronize do 
 								@@cache[uri] = {
 									:time => Time.now,

@@ -428,6 +428,7 @@ __EOM__
   end
 
   def unknownError( err, info )
+		log( SEV_ERROR, "unknown error occured.\n[#{err}]\n" << info.join("\n") )
     errMessage = "#{ err }\n\n" << info.join( "\n" )
     errorResponse( 'error', errMessage )
   end
