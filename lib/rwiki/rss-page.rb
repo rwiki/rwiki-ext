@@ -109,13 +109,26 @@ module RWiki
 
 		module FormatUtils
 
-			def make_anchor(href, name, time=nil)
-				%Q[<a href="#{h href}" title="#{h name} #{make_modified(time)}" class="#{modified_class(time)}">#{h name}</a>]
+			def make_anchor(href, name, time=nil, image_src=nil, image_title=nil)
+				anchor = if image_src
+									 image_title ||= name
+									 %Q[<img src="#{h image_src}" title="#{h image_title}" alt="#{h image_title}"]
+								 else
+									 h(name)
+								 end
+				%Q[<a href="#{h href}" title="#{h name} #{make_modified(time)}" class="#{modified_class(time)}">#{anchor}</a>]
 			end
 
-			def make_channel_anchor(channel, name=nil)
+			def make_channel_anchor(channel, image, name=nil)
 				name = channel.title if name.to_s =~ /\A\s*\z/
-				make_anchor(channel.link.strip, name, channel.dc_date)
+				if image
+					image_src = image.url
+					image_title = image.title
+				else
+					image_src = nil
+					image_title = nil
+				end
+				make_anchor(channel.link, name, channel.dc_date, image_src, image_title)
 			end
 			alias ca make_channel_anchor
 
@@ -128,11 +141,11 @@ module RWiki
 				%Q[(#{h modified(date)})]
 			end
 
-			def make_anchors_and_modified(channel, item, name=nil)
-				"#{ca(channel, name)}: #{ia(item)} #{make_modified(item.dc_date)}"
+			def make_anchors_and_modified(channel, image, item, name=nil)
+				"#{ca(channel, image, name)}: #{ia(item)} #{make_modified(item.dc_date)}"
 			end
 			alias am make_anchors_and_modified
-			
+
 			def make_uri_anchor(uri, name)
 				%Q|<a href="#{h uri}">#{h name} : #{h uri}</a>|
 			end

@@ -2,6 +2,15 @@
 <%= navi(pg) %>
 
 <%= link_navi(pg) %>
+<%
+	if pg.rss
+		maneger = ::RWiki::RSS::Maneger.new
+		maneger.parse(pg.rss, @@charset, pg.title)
+		rss = maneger[pg.rss]
+	else
+		maneger = rss = nil
+	end
+%>
 
 <hr />
 
@@ -9,8 +18,12 @@
 <h1><%=h pg.title %></h1>
 <% if pg.url or pg.rss %>
 <p>
-<%	if pg.url then %><%= make_anchor(pg.url, pg.title) %><% end %>
-<%	if pg.rss then %>[<%= make_anchor(pg.rss, "RSS") %>]<% end %>
+	<% if rss and rss[:channel] %>
+	<%= ca(rss[:channel], rss[:image], pg.title) %>
+	<% elsif pg.url %>
+	<%= make_anchor(pg.url, pg.title) %>
+	<% end %>
+	<% if pg.rss then %>[<%= make_anchor(pg.rss, "RSS") %>]<% end %>
 </p>
 <% end %>
 
@@ -27,20 +40,16 @@
 </ul>
 <% end %>
 
-<%
-	if pg.rss
-		maneger = ::RWiki::RSS::Maneger.new
-		maneger.parse(pg.rss, @@charset, pg.title)
-%>
+<% if rss %>
 <h2>¹¹¿·¾õ¶·</h2>
 <ul>
-<%	 maneger.items(pg.rss).each do |item| %>
+	<% rss[:items].each do |item| %>
 				<li>
 					<%= ia(item) %>
 					<% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
 					<% if item.description then %>: <%=h item.description.shorten %><% end %>
 				</li>
-<%	 end %>
+	<% end %>
 </ul>
 </div>
 <% end %>

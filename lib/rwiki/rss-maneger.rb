@@ -20,7 +20,7 @@ module RWiki
 
 			include Enumerable
 
-			VERSION = "0.0.3"
+			VERSION = "0.0.4"
 			
 			HTTP_HEADER = {
 				"User-Agent" => "RWiki's RSS Maneger version #{VERSION}. " <<
@@ -86,7 +86,8 @@ module RWiki
 									:time => Time.now,
 									:name => name,
 									:channel => nil,
-									:items => []
+									:items => [],
+									:image => nil,
 								}
 							end
 							raise InvalidResourceError
@@ -117,8 +118,9 @@ module RWiki
 								:time => Time.now,
 								:name => name,
 								:channel => channel,
-								:items => []
+								:items => [],
 							}
+							@@cache[uri][:image] = rss.image
 						end
 
 						items = rss.items
@@ -189,6 +191,7 @@ module RWiki
 						channel = v[:channel]
 						next if channel.nil?
 						name = v[:name]
+						image = v[:image]
 						v[:items].each do |item|
 							if item.dc_date
 								# OK
@@ -199,12 +202,12 @@ module RWiki
 							else
 								next
 							end
-							has_update_info_values << [uri, channel, item, name]
+							has_update_info_values << [uri, channel, image, item, name]
 						end
 					end
 				end
 				has_update_info_values.sort do |x, y|
-					y[2].dc_date <=> x[2].dc_date
+					y[3].dc_date <=> x[3].dc_date
 				end
 			end
 
@@ -212,7 +215,7 @@ module RWiki
 				@@mutex.synchronize do
 					@@cache.each do |uri, value|
 						next if value[:channel].nil?
-						yield(uri, value[:channel], value[:items], value[:name], value[:time])
+						yield(uri, value[:channel], value[:image], value[:items], value[:name], value[:time])
 					end
 				end
 			end

@@ -41,8 +41,8 @@
 <% end %>
 <h2>リンク先の更新順一覧</h2>
 <ol>
-<% recent_changes.each do |uri, channel, item, name| %>
-	<li><p><%= am(channel, item, name) %> <%= hotbar(item.dc_date) %></p>
+<% recent_changes.each do |uri, channel, image, item, name| %>
+	<li><p><%= am(channel, image, item, name) %> <%= hotbar(item.dc_date) %></p>
 	  <% unless item.description.nil? %>
 	    <p><%=h item.description.shorten %></p>
 	  <% end %>
@@ -59,12 +59,19 @@
 </ol>
 <h2>リンク一覧</h2>
 <ul>
-<% link_pages.each do |link_pg| %>
+<% link_pages.each do |link_pg|
+		rss = maneger[link_pg.rss]
+		image_infos = []
+		if rss[:image]
+			image_infos << rss[:image].url
+			image_infos << rss[:image].title
+		end
+%>
 	<li>
-		<%= make_anchor(ref_name(link_pg.name), link_pg.title, link_pg.modified) %>: <%=h link_pg.description %>
-	<% if link_pg.rss %>
+		<%= send(:make_anchor, ref_name(link_pg.name), link_pg.title, link_pg.modified, *image_infos) %>: <%=h link_pg.description %>
+	<% if rss and rss[:items] %>
 		<ul>
-			<% maneger.items(link_pg.rss)[0...3].each do |item| %>
+			<% rss[:items][0...3].each do |item| %>
 				<li>
 					<%= ia(item) %>
 					<% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>

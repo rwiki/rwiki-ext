@@ -42,7 +42,7 @@
 <% if prop[:use_thread] then %><p>Useing thread</p><% end %>
 
 <ol>
-<% recent_changes[0...number_of_pages].each do |uri, channel, item, name| %>
+<% recent_changes[0...number_of_pages].each do |uri, channel, image, item, name| %>
   <li><p><%= am(channel, item, name) %> <%= hotbar(item.dc_date) %></p>
   <% unless item.description.nil? %>
     <p><%=h item.description.shorten(number_of_chars)%></p>

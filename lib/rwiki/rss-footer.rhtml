@@ -10,7 +10,7 @@ if ::RWiki::RSS::Topic.display
 	topics = ::RWiki::RSS::Topic.topics
 	pages = ::RWiki::RSS::Topic.pages
 	characters = ::RWiki::RSS::Topic.characters
-	::RWiki::RSS::Topic.each_topics do |uri, channel, items, name, time|
+	::RWiki::RSS::Topic.each_topics do |uri, channel, image, items, name, time|
 		if topics.has_key?(uri) and not items.empty?
 %>
 	<div class="rss-topic-item">
