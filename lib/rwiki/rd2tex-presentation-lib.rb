@@ -113,8 +113,12 @@ module RD
 
     def apply_to_Verbatim(element)
 			indent do
+				contents = []
+				element.each_line do |x|
+					contents.push(x)
+				end
 				[%Q[\\begin{alltt}],
-				 element.collect{|x| x.chomp},
+					contents.collect{|x| x.chomp},
 				 %Q[\\end{alltt}\n]].flatten
 			end
     end
@@ -195,15 +199,15 @@ module RD
     end
   
     def apply_to_Code(element, content)
-      %Q[texttt{#{content.join("")}}]
+      %Q[\\texttt{#{content.join("")}}]
     end
   
     def apply_to_Var(element, content)
-      %Q[textit{#{content.join("")}}]
+      %Q[\\textit{#{content.join("")}}]
     end
   
     def apply_to_Keyboard(element, content)
-      %Q[texttt{#{content.join("")}}]
+      %Q[\\texttt{#{content.join("")}}]
     end
   
     def apply_to_Index(element, content)
