@@ -37,7 +37,7 @@
 <% end %>
 <% if 0 < num_of_pages and num_of_pages < full_recent_changes.size %>
 <div class="link-navi">
-	<span class="link-navi">[<a href="<%= full_ref_name(pg.name, 'pages' => num_of_pages + added_recent_changes_number) %>">もっと見たい</a>]</span>
-	<span class="link-navi">[<a href="<%= full_ref_name(pg.name, 'pages' => -1) %>">全部見たい</a>]</span>
+	<span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', num_of_pages + added_recent_changes_number]]) %>">もっと見たい</a>]</span>
+	<span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', -1]]) %>">全部見たい</a>]</span>
 </div>
 <% end %>

@@ -24,8 +24,9 @@
 		end
 	end
 
-#	params = keywords.collect {|keyword| ["em", keyword]}
-	params = {}
+	params = [["mode", var("mode")[0]],
+		  ["type", search_type],
+		  *keywords.collect{|keyword| ["key", keyword]}]
 
 	found_page = ((not category_pages.empty?) or (not link_pages.empty?))
 %>
@@ -37,7 +38,7 @@
 
 <% if found_page %>
 <h2>リンク先の更新状況</h2>
-<%= hilighten(dedicated_list_recent_link(pg, link_pages), keywords) %>
+<%= hilighten(dedicated_list_recent_link(pg, link_pages, *params), keywords) %>
 </div>
 
 </div>
