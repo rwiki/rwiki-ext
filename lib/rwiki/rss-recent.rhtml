@@ -6,8 +6,20 @@
 	maneger = ::RWiki::RSS::Maneger.new
 	prop = pg.prop(:rss)
 	expire = prop[:expire] || ::RWiki::RSS::EXPIRE
-	number = prop[:number] || ::RWiki::RSS::DISPLAY_NUMBER
-	characters = prop[:characters] || ::RWiki::RSS::DISPLAY_CHARACTERS
+
+  req_pages ,= var('pages')
+  number_of_pages = if req_pages
+      req_pages.to_i
+    else
+      prop[:pages] || ::RWiki::RSS::DISPLAY_PAGES
+    end
+
+	req_chars ,= var('chars')
+	number_of_chars = if req_chars
+      req_chars.to_i
+    else
+     prop[:characters] || ::RWiki::RSS::DISPLAY_CHARACTERS
+    end
 
 	::RWiki::RSS::Maneger.forget(expire)
 
@@ -20,11 +32,9 @@
 			maneger.parse(uri, @@charset, name, expire)
 		end
 	end
+
+	recent_changes = maneger.recent_changes
 %>
-
-<%= body(pg) %>
-
-<hr />
 
 <div class="rss-recent">
 <h2>RSS Recent</h2>
@@ -32,16 +42,20 @@
 <% if prop[:use_thread] then %><p>Useing thread</p><% end %>
 
 <ol>
-<% maneger.recent_changes[0...number].each do |channel, item, name| %>
-  <li><%=h item.dc_date.localtime.iso8601 %>
-      : <%= ia(channel, item, name) %>
+<% recent_changes[0...number_of_pages].each do |channel, item, name| %>
+  <li><%= iam(channel, item, name) %> <%= hotbar(item.dc_date) %>
   <% unless item.description.nil? %>
     <ul>
-      <li><%=h item.description.shorten(characters)%></li>
+      <li><%=h item.description.shorten(number_of_chars)%></li>
     </ul>
   <% end %>
   </li>
 <% end %>
+<%
+  if number_of_pages > 0 and recent_changes.size > number_of_pages
+    %><li><a href="<%= full_ref_name(pg.name, 'pages' => number_of_pages + 30) %>">more ...</a></li><%
+  end
+%>
 </ol>
 
 <h2>Invalid URIs</h2>
@@ -69,5 +83,9 @@
 <h2>Processing time</h2>
 <p><%= Time.now - before_time %></p>
 </div>
+
+<hr />
+
+<%= body(pg) %>
 
 <%= footer(pg) %>

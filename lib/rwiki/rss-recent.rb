@@ -25,6 +25,11 @@ module RWiki
 				end
 				alias ia make_item_anchor
 				
+				def make_item_anchor_and_modified(channel, item, name)
+					ia(channel, item, name) << %Q| (#{h modified(item.dc_date)})|
+				end
+				alias iam make_item_anchor_and_modified
+				
 				def make_uri_anchor(uri, name)
 					%Q|<a href="#{h uri}">#{h name} : #{h uri}</a>|
 				end

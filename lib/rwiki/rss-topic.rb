@@ -54,7 +54,7 @@ module RWiki
 					@@mutex.synchronize do
 						@@maneger = ::RWiki::RSS::Maneger.new
 						@@topics = {}
-						@@number = DISPLAY_NUMBER
+						@@pages = DISPLAY_PAGES
 						@@characters = DISPLAY_CHARACTERS
 						@@use_thread = false
 						@@display = false
@@ -93,7 +93,7 @@ module RWiki
 
 			end
 
-			mutex_attr_accessor :use_thread, :number, :characters
+			mutex_attr_accessor :use_thread, :pages, :characters
 			mutex_attr_accessor :display, :expire
 			mutex_attr_reader :topics
 

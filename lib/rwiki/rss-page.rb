@@ -6,7 +6,7 @@ module RWiki
 		MINIMUM_EXPIRE = 60 * 60 unless const_defined?(:MINIMUM_EXPIRE)
 		EXPIRE = 2 * 60 * 60 unless const_defined?(:EXPIRE)
 		DISPLAY = true unless const_defined?(:DISPLAY)
-		DISPLAY_NUMBER = 5 unless const_defined?(:DISPLAY_NUMBER)
+		DISPLAY_PAGES = 5 unless const_defined?(:DISPLAY_PAGES)
 		DISPLAY_CHARACTERS = 20 unless const_defined?(:DISPLAY_CHARACTERS)
 		TRUE_VALUES = ["はい", "yes", "true"] unless const_defined?(:TRUE_VALUES)
 
@@ -70,9 +70,9 @@ module RWiki
 					else
 						@prop[:display] = false
 					end
-				when '件数', 'number'
-					@prop[:number] = value.to_i
-					@prop[:number] = DISPLAY_NUMBER if @prop[:number].zero?
+				when '件数', 'pages'
+					@prop[:pages] = value.to_i
+					@prop[:pages] = DISPLAY_PAGES if @prop[:pages].zero?
 				when '文字数', 'characters'
 					@prop[:characters] = value.to_i
 					if @prop[:characters].zero?

@@ -8,7 +8,7 @@
 	
 	prop = pg.prop(:rss)
 	topic.expire = prop[:expire] || ::RWiki::RSS::EXPIRE
-	topic.number = prop[:number] || ::RWiki::RSS::DISPLAY_NUMBER
+	topic.pages = prop[:pages] || ::RWiki::RSS::DISPLAY_PAGES
 	topic.characters = prop[:characters] || ::RWiki::RSS::DISPLAY_CHARACTERS
 	topic.use_thread = prop[:use_thread]
 	topic.display = prop[:display]
