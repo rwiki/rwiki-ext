@@ -51,7 +51,7 @@ document.write('<div class="<%= rss_display_toggle_name %>" id="<%= rss_display_
 </div>
 <script type="text/javascript">
 <!--
-if (/rss_display=none/.exec(document.cookie)) {
+if (! /rss_display=show/.exec(document.cookie)) {
 	show_hide("rss-topic-contents");
 }
 // -->
