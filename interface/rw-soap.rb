@@ -1,16 +1,16 @@
 #!/usr/local/bin/ruby
 
-$KCODE = 'EUC'	# SETUP
+$KCODE = 'EUC'  # SETUP
 rwiki_uri = 'druby://localhost:8470' # SETUP
-rwiki_log_dir = '/var/tmp'	# SETUP
-use_as_cgi_stub = true	# SETUP
+rwiki_log_dir = '/var/tmp'  # SETUP
+use_as_cgi_stub = true  # SETUP
 
 module RWiki
-	module SOAP
-		class RWikiControler
-			ALLOW_GET_PAGE = false	# SETUP
-		end
-	end
+  module SOAP
+    class RWikiControler
+      ALLOW_GET_PAGE = false  # SETUP
+    end
+  end
 end
 
 require 'rwiki/soap/servant'
@@ -23,7 +23,7 @@ else
   # standalone server
   require 'soap/rpc/standaloneServer'
   server = SOAP::RPC::StandaloneServer.new('Standalone', RWiki::SOAP::NS,
-																					 'localhost', 8080)
+                                           'localhost', 8080)
 end
 
 server.set_log(File.join(rwiki_log_dir, 'RWikiSOAPServer.log')) if rwiki_log_dir

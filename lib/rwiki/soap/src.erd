@@ -8,4 +8,4 @@ SOAPサーバのURIを登録．書式は
 
 となる．表示名を省略するとURIが表示される．
 
-* : http://localhost/~kou/rwiki/rw-soap-server.rb
+* : http://localhost/~kou/rwiki/rw-soap.rb

@@ -11,10 +11,10 @@ module RWiki
 
       def initialize(log_dir, end_point, http_proxy=nil, soap_action=nil)
         super(end_point, RWiki::SOAP::NS, soap_action)
-				unless log_dir.nil?
-					self.wiredump_file_base = File.join(log_dir, APP_NAME)
-				end
-				self.httpproxy = http_proxy
+        unless log_dir.nil?
+          self.wiredump_file_base = File.join(log_dir, APP_NAME)
+        end
+        self.httpproxy = http_proxy
 
         add_method('allow_get_page')
         add_method('page', 'name')
