@@ -63,7 +63,6 @@
 	<li>
 		<%= make_anchor(ref_name(link_pg.name), link_pg.title, link_pg.modified) %>: <%=h link_pg.description %>
 	<% if link_pg.rss %>
-		<%=h link_pg.rss %>
 		<ul>
 			<% maneger.items(link_pg.rss)[0...3].each do |item| %>
 				<li>
