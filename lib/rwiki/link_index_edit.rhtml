@@ -1,0 +1,22 @@
+<%= header(pg) %>
+<%= navi(pg) %>
+
+<div class="edit">
+<h1><%=h pg.title %></h1>
+
+<form action="<%= form_action %>" method="post">
+<p>
+<%= form_hidden(pg.name, 'submit') %>
+<input type="hidden" name="rev" value="<%= pg.revision %>" />
+<input type="hidden" name="src" value="<%=h pg.src %>" />
+タイトル: <input type="text" name="title" <%=tabindex%> value="<%=h pg.title %>" accesskey="T" />
+<br />
+説明: <textarea name="description" cols="80" rows="10" <%=tabindex%> accesskey="D"><%=h pg.description %></textarea>
+<input type="submit" name="commit" value="保存" <%=tabindex%> accesskey="S" />
+</p>
+</form>
+</div>
+
+<%= body(pg) %>
+
+<%= footer(pg) %>

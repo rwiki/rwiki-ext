@@ -1,0 +1,13 @@
+<%= header(pg) %>
+<%= navi(pg) %>
+
+<% index_pg = index_page(pg) %>
+<div class="link-navi">
+<span class="link-navi">[<%= make_anchor(ref_name(index_pg.name), index_pg.title, index_pg.modified) %>]</span>
+</div>
+
+<hr />
+
+<%= body(pg) %>
+
+<%= footer(pg) %>

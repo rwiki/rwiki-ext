@@ -1,0 +1,40 @@
+<%= header(pg) %>
+<%= navi(pg) %>
+<% 
+	src = pg.src || pg.book.default_src(pg.name)
+%>
+
+<div class="edit">
+<h1>Edit: <%=h pg.name%></h1>
+
+<form action="<%= form_action %>" method="post">
+<p>
+<%= form_hidden(pg.name, 'submit') %>
+<input type="hidden" name="rev" value="<%= pg.revision %>" />
+<input type="hidden" name="src" value="<%= h src %>" />
+
+<%= field_type(pg).to_html(self, pg) %>
+
+<br />
+<%
+  if defined?(::RWiki::PageStoreCVS) and pg.section.db.is_a?(::RWiki::PageStoreCVS)
+%>
+commit log:<br />
+<textarea name="commit_log" cols="80" rows="3" <%=tabindex%> accesskey="L">
+</textarea>
+<br />
+<%
+  end
+%>
+<input type="submit" name="commit" value="Save" <%=tabindex%> accesskey="S" />
+</p>
+</form>
+
+</div>
+
+<% unless pg.empty? %>
+<hr />
+<%= body(pg) %>
+<% end %>
+
+<%= footer(pg) %>

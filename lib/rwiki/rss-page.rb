@@ -108,5 +108,37 @@ module RWiki
 			end
 		end
 
+		module FormatUtils
+
+			def make_anchor(href, name, time=nil)
+				%Q[<a href="#{h href}" title="#{h name} #{make_modified(time)}" class="#{modified_class(time)}">#{h name}</a>]
+			end
+
+			def make_channel_anchor(channel, name=nil)
+				name = channel.title if name.to_s =~ /\A\s*\z/
+				make_anchor(channel.link.strip, name, channel.dc_date)
+			end
+			alias ca make_channel_anchor
+
+			def make_item_anchor(item)
+				make_anchor(item.link.strip, item.title, item.dc_date)
+			end
+			alias ia make_item_anchor
+
+			def make_modified(date)
+				%Q[(#{h modified(date)})]
+			end
+
+			def make_anchors_and_modified(channel, item, name=nil)
+				"#{ca(channel, name)}: #{ia(item)} #{make_modified(item.dc_date)}"
+			end
+			alias am make_anchors_and_modified
+			
+			def make_uri_anchor(uri, name)
+				%Q|<a href="#{h uri}">#{h name} : #{h uri}</a>|
+			end
+			alias ua make_uri_anchor
+		end
+
 	end
 end

@@ -1,0 +1,23 @@
+<%
+	title = var("title").first
+	title = pg.title if /\A\s*\z/ =~ title
+%>
+= <%=er title %>
+
+<%=er var("description").first %>
+
+== URL
+<% if /\A\s*\z/ !~ var("url").first %>
+((<URL:<%=er var("url").first %>>))
+<% end %>
+
+== RSS
+<% if /\A\s*\z/ !~ var("rss").first %>
+((<URL:<%=er var("rss").first %>>))
+<% end %>
+
+== カテゴリー
+
+<% var("categories").each do |name| %>
+* ((<<%=er pg.book[name].title %>|<%=er name %>>))
+<% end %>

@@ -42,20 +42,23 @@
 <% if prop[:use_thread] then %><p>Useing thread</p><% end %>
 
 <ol>
-<% recent_changes[0...number_of_pages].each do |channel, item, name| %>
-  <li><%= iam(channel, item, name) %> <%= hotbar(item.dc_date) %>
+<% recent_changes[0...number_of_pages].each do |uri, channel, item, name| %>
+  <li><p><%= am(channel, item, name) %> <%= hotbar(item.dc_date) %></p>
   <% unless item.description.nil? %>
-    <ul>
-      <li><%=h item.description.shorten(number_of_chars)%></li>
-    </ul>
+    <p><%=h item.description.shorten(number_of_chars)%></p>
   <% end %>
   </li>
 <% end %>
 <%
   if number_of_pages > 0 and recent_changes.size > number_of_pages
-    %><li><a href="<%= full_ref_name(pg.name, 'pages' => number_of_pages + 30) %>">more ...</a></li><%
-  end
-%>
+    %>
+	<li>
+		<ul>
+			<li><a href="<%= full_ref_name(pg.name, 'pages' => number_of_pages + 30) %>">more ...</a></li>
+			<li><a href="<%= full_ref_name(pg.name, 'pages' => -1) %>">show all</a></li>
+		</ul>
+	</li>
+<% end %>
 </ol>
 
 <h2>Invalid URIs</h2>

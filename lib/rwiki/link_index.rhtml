@@ -1,0 +1,25 @@
+<%= header(pg) %>
+<%= navi(pg) %>
+
+<%= link_navi(pg, {:category => "新しいカテゴリーを登録",	:link => "新しいリンク先を登録"}) %>
+
+<hr />
+
+<div class="body">
+<h1><%=h pg.title %></h1>
+<p><%=h pg.description %></p>
+<%
+[
+	["カテゴリー", "categories"],
+	["リンク", "links"],
+].each do |section_title, selector|
+%>
+<h2><%= section_title %></h2>
+<ul>
+<% pg.send(selector).each do |target_pg| %>
+	<li><%= make_anchor(ref_name(target_pg.name), target_pg.title, target_pg.modified) %>: <%=h target_pg.description %></li>
+<% end %>
+</ul>
+<% end %>
+
+<%= footer(pg) %>

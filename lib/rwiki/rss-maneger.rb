@@ -15,6 +15,8 @@ module RWiki
 		
 		class Maneger
 
+			include Enumerable
+
 			VERSION = "0.0.3"
 			
 			HTTP_HEADER = {
@@ -22,7 +24,7 @@ module RWiki
 				"Using RSS parser version is #{::RSS::VERSION}."
 			}
 
-			@@cache = {}
+			@@cache = Hash.new({})
 			@@mutex = Mutex.new
 
 			class << self
@@ -193,12 +195,12 @@ module RWiki
 							else
 								next
 							end
-							has_update_info_values << [channel, item, name]
+							has_update_info_values << [uri, channel, item, name]
 						end
 					end
 				end
 				has_update_info_values.sort do |x, y|
-					y[1].dc_date <=> x[1].dc_date
+					y[2].dc_date <=> x[2].dc_date
 				end
 			end
 
@@ -217,7 +219,13 @@ module RWiki
 						@@cache[uri][:items]
 					end
 				rescue NameError
-					nil
+					[]
+				end
+			end
+
+			def [](uri)
+				@@mutex.synchronize do
+					@@cache[uri]
 				end
 			end
 
