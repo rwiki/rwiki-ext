@@ -14,7 +14,7 @@ module RWiki
 						s
 					end
 				end
-				string.gsub!(/「(\S{20}+)」/m) do |s|
+				string.gsub!(/「(\S{1,20})」/m) do |s|
 					if !$1.include?('))')
 						"「((<#{$1}>))」"
 					else
