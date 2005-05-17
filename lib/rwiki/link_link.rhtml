@@ -2,24 +2,24 @@
 <%= navi(pg) %>
 
 <%
-	if pg.rss
-		maneger.parse(pg.rss, @@charset, pg.title)
-		rss = maneger[pg.rss]
-	else
-		rss = nil
-	end
+  if pg.rss
+    maneger.parse(pg.rss, @@charset, pg.title)
+    rss = maneger[pg.rss]
+  else
+    rss = nil
+  end
 %><%= link_navi(pg) %>
 
 <div class="links">
 <h1><%=h pg.title %></h1>
 <p>
 <% if pg.url or pg.rss %>
-	<% if rss and rss[:channel] %>
-	<%= ca(rss[:channel], rss[:image], pg.title) %>
-	<% elsif pg.url %>
-	<%= make_anchor(pg.url, pg.title) %>
-	<% end %>
-	<% if pg.rss then %>[<%= make_anchor(pg.rss, "RSS") %>]<% end %>
+  <% if rss and rss[:channel] %>
+  <%= ca(rss[:channel], rss[:image], pg.title) %>
+  <% elsif pg.url %>
+  <%= make_anchor(pg.url, pg.title) %>
+  <% end %>
+  <% if pg.rss then %>[<%= make_anchor(pg.rss, "RSS") %>]<% end %>
 <% end %>
 [<%= pg.count %>]
 </p>
@@ -32,7 +32,7 @@
 <h2>カテゴリ</h2>
 <ul>
 <% pg.categories.sort{|x, y| x.title <=> y.title}.each do |category| %>
-	<li><%= make_anchor(ref_name(category.name), category.title, category.modified) %>: <%=h category.description %></li>
+  <li><%= make_anchor(ref_name(category.name), category.title, category.modified) %>: <%=h category.description %></li>
 <% end %>
 </ul>
 <% end %>
@@ -40,16 +40,16 @@
 <% if rss %>
 <h2>更新状況</h2>
 <ul>
-	<% rss[:items].each do |item| %>
-				<li>
-					<%= ia(item) %>
-					<% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
+  <% rss[:items].each do |item| %>
+        <li>
+          <%= ia(item) %>
+          <% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
 
-					<% if item.content %>
-					: <%= item.content.shorten %>
-					<% end %>
-				</li>
-	<% end %>
+          <% if item.content %>
+          : <%= item.content.shorten %>
+          <% end %>
+        </li>
+  <% end %>
 </ul>
 </div>
 <% end %>

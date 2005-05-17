@@ -1,8 +1,8 @@
 <%= dedicated_header(pg) %>
 
 <%
-	link_pages = pg.link_pages
-	params = []
+  link_pages = pg.link_pages
+  params = []
 %>
 
 <div class="main">
@@ -13,7 +13,7 @@
 <span class="group-info">絞りこみタイプ: <%= pg.refine_type %></span>
 <span class="group-info">
 <% pg.categories.sort{|x, y| x.title <=> y.title}.each do |cat_pg| %>
-	<span class="category">[<%= make_anchor(ref_name(cat_pg.name), cat_pg.title, cat_pg.modified) %>]</span>
+  <span class="category">[<%= make_anchor(ref_name(cat_pg.name), cat_pg.title, cat_pg.modified) %>]</span>
 <% end %>
 </span>
 </div>

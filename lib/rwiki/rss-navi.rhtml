@@ -1,12 +1,12 @@
 <%= super(pg) %>
 <%
 if ::RWiki::RSS::Topic.display
-	cmd = var('cmd')
-	cmd = cmd.first if cmd.kind_of?(Array)
-	if cmd == 'view' and not pg.empty?
+  cmd = var('cmd')
+  cmd = cmd.first if cmd.kind_of?(Array)
+  if cmd == 'view' and not pg.empty?
 %>
 <div class="using-rss-main">
 <%
-	end
+  end
 end
 %>

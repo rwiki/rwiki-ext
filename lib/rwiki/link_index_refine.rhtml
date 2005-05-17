@@ -2,30 +2,30 @@
 <%= navi(pg) %>
 
 <%
-	refine_type, = var("type")
-	refine_type ||= "and"
-	refine_type.downcase!
-	refine_type = "and" unless %w(and or).include?(refine_type)
-	refine_funcname = if refine_type == "and" then "&" else "|" end
+  refine_type, = var("type")
+  refine_type ||= "and"
+  refine_type.downcase!
+  refine_type = "and" unless %w(and or).include?(refine_type)
+  refine_funcname = if refine_type == "and" then "&" else "|" end
 
-	category_names = var('cat')
-	category_names ||= []
-	category_name = {}
-	category_names.each {|cat_name| category_name[cat_name] = nil}
-	categories = pg.find_all_category {|cat_pg| category_name.has_key?(cat_pg.name)}.sort {|x, y| x.title <=> y.title}
+  category_names = var('cat')
+  category_names ||= []
+  category_name = {}
+  category_names.each {|cat_name| category_name[cat_name] = nil}
+  categories = pg.find_all_category {|cat_pg| category_name.has_key?(cat_pg.name)}.sort {|x, y| x.title <=> y.title}
 
-	link_pages = if refine_type == "and" and not categories.empty?
-								categories.first.link_pages
-							else
-								[]
-							end
-	categories.each {|cat_pg| link_pages = link_pages.send(refine_funcname, cat_pg.link_pages)}
-	link_pages.uniq! if refine_type == "and"
-	link_pages.sort! {|x, y| x.title <=> y.title}
+  link_pages = if refine_type == "and" and not categories.empty?
+                categories.first.link_pages
+              else
+                []
+              end
+  categories.each {|cat_pg| link_pages = link_pages.send(refine_funcname, cat_pg.link_pages)}
+  link_pages.uniq! if refine_type == "and"
+  link_pages.sort! {|x, y| x.title <=> y.title}
 
-	params = categories.collect {|cat_pg| ["cat", cat_pg.name]}
-	params.unshift(["type", refine_type])
-	params.unshift(["mode", "#{pg.mode}_refine"])
+  params = categories.collect {|cat_pg| ["cat", cat_pg.name]}
+  params.unshift(["type", refine_type])
+  params.unshift(["mode", "#{pg.mode}_refine"])
 
 %><%= link_navi(pg) %>
 
@@ -39,7 +39,7 @@
 カテゴリ選択(複数選択可):<br />
 <select name="cat" multiple="true" <%=tabindex%> accesskey="C" size="5">
 <% pg.all_category.sort{|x, y| x.title <=> y.title}.each do |cat_pg| %>
-			<option value="<%=h cat_pg.name%>"<%= if category_name.has_key?(cat_pg.name) then ' selected="selected"' end%>><%=h cat_pg.title%></option>
+      <option value="<%=h cat_pg.name%>"<%= if category_name.has_key?(cat_pg.name) then ' selected="selected"' end%>><%=h cat_pg.title%></option>
 <% end %>
 </select><br />
 <input type="radio" name="type" value="and" <%=tabindex%> accesskey="A"<%= if refine_type == "and" then ' checked="true"' end %>>全てのカテゴリに含まれているリンクのみ(AND)</input><br />
@@ -52,9 +52,9 @@
 <% unless categories.empty? then %>
 <h2>選択したカテゴリ</h2>
 <p>
-	<% categories.each do |cat_pg| %>
+  <% categories.each do |cat_pg| %>
 [<%= make_anchor(ref_name(cat_pg.name), cat_pg.title, cat_pg.modified)%>]
-	<% end %>
+  <% end %>
 </p>
 
 <h2>選択したカテゴリに属するリンクの更新状況</h2>

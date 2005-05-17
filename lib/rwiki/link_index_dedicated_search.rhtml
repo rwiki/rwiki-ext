@@ -1,34 +1,34 @@
 <%= dedicated_header(pg) %>
 
 <%
-	keywords = var("key")
-	keywords.collect!{|x| x.split(/\s/)}
-	keywords.flatten!
-	keywords.uniq!
+  keywords = var("key")
+  keywords.collect!{|x| x.split(/\s/)}
+  keywords.flatten!
+  keywords.uniq!
 
-	search_type, = var("type")
-	search_type ||= "and"
-	search_type.downcase!
-	search_type = "and" unless %w(and or).include?(search_type)
+  search_type, = var("type")
+  search_type ||= "and"
+  search_type.downcase!
+  search_type = "and" unless %w(and or).include?(search_type)
 
-	if keywords.empty?
-		category_pages = []
-		link_pages = []
-	else
-		if search_type == "or"
-			category_pages = search_pages_by_or(pg.categories, keywords)
-			link_pages = search_pages_by_or(pg.link_pages, keywords)
-		else
-			category_pages = search_pages_by_and(pg.categories, keywords)
-			link_pages = search_pages_by_and(pg.link_pages, keywords)
-		end
-	end
+  if keywords.empty?
+    category_pages = []
+    link_pages = []
+  else
+    if search_type == "or"
+      category_pages = search_pages_by_or(pg.categories, keywords)
+      link_pages = search_pages_by_or(pg.link_pages, keywords)
+    else
+      category_pages = search_pages_by_and(pg.categories, keywords)
+      link_pages = search_pages_by_and(pg.link_pages, keywords)
+    end
+  end
 
-	params = [["mode", var("mode")[0]],
-		  ["type", search_type],
-		  *keywords.collect{|keyword| ["key", keyword]}]
+  params = [["mode", var("mode")[0]],
+      ["type", search_type],
+      *keywords.collect{|keyword| ["key", keyword]}]
 
-	found_page = ((not category_pages.empty?) or (not link_pages.empty?))
+  found_page = ((not category_pages.empty?) or (not link_pages.empty?))
 %>
 
 <% if found_page then %><div class="main"><% end %>

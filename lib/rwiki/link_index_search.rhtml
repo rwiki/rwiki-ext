@@ -2,31 +2,31 @@
 <%= navi(pg) %>
 
 <%
-	keywords = var("key")
-	keywords.collect!{|x| x.split(/\s/)}
-	keywords.flatten!
-	keywords.uniq!
+  keywords = var("key")
+  keywords.collect!{|x| x.split(/\s/)}
+  keywords.flatten!
+  keywords.uniq!
 
-	search_type, = var("type")
-	search_type ||= "and"
-	search_type.downcase!
-	search_type = "and" unless %w(and or).include?(search_type)
+  search_type, = var("type")
+  search_type ||= "and"
+  search_type.downcase!
+  search_type = "and" unless %w(and or).include?(search_type)
 
-	if keywords.empty?
-		category_pages = []
-		link_pages = []
-	else
-		if search_type == "or"
-			category_pages = search_pages_by_or(pg.categories, keywords)
-			link_pages = search_pages_by_or(pg.link_pages, keywords)
-		else
-			category_pages = search_pages_by_and(pg.categories, keywords)
-			link_pages = search_pages_by_and(pg.link_pages, keywords)
-		end
-	end
+  if keywords.empty?
+    category_pages = []
+    link_pages = []
+  else
+    if search_type == "or"
+      category_pages = search_pages_by_or(pg.categories, keywords)
+      link_pages = search_pages_by_or(pg.link_pages, keywords)
+    else
+      category_pages = search_pages_by_and(pg.categories, keywords)
+      link_pages = search_pages_by_and(pg.link_pages, keywords)
+    end
+  end
 
-#	params = keywords.collect {|keyword| ["em", keyword]}
-	params = {}
+#  params = keywords.collect {|keyword| ["em", keyword]}
+  params = {}
 
 %><%= link_navi(pg) %>
 
@@ -47,15 +47,15 @@
 <h2>検索結果</h2>
 <%
 [
-	["カテゴリ", category_pages],
-	["リンク", link_pages],
+  ["カテゴリ", category_pages],
+  ["リンク", link_pages],
 ].each do |section_title, target_pages|
 %>
 <h2><%= section_title %></h2>
 <ul>
-	<% target_pages.sort{|x, y| x.title <=> y.title}.each do |target_pg| %>
-	<li><%= make_anchor(ref_name(target_pg.name, params), target_pg.title, target_pg.modified) %>: <%=h target_pg.description %></li>
-	<% end %>
+  <% target_pages.sort{|x, y| x.title <=> y.title}.each do |target_pg| %>
+  <li><%= make_anchor(ref_name(target_pg.name, params), target_pg.title, target_pg.modified) %>: <%=h target_pg.description %></li>
+  <% end %>
 </ul>
 <% end
 end %>

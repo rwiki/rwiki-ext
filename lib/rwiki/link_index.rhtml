@@ -9,15 +9,15 @@
 <% end %>
 <%
 [
-	["グループ", "groups"],
-	["カテゴリ", "categories"],
-	["リンク", "link_pages"],
+  ["グループ", "groups"],
+  ["カテゴリ", "categories"],
+  ["リンク", "link_pages"],
 ].each do |section_title, selector|
 %>
 <h2><%= section_title %></h2>
 <ul>
-	<% pg.send(selector).sort{|x, y| x.title <=> y.title}.each do |target_pg| %>
-	<li><%= make_anchor(ref_name(target_pg.name), target_pg.title, target_pg.modified) %>: <%=h target_pg.description %></li>
+  <% pg.send(selector).sort{|x, y| x.title <=> y.title}.each do |target_pg| %>
+  <li><%= make_anchor(ref_name(target_pg.name), target_pg.title, target_pg.modified) %>: <%=h target_pg.description %></li>
 <% end %>
 </ul>
 <% end %>

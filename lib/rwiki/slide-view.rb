@@ -15,17 +15,17 @@ module Slide
       slide_view(pg, slide, slide_no)
     end
 
-		def navi_view(pg, title, referer)
-			if @env[:slide_navi]
-				if slide?(pg)
-					%Q[<span class="navi">[<a href="#{ ref_name(pg.name, 'slide' => 1) }">#{ h title }</a>]</span>]
-				else
-					''
-				end
-			else
-				super
-			end
-		end
+    def navi_view(pg, title, referer)
+      if @env[:slide_navi]
+        if slide?(pg)
+          %Q[<span class="navi">[<a href="#{ ref_name(pg.name, 'slide' => 1) }">#{ h title }</a>]</span>]
+        else
+          ''
+        end
+      else
+        super
+      end
+    end
 
     def slide_view(pg, slide, slide_no)
       SlideView.new(slide, slide_no, @env, &@block).view(pg)
@@ -33,16 +33,16 @@ module Slide
     
     def slide?(pg)
       slide = pg.prop(:slide)
-			slide && slide[:index] 
+      slide && slide[:index] 
     end
 
   end
   
   class SlideView < RWiki::PageFormat
                 
-		@@slide_css = nil
-		def self.slide_css() @@slide_css; end
-		def self.slide_css=(css) @@slide_css = css; end
+    @@slide_css = nil
+    def self.slide_css() @@slide_css; end
+    def self.slide_css=(css) @@slide_css = css; end
 
     @rhtml = {
       :view => RWiki::ERBLoader.new('view(pg)', 'slide-view.rhtml')

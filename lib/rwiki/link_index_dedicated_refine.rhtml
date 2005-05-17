@@ -1,29 +1,29 @@
 <%= dedicated_header(pg) %>
 
 <%
-	refine_type, = var("type")
-	refine_type ||= "and"
-	refine_type.downcase!
-	refine_type = "and" unless %w(and or).include?(refine_type)
-	refine_funcname = if refine_type == "and" then "&" else "|" end
+  refine_type, = var("type")
+  refine_type ||= "and"
+  refine_type.downcase!
+  refine_type = "and" unless %w(and or).include?(refine_type)
+  refine_funcname = if refine_type == "and" then "&" else "|" end
 
-	category_names = var('cat')
-	category_name = {}
-	category_names.each {|cat_name| category_name[cat_name] = nil}
-	categories = pg.find_all_category {|cat_pg| category_name.has_key?(cat_pg.name)}.sort {|x, y| x.title <=> y.title}
+  category_names = var('cat')
+  category_name = {}
+  category_names.each {|cat_name| category_name[cat_name] = nil}
+  categories = pg.find_all_category {|cat_pg| category_name.has_key?(cat_pg.name)}.sort {|x, y| x.title <=> y.title}
 
-	link_pages = if refine_type == "and" and not categories.empty?
-								categories.first.link_pages
-							else
-								[]
-							end
-	categories.each {|cat_pg| link_pages = link_pages.send(refine_funcname, cat_pg.link_pages)}
-	link_pages.uniq! if refine_type == "and"
-	link_pages.sort! {|x, y| x.title <=> y.title}
+  link_pages = if refine_type == "and" and not categories.empty?
+                categories.first.link_pages
+              else
+                []
+              end
+  categories.each {|cat_pg| link_pages = link_pages.send(refine_funcname, cat_pg.link_pages)}
+  link_pages.uniq! if refine_type == "and"
+  link_pages.sort! {|x, y| x.title <=> y.title}
 
-	params = categories.collect {|cat_pg| ["cat", cat_pg.name]}
-	params.unshift(["type", refine_type])
-	params.unshift(["mode", "dedicated_refine"])
+  params = categories.collect {|cat_pg| ["cat", cat_pg.name]}
+  params.unshift(["type", refine_type])
+  params.unshift(["mode", "dedicated_refine"])
 %>
 
 <% unless categories.empty? then %><div class="main"><% end %>

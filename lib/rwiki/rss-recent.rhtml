@@ -2,38 +2,38 @@
 <%= navi(pg) %>
 
 <%
-	before_time = Time.now
-	maneger = ::RWiki::RSS::Maneger.new
-	prop = pg.prop(:rss)
-	expire = prop[:expire] || ::RWiki::RSS::EXPIRE
+  before_time = Time.now
+  maneger = ::RWiki::RSS::Maneger.new
+  prop = pg.prop(:rss)
+  expire = prop[:expire] || ::RWiki::RSS::EXPIRE
 
-	req_pages ,= var('pages')
-	number_of_pages = if req_pages
-			req_pages.to_i
-		else
-			prop[:pages] || ::RWiki::RSS::DISPLAY_PAGES
-		end
+  req_pages ,= var('pages')
+  number_of_pages = if req_pages
+      req_pages.to_i
+    else
+      prop[:pages] || ::RWiki::RSS::DISPLAY_PAGES
+    end
 
-	req_chars ,= var('chars')
-	number_of_chars = if req_chars
-			req_chars.to_i
-		else
-		 prop[:characters] || ::RWiki::RSS::DISPLAY_CHARACTERS
-		end
+  req_chars ,= var('chars')
+  number_of_chars = if req_chars
+      req_chars.to_i
+    else
+     prop[:characters] || ::RWiki::RSS::DISPLAY_CHARACTERS
+    end
 
-	::RWiki::RSS::Maneger.forget(expire)
+  ::RWiki::RSS::Maneger.forget(expire)
 
-	if prop[:use_thread]
-		maneger.parallel_parse(prop[:uri].collect do |uri, name|
-				[uri, @@charset, name, expire]
-			end)
-	else
-		prop[:uri].each do |uri, name|
-			maneger.parse(uri, @@charset, name, expire)
-		end
-	end
+  if prop[:use_thread]
+    maneger.parallel_parse(prop[:uri].collect do |uri, name|
+        [uri, @@charset, name, expire]
+      end)
+  else
+    prop[:uri].each do |uri, name|
+      maneger.parse(uri, @@charset, name, expire)
+    end
+  end
 
-	recent_changes = maneger.recent_changes
+  recent_changes = maneger.recent_changes
 %>
 
 <div class="rss-recent">
@@ -43,21 +43,21 @@
 
 <ol>
 <% recent_changes[0...number_of_pages].each do |uri, channel, image, item, name| %>
-	<li><p><%= am(channel, image, item, name) %> <%= hotbar(item.dc_date) %></p>
-	<% if /\A\s*\z/ !~ item.description.to_s %>
-		<p><%=h item.description.shorten(number_of_chars)%></p>
-	<% end %>
-	</li>
+  <li><p><%= am(channel, image, item, name) %> <%= hotbar(item.dc_date) %></p>
+  <% if /\A\s*\z/ !~ item.description.to_s %>
+    <p><%=h item.description.shorten(number_of_chars)%></p>
+  <% end %>
+  </li>
 <% end %>
 <%
-	if number_of_pages > 0 and recent_changes.size > number_of_pages
-		%>
-	<li>
-		<ul>
-			<li><a href="<%= full_ref_name(pg.name, 'pages' => number_of_pages + 30) %>">more ...</a></li>
-			<li><a href="<%= full_ref_name(pg.name, 'pages' => -1) %>">show all</a></li>
-		</ul>
-	</li>
+  if number_of_pages > 0 and recent_changes.size > number_of_pages
+    %>
+  <li>
+    <ul>
+      <li><a href="<%= full_ref_name(pg.name, 'pages' => number_of_pages + 30) %>">more ...</a></li>
+      <li><a href="<%= full_ref_name(pg.name, 'pages' => -1) %>">show all</a></li>
+    </ul>
+  </li>
 <% end %>
 </ol>
 
@@ -65,21 +65,21 @@
 
 <ul>
 <% maneger.invalid_uris.each do |uri, name| %>
-	<li><%= ua(uri, name) %></li>
+  <li><%= ua(uri, name) %></li>
 <% end %>
 </ul>
 
 <h2>Invalid Resources</h2>
 <ul>
 <% maneger.invalid_resources.each do |uri, name| %>
-	<li><%= ua(uri, name) %></li>
+  <li><%= ua(uri, name) %></li>
 <% end %>
 </ul>
 
 <h2>Resources that doesn't include update infomation</h2>
 <ul>
 <% maneger.not_include_update_info_resources.each do |uri, name| %>
-	<li><%= ua(uri, name) %></li>
+  <li><%= ua(uri, name) %></li>
 <% end %>
 </ul>
 

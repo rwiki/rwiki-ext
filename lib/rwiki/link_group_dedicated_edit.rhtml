@@ -13,16 +13,16 @@
 <div class="item"><span class="item-title">タイトル: </span><input type="text" size="30" name="title" <%=tabindex%> value="<%=h pg.title %>" accesskey="T" /></div>
 
 <div class="item"><span class="item-title">カテゴリ(複数選択可): </span>
-	<select name="categories" multiple="true" <%=tabindex%> accesskey="C" size="5">
+  <select name="categories" multiple="true" <%=tabindex%> accesskey="C" size="5">
 <%
-	cats = pg.categories || []
-	cat_names = {}		
-	cats.each {|cat| cat_names[cat.name] = nil}
-	pg.all_category.sort{|x, y| x.title <=> y.title}.each do |cat_pg|
+  cats = pg.categories || []
+  cat_names = {}    
+  cats.each {|cat| cat_names[cat.name] = nil}
+  pg.all_category.sort{|x, y| x.title <=> y.title}.each do |cat_pg|
 %>
-		<option value="<%=h cat_pg.name%>"<%= if cat_names.has_key?(cat_pg.name) then ' selected="selected"' end%>><%=h cat_pg.title%></option>
+    <option value="<%=h cat_pg.name%>"<%= if cat_names.has_key?(cat_pg.name) then ' selected="selected"' end%>><%=h cat_pg.title%></option>
 <% end %>
-	</select>
+  </select>
 </div>
 
 <div class="item">

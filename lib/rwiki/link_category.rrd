@@ -1,6 +1,6 @@
 <%
-	title = var("title").first
-	title = pg.title if /\A\s*\z/ =~ title.to_s
+  title = var("title").first
+  title = pg.title if /\A\s*\z/ =~ title.to_s
 %>
 = <%=er title %>
 

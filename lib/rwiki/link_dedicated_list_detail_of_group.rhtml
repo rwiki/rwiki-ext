@@ -1,12 +1,12 @@
 <% group_pages.sort {|x, y| x.title <=> y.title}.each do |group_page| %>
 <div class="content">
-	<h3><%= make_anchor(ref_name(group_page.name), group_page.title, group_page.modified) %></h3>
-	<div class="group-info">絞りこみタイプ: <%= group_page.refine_type %></div>
-	<div class="description"><p><%=h group_page.descriptions.first %></p></div>
-	<div class="category">
-	<% group_page.categories.sort {|x, y| x.title <=> y.title}.each do |cat_pg| %>
-		<span class="category">[<%= make_anchor(ref_name(cat_pg.name), cat_pg.title, cat_pg.modified) %>]</span>
-	<% end %>
-	</div>
+  <h3><%= make_anchor(ref_name(group_page.name), group_page.title, group_page.modified) %></h3>
+  <div class="group-info">絞りこみタイプ: <%= group_page.refine_type %></div>
+  <div class="description"><p><%=h group_page.descriptions.first %></p></div>
+  <div class="category">
+  <% group_page.categories.sort {|x, y| x.title <=> y.title}.each do |cat_pg| %>
+    <span class="category">[<%= make_anchor(ref_name(cat_pg.name), cat_pg.title, cat_pg.modified) %>]</span>
+  <% end %>
+  </div>
 </div>
 <% end %>

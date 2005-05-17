@@ -1,12 +1,12 @@
 <%= dedicated_header(pg) %>
 
 <%
-	if pg.rss
-		maneger.parse(pg.rss, @@charset, pg.title)
-		rss = maneger[pg.rss]
-	else
-		rss = nil
-	end
+  if pg.rss
+    maneger.parse(pg.rss, @@charset, pg.title)
+    rss = maneger[pg.rss]
+  else
+    rss = nil
+  end
 %>
 
 <div class="main">
@@ -15,12 +15,12 @@
 
 <div class="link-info">
 <% if pg.url or pg.rss %>
-	<% if rss and rss[:channel] %>
-	<%= ca(rss[:channel], rss[:image], pg.title) %>
-	<% elsif pg.url %>
-	<%= make_anchor(pg.url, pg.title) %>
-	<% end %>
-	<% if pg.rss then %>[<%= make_anchor(pg.rss, "RSS") %>]<% end %>
+  <% if rss and rss[:channel] %>
+  <%= ca(rss[:channel], rss[:image], pg.title) %>
+  <% elsif pg.url %>
+  <%= make_anchor(pg.url, pg.title) %>
+  <% end %>
+  <% if pg.rss then %>[<%= make_anchor(pg.rss, "RSS") %>]<% end %>
 <% end %>
 [<%= pg.count %>]
 </div>
@@ -34,22 +34,22 @@
 
 <% if rss and rss[:items] %>
 <h2>¹¹¿·¾õ¶·</h2>
-	<% rss[:items].each do |item| %>
+  <% rss[:items].each do |item| %>
 <div class="content">
-	<h3>
-		<%= ia(item) %>
-		<% if item.respond_to?(:dc_publisher) and /\A\s*\z/ !~ item.dc_publisher.to_s then %> @ <%=h item.dc_publisher%><% end %>
-		<% if item.respond_to?(:dc_creator) and /\A\s*\z/ !~ item.dc_creator.to_s then %> by <%=h item.dc_creator%><% end %>
-		<%= make_modified(item.dc_date) %>
-	</h3>
-		<% if item.content %>
-	<div class="description">
-	<p><%= item.content %></p>
-	</div>
-		<% end %>
-		<% if item.dc_date then %><div class="date"><%=h item.dc_date.localtime%></div><% end %>
+  <h3>
+    <%= ia(item) %>
+    <% if item.respond_to?(:dc_publisher) and /\A\s*\z/ !~ item.dc_publisher.to_s then %> @ <%=h item.dc_publisher%><% end %>
+    <% if item.respond_to?(:dc_creator) and /\A\s*\z/ !~ item.dc_creator.to_s then %> by <%=h item.dc_creator%><% end %>
+    <%= make_modified(item.dc_date) %>
+  </h3>
+    <% if item.content %>
+  <div class="description">
+  <p><%= item.content %></p>
+  </div>
+    <% end %>
+    <% if item.dc_date then %><div class="date"><%=h item.dc_date.localtime%></div><% end %>
 </div>
-	<% end %>
+  <% end %>
 <% end %>
 </div>
 </div>

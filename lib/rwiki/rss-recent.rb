@@ -2,28 +2,28 @@ require "rwiki/rss-page"
 require "rwiki/rss-maneger"
 
 module RWiki
-	module RSS
-		module Recent
+  module RSS
+    module Recent
 
-			class Section < RWiki::Section
+      class Section < RWiki::Section
 
-				def initialize(config, pattern)
-					super(config, pattern)
-					add_prop_loader(:rss, PropLoader.new)
-					add_default_src_proc(method(:default_src))
-				end
+        def initialize(config, pattern)
+          super(config, pattern)
+          add_prop_loader(:rss, PropLoader.new)
+          add_default_src_proc(method(:default_src))
+        end
 
         ERBLoader.new('default_src(name)', 'rss-recent.erd').load(self)
-			end
+      end
 
-			class PageFormat < RWiki::PageFormat
-				private
-				include FormatUtils
+      class PageFormat < RWiki::PageFormat
+        private
+        include FormatUtils
 
-				@rhtml = { :view => ERBLoader.new('view(pg)', 'rss-recent.rhtml') }
-				reload_rhtml
-			end
-			
-		end
-	end
+        @rhtml = { :view => ERBLoader.new('view(pg)', 'rss-recent.rhtml') }
+        reload_rhtml
+      end
+      
+    end
+  end
 end
