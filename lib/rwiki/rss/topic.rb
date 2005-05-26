@@ -1,5 +1,4 @@
-require "rwiki/rss-page"
-require "rwiki/rss-maneger"
+require "rwiki/rss/page"
 
 module RWiki
   module RSS
@@ -106,13 +105,16 @@ module RWiki
           add_default_src_proc(method(:default_src))
         end
 
-        RWiki::ERBLoader.new('default_src(name)', 'rss-topic.erd').load(self)
+        path = %w(rss topic default_src.erd)
+        RWiki::ERBLoader.new('default_src(name)', path).load(self)
       end
 
 
       class PageFormat < RWiki::PageFormat
         private
-        @rhtml = { :view => ERBLoader.new('view(pg)', 'rss-topic.rhtml') }
+        @rhtml = {
+          :view => ERBLoader.new('view(pg)', %w(rss topic view.rhtml)),
+        }
         reload_rhtml
       end
 

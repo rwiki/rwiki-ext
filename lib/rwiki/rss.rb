@@ -1,8 +1,8 @@
-require "rwiki/rss-writer"
-require "rwiki/rss-recent"
-require "rwiki/rss-topic"
+require "rwiki/rss/writer"
+require "rwiki/rss/recent"
+require "rwiki/rss/topic"
 
-RWiki::Version.regist("rw-rss", "2003-8-04")
+RWiki::Version.regist("rwiki/rss", '$Id$')
 
 module RWiki
   class Page
@@ -29,10 +29,10 @@ module RWiki
         rv
       end
       alias ttia make_topic_item_anchor
-      
+
       @rhtml = {
-        :navi => RWiki::ERBLoader.new('navi(pg)', 'rss-navi.rhtml'),
-        :footer => RWiki::ERBLoader.new('footer(pg)', 'rss-footer.rhtml')
+        :navi => RWiki::ERBLoader.new(meth, %w("rss", 'navi.rhtml')),
+        :footer => RWiki::ERBLoader.new(meth, %w("rss", 'footer.rhtml')),
       }
       reload_rhtml
     end

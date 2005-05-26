@@ -1,5 +1,5 @@
 require "rwiki/rd/rddoc"
-require "rwiki/rss-maneger"
+require "rwiki/rss/maneger"
 
 require "nkf"
 
