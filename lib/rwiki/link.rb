@@ -631,7 +631,7 @@ module RWiki
     
     class PageFormat < ::RWiki::PageFormat
       def create_src(pg, src)
-        if var('mode').first == pg.default_mode
+        if var('mode') == pg.default_mode
           generate_src(pg, src)
         else
           src
@@ -662,8 +662,8 @@ module RWiki
       end
 
       def have_contents(pg)
-        /\A\s*\z/ !~ var("title").first.to_s or
-          /\A\s*\z/ !~ var("description").first.to_s
+        /\A\s*\z/ !~ get_var("title", '') or
+          /\A\s*\z/ !~ get_var("description", '')
       end
 
       def default_escape_rd_options

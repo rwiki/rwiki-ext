@@ -1,10 +1,10 @@
 <%
-  title = var("title").first
+  title = get_var("title", '')
   title = pg.title if /\A\s*\z/ =~ title.to_s
 %>
 = <%=er title %>
 
-<%=er((var("description").first || pg.description), {:accept_textblock => true})%>
+<%=er((get_var("description", pg.description)), {:accept_textblock => true})%>
 
 == ¥ê¥ó¥¯
 <% pg.categorized_links.sort{|x, y| x.name <=> y.name}.each do |link_pg| %>

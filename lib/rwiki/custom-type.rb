@@ -49,7 +49,7 @@ module RWiki
         def create_src(pg, src)
           RDWriter.new(pg.name, "field") do |key|
             if key == "field"
-              var("field").first
+              get_var("field")
             else
               var(key)
             end
@@ -156,7 +156,7 @@ module RWiki
         def create_src(pg, src)
           RDWriter.new(pg.name, "field").to_rd(0, pg) do |key|
             if key == "field"
-              var("field").first
+              get_var("field")
             else
               var(key)
             end

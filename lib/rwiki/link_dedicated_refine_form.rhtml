@@ -2,7 +2,7 @@
 <p>
 <%= form_hidden(pg.name) %>
 <input type="hidden" name="mode" value="<%= pg.index_page.mode %>_refine" />
-<input type="hidden" name="pages" value="<%= number_of_pages(var("pages").first) %>" />
+<input type="hidden" name="pages" value="<%= number_of_pages(var("pages")) %>" />
 カテゴリ選択(複数選択可):<br />
 <select name="cat" multiple="true" <%=tabindex%> accesskey="C" size="5">
 <% categories.sort{|x, y| x.title <=> y.title}.each do |cat_pg| %>

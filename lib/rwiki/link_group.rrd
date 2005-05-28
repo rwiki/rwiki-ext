@@ -1,16 +1,16 @@
 <%
-  title = var("title").first
+  title = var("title", '')
   title = pg.title if /\A\s*\z/ =~ title.to_s
   categories = var("categories").collect {|cat_name| pg.book[cat_name]}
   categories |= pg.grouped_categories
 %>
 = <%=er title %>
 
-<%=er((var("description").first || pg.description), {:accept_textblock => true})%>
+<%=er(get_var("description", pg.description), {:accept_textblock => true})%>
 
 == 絞りこみタイプ
 
-<%=er(var("type").first || pg.refine_type)%>
+<%=er(get_var("type", pg.refine_type))%>
 
 == カテゴリ
 <% categories.sort{|x, y| x.name <=> y.name}.each do |cat_pg| %>

@@ -1,6 +1,6 @@
-= <%= er(var("title").first || pg.title) %>
+= <%= er(get_var("title", pg.title)) %>
 
-<%=er((var("description").first || pg.description), {:accept_textblock => true})%>
+<%=er(get_var("description", pg.description), {:accept_textblock => true})%>
 
 == グループ
 <% pg.groups(true).sort{|x, y| x.name <=> y.name}.each do |group_pg| %>
