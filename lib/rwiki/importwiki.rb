@@ -1,6 +1,6 @@
 require "uri"
 
-require "rwiki/rddoc"
+require "rwiki/rd/rddoc"
 require "rwiki/custom-edit"
 
 RWiki::Version.regist('ImportWiki', '2003-07-10')
