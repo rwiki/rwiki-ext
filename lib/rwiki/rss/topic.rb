@@ -1,14 +1,14 @@
 require "rwiki/rss/page"
 
+RWiki::Version.regist("rwiki/rss/topic",
+                      '$Id: rss.rb 582 2005-05-26 02:14:11Z kou $')
+
 module RWiki
   module RSS
-
     module Topic
-
       extend ERB::Util
 
       class << self
-
         def mutex_attr(id, writable=false)
           module_eval(<<-EOC)
           def self.#{id.id2name}
@@ -17,9 +17,7 @@ module RWiki
             end
           end
           EOC
-
           mutex_attr_writer(id) if writable
-          
         end
 
         def mutex_attr_writer(*ids)
@@ -110,15 +108,46 @@ module RWiki
       end
 
 
-      class PageFormat < RWiki::PageFormat
+      class PageFormat < RWiki::BookConfig.default.format
         private
+        def make_topic_title_anchor(channel, name)
+          name = channel.title if name.to_s =~ /\A\s*\z/
+        %Q!<a href="#{h channel.link.to_s.strip}">#{h name}</a>!
+        end
+        alias tta make_topic_title_anchor
+      
+        def make_topic_item_anchor(item, characters)
+          href = h(item.link.to_s.strip)
+          rv = %Q!<a href="#{href}">#{h item.title.to_s}</a>!
+          rv << %Q|(#{h modified(item.dc_date)})|
+          cont = item.content
+          if cont
+            rv << %Q[: #{cont.shorten(characters)} <a href="#{href}">more</a>]
+          end
+          rv
+        end
+        alias ttia make_topic_item_anchor
+
         @rhtml = {
           :view => ERBLoader.new('view(pg)', %w(rss topic view.rhtml)),
+          :navi => RWiki::ERBLoader.new('navi(pg)', %w(rss topic navi.rhtml)),
+          :footer => RWiki::ERBLoader.new('footer(pg)', %w(rss topic footer.rhtml)),
         }
         reload_rhtml
       end
 
-    end
 
+      module_function
+      def install
+        name = "rss_topic"
+        pattern = /\A#{Regexp.escape(name)}\z/
+        topic_section = Topic::Section.new(nil, pattern)
+        RWiki::Book.section_list.push(topic_section)
+        RWiki.install_page_module(name, RWiki::RSS::Topic::PageFormat, 'RSS Topic')
+        RWiki::BookConfig.default.format = PageFormat
+      end
+    end
   end
 end
+
+RWiki::RSS::Topic.install
