@@ -2,13 +2,12 @@
 <%= navi(pg) %>
 
 <%
-  keywords = var("key")
+  keywords = get_var("key").to_ary
   keywords.collect!{|x| x.split(/\s/)}
   keywords.flatten!
   keywords.uniq!
 
-  search_type, = var("type")
-  search_type ||= "and"
+  search_type = get_var("type", "and")
   search_type.downcase!
   search_type = "and" unless %w(and or).include?(search_type)
 

@@ -350,10 +350,10 @@ module RWiki
 
       def create_src(pg, src)
         rv = pg.src
-        wiki_type, = var('wiki_type')
-        encoding, = var('encoding')
-        wiki_name, = var('wiki_name')
-        source_uri, = var('source_uri')
+        wiki_type = get_var('wiki_type')
+        encoding = get_var('encoding')
+        wiki_name = get_var('wiki_name')
+        source_uri = get_var('source_uri')
         if !wiki_type.to_s.empty? and
             !encoding.to_s.empty? and
             !wiki_name.to_s.empty? and

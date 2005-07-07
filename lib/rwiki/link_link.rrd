@@ -11,7 +11,7 @@
 %>
 = <%=er title %>
 
-<%=er(var("description"), {:accept_textblock => true})%>
+<%=er(get_var("description"), {:accept_textblock => true})%>
 
 == URL
 <% if /\A\s*\z/ !~ get_var("url", '') %>
@@ -25,7 +25,7 @@
 
 == ¥«¥Æ¥´¥ê
 
-<% var("categories").each do |name| %>
+<% get_var("categories").each_data do |name| %>
 * ((<<%=er(pg.book[name].title, {:accept_slash => false})%>|<%=er name %>>))
 <% end %>
 

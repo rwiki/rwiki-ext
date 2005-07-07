@@ -207,14 +207,14 @@ module RWiki
         end.compact
         rd_writer = RDWriter.new(pg.name, "admin_page_name", children) do |key|
           if key == "admin_page_name"
-            val = var(key).find {|x| x !~ /\A\s*\z/}
+            val = get_var(key).to_ary.find {|x| x !~ /\A\s*\z/}
             if val
               "((<#{val}>))\n"
             else
               ""
             end
           else
-            var(key).find_all {|x| x !~ /\A\s*\z/}
+            get_var(key).to_ary.find_all {|x| x !~ /\A\s*\z/}
           end
         end
         rd_writer.to_rd(pg, 0)
@@ -355,7 +355,7 @@ module RWiki
                  end
         RDWriter.new(pg.name, "field") do |key|
           if key == "field"
-            types, names = var("field_type"), var("field_name")
+            types, names = get_var("field_type"), get_var("field_name")
             rv = []
             names.each_with_index do |name, i|
               if types[i] and name !~ /\A\s*\z/ and
@@ -365,7 +365,7 @@ module RWiki
             end
             rv
           else
-            var(key)
+            get_var(key)
           end
         end.to_rd(pg, 0)
       end

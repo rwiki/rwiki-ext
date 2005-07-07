@@ -1,7 +1,7 @@
 <%
-  title = var("title", '')
+  title = get_var("title", '')
   title = pg.title if /\A\s*\z/ =~ title.to_s
-  categories = var("categories").collect {|cat_name| pg.book[cat_name]}
+  categories = get_var("categories").to_ary.collect {|cat_name| pg.book[cat_name]}
   categories |= pg.grouped_categories
 %>
 = <%=er title %>

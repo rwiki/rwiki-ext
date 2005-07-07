@@ -1,7 +1,6 @@
 <%
 if ::RWiki::RSS::Topic.display
-  cmd = var('cmd')
-  cmd = cmd.first if cmd.kind_of?(Array)
+  cmd = get_var('cmd')
   if cmd == 'view' and not pg.empty?
 
   rss_display_toggle_name = "rss-display-toggle"

@@ -631,7 +631,7 @@ module RWiki
     
     class PageFormat < ::RWiki::PageFormat
       def create_src(pg, src)
-        if var('mode') == pg.default_mode
+        if get_var('mode') == pg.default_mode
           generate_src(pg, src)
         else
           src

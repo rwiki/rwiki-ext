@@ -51,7 +51,7 @@ module RWiki
             if key == "field"
               get_var("field")
             else
-              var(key)
+              get_var(key)
             end
           end.to_rd(0, pg)
         end
@@ -158,7 +158,7 @@ module RWiki
             if key == "field"
               get_var("field")
             else
-              var(key)
+              get_var(key)
             end
           end
         end

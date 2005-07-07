@@ -2,14 +2,12 @@
 <%= navi(pg) %>
 
 <%
-  refine_type, = var("type")
-  refine_type ||= "and"
+  refine_type = get_var("type", "and").to_s
   refine_type.downcase!
   refine_type = "and" unless %w(and or).include?(refine_type)
   refine_funcname = if refine_type == "and" then "&" else "|" end
 
-  category_names = var('cat')
-  category_names ||= []
+  category_names = get_var('cat').to_ary
   category_name = {}
   category_names.each {|cat_name| category_name[cat_name] = nil}
   categories = pg.find_all_category {|cat_pg| category_name.has_key?(cat_pg.name)}.sort {|x, y| x.title <=> y.title}
