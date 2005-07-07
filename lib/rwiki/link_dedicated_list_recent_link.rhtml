@@ -1,4 +1,9 @@
 <%
+  key = "pages"
+  default = 10
+  added_num = 30
+  num, range, have_more = limit_number(key, default, pg.book.size)
+
   parallel_parse = true
 
   link_page = {}
@@ -18,11 +23,10 @@
   end
   maneger.parallel_parse(parsed_rsses) if parallel_parse
 
-  num_of_pages = number_of_pages(get_var('pages'))
   full_recent_changes = maneger.recent_changes.find_all do |uri,|
     link_page.has_key?(uri)
   end
-  recent_changes = full_recent_changes[display_range(num_of_pages)]
+  recent_changes = full_recent_changes[range]
  %>
 <% recent_changes.each do |uri, channel, image, item, name| %>
 <div class="content">
@@ -43,9 +47,9 @@
   <% if item.dc_date then %><div class="date"><%=h item.dc_date.localtime %></div><% end %>
 </div>
 <% end %>
-<% if 0 < num_of_pages and num_of_pages < full_recent_changes.size %>
+<% if have_more %>
 <div class="link-navi">
-  <span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', num_of_pages + added_recent_changes_number]]) %>">もっと見たい</a>]</span>
+  <span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', num + added_num]]) %>">もっと見たい</a>]</span>
   <span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', -1]]) %>">全部見たい</a>]</span>
 </div>
 <% end %>
