@@ -1,5 +1,5 @@
 require "open-uri"
-require "uri/generic"
+require "uri"
 require "thread"
 require "time"
 require "timeout"
@@ -70,17 +70,6 @@ module RWiki
           @@mutex.synchronize do
             need_update = !@@cache.has_key?(uri_str) or
               ((@@cache[uri_str][:time] + expire) < Time.now)
-          end
-
-          begin
-#              STDERR.print("#{Time.now}: uri:#{uri} ",
-#                           "need_update:#{need_update} ",
-#                          "@@cache[uri][:time]:#{@@cache[uri][:time]} ",
-#                          "expire:#{expire} ",
-#                          "(@@cache[uri][:time] + expire) < Time.now:",
-#                          "#{(@@cache[uri][:time] + expire) < Time.now}")
-#              STDERR.puts
-          rescue NameError
           end
 
           if need_update
@@ -156,7 +145,8 @@ module RWiki
         @@mutex.synchronize do
           @@cache.each do |uri, value|
             next if value[:channel].nil?
-            yield(uri, value[:channel], value[:image], value[:items], value[:name], value[:time])
+            yield(uri, value[:channel], value[:image],
+                  value[:items], value[:name], value[:time])
           end
         end
       end
@@ -333,8 +323,6 @@ module RWiki
 
         have_update_info
       end
-      
     end
-    
   end
 end

@@ -49,7 +49,7 @@
 <% end %>
 <% if have_more %>
 <div class="link-navi">
-  <span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', num + added_num]]) %>">もっと見たい</a>]</span>
-  <span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [['pages', -1]]) %>">全部見たい</a>]</span>
+  <span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [[key, num + added_num]]) %>">もっと見たい</a>]</span>
+  <span class="link-navi">[<a href="<%= full_ref_name(pg.name, params + [[key, -1]]) %>">全部見たい</a>]</span>
 </div>
 <% end %>

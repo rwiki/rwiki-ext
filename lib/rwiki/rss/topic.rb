@@ -109,6 +109,8 @@ module RWiki
 
 
       class PageFormat < RWiki::BookConfig.default.format
+        include FormatUtils
+
         private
         def make_topic_title_anchor(channel, name)
           name = channel.title if name.to_s =~ /\A\s*\z/
@@ -122,7 +124,7 @@ module RWiki
           rv << %Q|(#{h modified(item.dc_date)})|
           cont = item.content
           if cont
-            rv << %Q[: #{cont.shorten(characters)} <a href="#{href}">more</a>]
+            rv << %Q[: #{shorten(cont, characters)} <a href="#{href}">more</a>]
           end
           rv
         end

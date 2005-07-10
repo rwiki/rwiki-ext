@@ -16,7 +16,7 @@
           <%= ia(item) %>
           <% if item.dc_date then %><%=make_modified(item.dc_date)%><% end %>
           <% if item.content %>
-          : <%= item.content.shorten %>
+          : <%= shorten(item.content) %>
           <% end %>
         </li>
       <% end %>

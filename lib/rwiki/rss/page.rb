@@ -13,32 +13,6 @@ class ERB
   end
 end
 
-class String
-  unless respond_to?(:shorten)
-    def shorten(len=120)
-
-      nkf_args = nil
-      case RWiki::KCode.charset
-      when 'euc-jp'
-        nkf_args = '-edXm0'
-      when 'Shift_JIS'
-        nkf_args = '-sdXm0'
-      else
-      end
-
-      if nkf_args
-        lines = NKF::nkf("-e -m0 -f#{len}", self.gsub(/\n/, ' ')).split(/\n/)
-        lines[0].concat('...') if lines[0] and lines[1]
-        lines[0]
-      else
-        rv = self[0...len]
-        rv.concat("...") if self.size > len
-        rv
-      end
-    end
-  end
-end
-
 module RWiki
   module RSS
     
@@ -147,14 +121,6 @@ module RWiki
 
     module FormatUtils
 
-      def default_recent_changes_number
-        10
-      end
-
-      def added_recent_changes_number
-        30
-      end
-
       def make_anchor(href, name, time=nil, image_src=nil, image_title=nil)
         anchor = if image_src
                    image_title ||= name
@@ -201,22 +167,6 @@ module RWiki
         @maneger ||= ::RWiki::RSS::Maneger.new
       end
 
-      def number_of_pages(request_pages)
-        if request_pages
-          request_pages.to_i
-        else
-          default_recent_changes_number
-        end
-      end
-      
-      def display_range(num_of_pages)
-        if 0 < num_of_pages
-          0...num_of_pages
-        else
-          0..num_of_pages
-        end
-      end
-
       def localtime(time)
         if time.respond_to?(:localtime)
           time.localtime
@@ -230,7 +180,14 @@ module RWiki
       end
 
       def shorten(text, len=120)
-        h(hu(text).shorten(len))
+        text = hu(text).gsub(/\n/, ' ')
+        if len < 0
+          lines = [text]
+        else
+          lines = NKF.nkf("-e -m0 -f#{len}", text).split(/\n/)
+        end
+        lines[0] << '...' if lines[0] and lines[1]
+        h(RWiki::KCode.kconv(lines[0]))
       end
 
     end
