@@ -111,6 +111,24 @@ module RWiki
       class PageFormat < RWiki::BookConfig.default.format
         include FormatUtils
 
+        def view(pg)
+          topic = ::RWiki::RSS::Topic
+          topic.clear
+  
+          prop = pg.prop(:rss) || {}
+          topic.expire = prop[:expire] || ::RWiki::RSS::EXPIRE
+          topic.pages = prop[:pages] || ::RWiki::RSS::DISPLAY_PAGES
+          topic.characters = prop[:characters] || ::RWiki::RSS::DISPLAY_CHARACTERS
+          topic.use_thread = prop[:use_thread]
+          topic.display = prop[:display]
+          
+          (prop[:uri] || []).each do |uri, name|
+            topic.add_topic(uri, @@charset, name)
+          end
+          
+          super
+        end
+        
         private
         def make_topic_title_anchor(channel, name)
           name = channel.title if name.to_s =~ /\A\s*\z/
@@ -131,7 +149,6 @@ module RWiki
         alias ttia make_topic_item_anchor
 
         @rhtml = {
-          :view => ERBLoader.new('view(pg)', %w(rss topic view.rhtml)),
           :navi => RWiki::ERBLoader.new('navi(pg)', %w(rss topic navi.rhtml)),
           :footer => RWiki::ERBLoader.new('footer(pg)', %w(rss topic footer.rhtml)),
         }
