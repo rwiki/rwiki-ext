@@ -2,8 +2,8 @@
 
 <%
   if pg.rss
-    maneger.parse(pg.rss, @@charset, pg.title)
-    rss = maneger[pg.rss]
+    manager.parse(pg.rss, @@charset, pg.title)
+    rss = manager[pg.rss]
   else
     rss = nil
   end

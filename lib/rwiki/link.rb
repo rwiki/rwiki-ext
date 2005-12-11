@@ -1,5 +1,5 @@
 require "rwiki/custom-edit"
-require "rwiki/rss/maneger"
+require "rwiki/rss/manager"
 require "rwiki/rss/page"
 
 module RWiki
@@ -250,8 +250,8 @@ module RWiki
         index_section.default_mode
       end
 
-      def maneger
-        @maneger ||= ::RWiki::RSS::Maneger.new
+      def manager
+        @manager ||= ::RWiki::RSS::Manager.new
       end
 
       private
@@ -491,7 +491,7 @@ module RWiki
         if cats.empty?
           update_index_page_src
         else
-           cats.each {|cat| update_category_page_src(cat)}
+          cats.each {|cat| update_category_page_src(cat)}
         end
       end
 
@@ -510,11 +510,11 @@ module RWiki
       end
 
       def rss_match?(regexp)
-        if rss and target_rss = maneger[rss]
+        if rss and target_rss = manager[rss]
           regexp.match(target_rss[:name]) or
             (target_rss[:description] and
                regexp =~ target_rss[:description]) or
-            rss_item_match?(regexp, maneger.items(rss))
+            rss_item_match?(regexp, manager.items(rss))
         else
           false
         end
@@ -598,7 +598,7 @@ module RWiki
       def view_html(env={}, &block)
         fmt = format.new(env, &block)
         update_page_src(self, fmt) if dirty?
-        ::RWiki::RSS::Maneger.forget
+        ::RWiki::RSS::Manager.forget
         dispatch_view_html(fmt, &block)
       end
 

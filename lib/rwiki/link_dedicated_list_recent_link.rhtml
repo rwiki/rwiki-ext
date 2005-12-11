@@ -15,15 +15,15 @@
       if parallel_parse
         parsed_rsses << [link_pg.rss, @@charset, link_pg.title]
       else
-        maneger.parse(link_pg.rss, @@charset, link_pg.title)
+        manager.parse(link_pg.rss, @@charset, link_pg.title)
       end
 #p Time.now - before_time
       link_page[link_pg.rss] = link_pg
     end
   end
-  maneger.parallel_parse(parsed_rsses) if parallel_parse
+  manager.parallel_parse(parsed_rsses) if parallel_parse
 
-  full_recent_changes = maneger.recent_changes.find_all do |uri,|
+  full_recent_changes = manager.recent_changes.find_all do |uri,|
     link_page.has_key?(uri)
   end
   recent_changes = full_recent_changes[range]

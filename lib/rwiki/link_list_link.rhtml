@@ -1,6 +1,6 @@
 <ul>
 <% link_pages.each do |link_pg|
-    rss = maneger[link_pg.rss]
+    rss = manager[link_pg.rss]
     image_infos = []
     if rss[:image]
       image_infos << rss[:image].url
