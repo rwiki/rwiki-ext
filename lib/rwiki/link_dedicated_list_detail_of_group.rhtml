@@ -1,6 +1,6 @@
 <% group_pages.sort {|x, y| x.title <=> y.title}.each do |group_page| %>
 <div class="content">
-  <h3><%= make_anchor(ref_name(group_page.name), group_page.title, group_page.modified) %></h3>
+  <h3><%= make_anchor(ref_name(group_page.name), group_page.title, group_page.modified, {:add_id => true}) %></h3>
   <div class="group-info">絞りこみタイプ: <%= group_page.refine_type %></div>
   <div class="description"><p><%=h group_page.descriptions.first %></p></div>
   <div class="category">

@@ -31,7 +31,7 @@
 <% recent_changes.each do |uri, channel, image, item, name| %>
 <div class="content">
   <h3>
-    <%= ia(item) %>
+    <%= ia(item, true) %>
     <% if item.respond_to?(:dc_publisher) and /\A\s*\z/ !~ item.dc_publisher.to_s then %> @ <%=h item.dc_publisher%><% end %>
     <% if item.respond_to?(:dc_creator) and /\A\s*\z/ !~ item.dc_creator.to_s then %> by <%=h item.dc_creator%><% end %>
     <%= make_modified(item.dc_date) %>
