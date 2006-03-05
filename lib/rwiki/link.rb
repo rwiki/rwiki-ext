@@ -529,7 +529,8 @@ module RWiki
         items.find do |item|
           regexp =~ item.title or
             (item.description and regexp =~ item.description) or
-            (item.content_encoded and regexp =~ item.content_encoded)
+            (item.respond_to?(:content_encoded) and
+             item.content_encoded and regexp =~ item.content_encoded)
         end
       end
 
